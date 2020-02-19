@@ -1,0 +1,15 @@
+// VS Code extensions recommendations
+{
+    "recommendations": [
+        // TODOs and notes managing
+        "fabiospampinato.vscode-todo-plus",
+        // Python linting and debugging
+        "ms-python.python",
+        // Python auto doc string
+        "njpwerner.autodocstring",
+        // Spell checking
+        "streetsidesoftware.code-spell-checker",
+        // Blender dev
+        "jacqueslucke.blender-development"
+    ]
+}

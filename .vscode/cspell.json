@@ -1,0 +1,145 @@
+// cSpell - Spell checker settings
+{
+    //=========================================================================
+    // GENERAL SETTINGS
+    //
+    // Version of the setting file.  Always 0.1
+    "version": "0.1",
+    // language - current active spelling language
+    "language": "en",
+    // Enable the spell checker.
+    "enabled": true,
+    // Display the spell checker status on the status bar.
+    "showStatus": true,
+    // Compound words like 'errormessage'
+    "allowCompoundWords": true,
+    // Exclude checking of some regexp
+    "ignoreRegExpList": [
+        "Urls",
+        "Email"
+    ],
+    //
+    //=========================================================================
+    // WORDS AND DICTIONARIES
+    //
+    // words - list of words to be always considered correct
+    "words": [
+        "bsdf",
+        "cmath",
+        "cuda",
+        "exif",
+        "issn",
+        "kdtree",
+        "numpy",
+        "opengl",
+        "prefs",
+        "pylint",
+        "rgba",
+        "sfm",
+        "sobol",
+        "tolist",
+        "tool",
+        "unregister",
+        "virtualenv",
+        "visual"
+    ],
+    // flagWords - list of words to be always considered incorrect (eg. spelling errors)
+    "flagWords": [
+        "hte",
+        "pipelien",
+        "te"
+    ],
+    // Words to be ignored and not suggested
+    "ignoreWords": [
+        "atexit",
+        "bsdfs",
+        "depsgraph",
+        "dists",
+        "dtype",
+        "fcurves",
+        "functools",
+        "fstop",
+        "icce",
+        "idname",
+        "inproceedings",
+        "isdir",
+        "isfile",
+        "linalg",
+        "ndarray",
+        "nurbs",
+        "objs",
+        "openmvg",
+        "persp",
+        "pmvs",
+        "pydata",
+        "sfmflow",
+        "stdev",
+        "theia",
+        "venv",
+        "vsfm",
+        "werkzeug",
+        "wxyz"
+    ],
+    //
+    //=========================================================================
+    // FILES AND LANGUAGE SPECIFIC SETTINGS
+    //
+    // Enabled file types
+    "enabledLanguageIds": [
+        "asciidoc",
+        "json",
+        "jsonc",
+        "markdown",
+        "plaintext",
+        "python",
+        "text"
+    ],
+    // language specific settings
+    "languageSettings": [
+        //--------------------------------------------
+        // all
+        {
+            "languageId": "*",
+            "local": "en",
+            "dictionaries": [
+                "wordsEn"
+            ],
+            "ignoreRegExpList": [
+                "'s\\s"
+            ]
+        },
+        {
+            "languageId": "*",
+            "local": "en-US",
+            "dictionaries": [
+                "wordsEn"
+            ]
+        },
+        {
+            "languageId": "*",
+            "local": "en-GB",
+            "dictionaries": [
+                "wordsEnGb"
+            ]
+        },
+        {
+            "languageId": "*",
+            "dictionaries": [
+                "companies",
+                "softwareTerms",
+                "misc"
+            ]
+        },
+        //--------------------------------------------
+        // python
+        {
+            "languageId": "python",
+            "allowCompoundWords": true,
+            "dictionaries": [
+                "python"
+            ]
+        }
+    ]
+    //
+    //=========================================================================
+}

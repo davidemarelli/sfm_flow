@@ -1,0 +1,11 @@
+{
+    // Launch configurations.
+    "version": "0.2.0",
+    "configurations": [
+        //
+        // DO NOT USE!!!
+        // Use the Blender development extension (jacqueslucke.blender-development) instead.
+        //
+        // To run the add-on use command "Blender: Start" form the command palette.
+    ]
+}

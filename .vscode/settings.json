@@ -1,0 +1,68 @@
+{
+    //----------------------------------------------------------------------------------------------
+    // Spell checker
+    "cSpell.enabled": true,
+    //
+    //----------------------------------------------------------------------------------------------
+    // TODOs
+    "todo.file.exclude": [
+        "**/.!(todo|todos|task|tasks)/**",
+        "**/assets/**",
+        "**/build/**",
+    ],
+    "todo.embedded.exclude": [
+        "**/.*",
+        "**/.*/**",
+        "**/build/**",
+        "**/assets/**",
+        "**/*.{jpeg,jpg,zip}"
+    ],
+    //
+    //----------------------------------------------------------------------------------------------
+    // Blender
+    "blender.addon.reloadOnSave": true,
+    //
+    //----------------------------------------------------------------------------------------------
+    // Python
+    //"python.pythonPath": "${workspaceFolder}\\.venv\\Scripts\\python.exe",  // on Windows
+    "python.pythonPath": "${workspaceFolder}/.venv/bin/python",               // on Linux
+    "python.terminal.activateEnvironment": true,
+    "python.linting.pylintArgs": [
+        "--ignored-modules=mathutils,bpy.app,bpy.props,gpu,numpy,bgl", // fix import errors
+        "--variable-rgx=[a-zA-Z0-9_]{1,30}$",  // fix variable don't conform camel_case on single char
+        "--argument-rgx=[a-zA-Z0-9_]{1,30}$",  // fix argument don't conform camel_case on single char
+        "--attr-rgx=[a-zA-Z0-9_]{1,30}$",      // fix attribute don't conform camel_case on single char
+        "--class-rgx=([A-Z]+_[A-Z]{2}_[a-z0-9_]+)|([A-Z]+_?[a-zA-Z0-9]+)$",  // fix class name style
+        "--good-names=logger,app",
+        "--max-line-length=120",
+        "--disable=C0114"
+    ],
+    //
+    //----------------------------------------------------------------------------------------------
+    // Code formatting rules
+    "editor.formatOnSave": true,
+    "json.format.enable": false,
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": true,
+    },
+    "python.sortImports.args": ["-l", "100"],
+    "files.trimTrailingWhitespace": true,
+    "python.formatting.provider": "autopep8",
+    "python.formatting.autopep8Args": [
+        "--max-line-length", "120"
+    ],
+    //
+    //----------------------------------------------------------------------------------------------
+    // Editor interface settings
+    "files.exclude": {  // hide files and folders in explorer panel
+        "**/*.pyc": true,              // python bytecode files in all dirs
+        "**/__*__": true,              // files and folders starting and ending with __ (e.g. __pycache__)
+        "**/__*.py": false,            // do not exclude __*.py files (e.g. __init__.py)
+        ".venv/": true,                // virtualenv folder
+        ".vscode/.ropeproject": true
+    },
+    "editor.rulers": [  // vertical rulers
+        100,
+        120
+    ],
+}

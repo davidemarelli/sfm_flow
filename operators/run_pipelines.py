@@ -2,6 +2,7 @@
 import logging
 import os
 import platform
+import shlex
 import subprocess
 from multiprocessing import cpu_count
 from typing import Dict, List
@@ -79,9 +80,10 @@ class SFMFLOW_OT_run_pipelines(ThreadedOperator):
             # check if is a custom pipeline
             cp = next((e for e in addon_prefs.custom_pipelines if e.uuid == pipeline_name), None)
             if cp is not None:
-                cp_ws = os.path.join(reconstructions_folder, cp.name)
+                cp_ws = os.path.join(reconstructions_folder, "".join([c if c.isalnum() else "_" for c in cp.name]))
                 os.makedirs(cp_ws, exist_ok=True)
-                command = replace_tokens(cp.command, images_folder, cp_ws)
+                command = shlex.split(cp.command)   # split command and args
+                command = [replace_tokens(c, images_folder, cp_ws) for c in command]
                 logfile_path = os.path.join(cp_ws, bpy.path.clean_name(cp.name) + "_execution.log")
                 self.run_commands(cp.name, [command, ], logfile_path)
             else:

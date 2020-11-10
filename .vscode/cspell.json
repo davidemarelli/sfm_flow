@@ -59,6 +59,7 @@
         "fcurves",
         "functools",
         "fstop",
+        "hosek",
         "icce",
         "idname",
         "inproceedings",
@@ -67,6 +68,7 @@
         "isfile",
         "linalg",
         "ndarray",
+        "nishita",
         "nurbs",
         "objs",
         "openmvg",
@@ -79,6 +81,7 @@
         "venv",
         "vsfm",
         "werkzeug",
+        "wilkie",
         "wxyz"
     ],
     //

@@ -642,6 +642,7 @@ class SFMFLOW_OT_init_scene(bpy.types.Operator):
         # sky texture
         sky_tex = nodes.new("ShaderNodeTexSky")
         sky_tex.location = Vector((1650, 50))
+        sky_tex.sky_type = 'HOSEK_WILKIE'   # TODO switch to the new NISHITA in 2.90+ ?
         sky_tex.turbidity = 2.0
         sky_tex.ground_albedo = 0.5
         # mix color

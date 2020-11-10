@@ -15,7 +15,7 @@ See the [Getting started](https://github.com/davidemarelli/sfm_flow/wiki/Getting
 
 ## License
 
-[MIT License](blob/master/LICENSE)
+[MIT License](LICENSE)
 
 ## Documentation
 

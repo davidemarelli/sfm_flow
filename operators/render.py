@@ -133,6 +133,11 @@ class SFMFLOW_OT_render_images(bpy.types.Operator):
             addon_user_preferences_name = (__name__)[:__name__.index('.')]
             addon_prefs = user_preferences.addons[addon_user_preferences_name].preferences   # type: AddonPreferences
             exiftool_path = addon_prefs.exiftool_path
+            if exiftool_path and "(-k)" in os.path.basename(exiftool_path):
+                msg = "Error running `Exiftool`, please remove `(-k)` from filename"
+                logger.error(msg)
+                self.report({'ERROR'}, msg)
+                return {'CANCELLED'}
             try:
                 result = check_output([exiftool_path, "-ver"]).decode().rstrip()
                 et_version = list(map(int, result.split('.')))

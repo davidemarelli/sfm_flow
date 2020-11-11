@@ -5,7 +5,7 @@
         {
             "label": "Build add-on zip",
             "type": "shell",
-            "command": "python3 ${workspaceFolder}/.vscode/scripts/build_zip.py",
+            "command": "python ${workspaceFolder}/.vscode/scripts/build_zip.py",
         }
     ]
 }

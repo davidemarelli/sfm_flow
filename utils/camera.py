@@ -4,6 +4,7 @@ import logging
 import bpy
 from mathutils import Vector
 
+from .blender_version import BlenderVersion
 from .math import euclidean_distance
 
 logger = logging.getLogger(__name__)
@@ -59,6 +60,9 @@ def camera_detect_nearest_intersection(view_layer: bpy.types.ViewLayer, camera: 
                   If no intersection found returns camera location. TODO better return infinite?
     """
     camera_lookat = get_camera_lookat(camera)
+    if bpy.app.version >= BlenderVersion.V2_91:
+        # see https://wiki.blender.org/wiki/Reference/Release_Notes/2.91/Python_API
+        view_layer = view_layer.depsgraph
     result, location, *_ = scene.ray_cast(view_layer, camera.location, camera_lookat)
     logger.debug("Nearest intersection for camera %s (location=%s, look_at=%s): found=%s, position=%s",
                  camera.name, camera.location, camera_lookat, result, location)

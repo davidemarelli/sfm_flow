@@ -5,6 +5,8 @@ from typing import Optional, Tuple
 import bpy
 from mathutils import Vector
 
+from .blender_version import BlenderVersion
+
 ASSET_FOLDER = path.join(path.dirname(path.abspath(__file__)), "../assets")
 
 
@@ -45,14 +47,14 @@ def add_texture_mapping_node(node_tree: bpy.types.NodeTree, location: Vector = V
     tex_mapping_node = node_tree.nodes.new("ShaderNodeMapping")
     tex_mapping_node.location = nodes_location + Vector((150, 0))
     node_tree.links.new(tex_coords.outputs['UV'], tex_mapping_node.inputs['Vector'])
-    if bpy.app.version[1] == 80:  # v2.80
-        tex_mapping_node.translation = location
-        tex_mapping_node.rotation = rotation
-        tex_mapping_node.scale = scale
-    else:                         # v2.81+
+    if bpy.app.version >= BlenderVersion.V2_81:   # v2.81+
         tex_mapping_node.inputs['Location'].default_value = location
         tex_mapping_node.inputs['Rotation'].default_value = rotation
         tex_mapping_node.inputs['Scale'].default_value = scale
+    else:                                         # v2.80
+        tex_mapping_node.translation = location
+        tex_mapping_node.rotation = rotation
+        tex_mapping_node.scale = scale
     return tex_mapping_node
 
 

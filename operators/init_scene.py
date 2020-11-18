@@ -9,8 +9,8 @@ import bpy
 from mathutils import Euler, Vector
 
 from ..prefs import SFMFLOW_AddonProperties
-from ..utils import (SceneBoundingBox, camera_detect_dof_distance, euclidean_distance,
-                     get_environment_collection)
+from ..utils import (BlenderVersion, SceneBoundingBox, camera_detect_dof_distance,
+                     euclidean_distance, get_environment_collection)
 from ..utils.nodes import add_floor_material_nodes
 
 logger = logging.getLogger(__name__)
@@ -560,14 +560,14 @@ class SFMFLOW_OT_init_scene(bpy.types.Operator):
         location = Vector((random() - 0.5, random() - 0.5, random() - 0.5))
         rotation = Vector((random() * pi_2, random() * pi_2, random() * pi_2))
         scale = Vector((1 + random(), 1 + random(), 1 + random()))
-        if bpy.app.version[1] == 80:  # v2.80
-            cl_01a.translation = location
-            cl_01a.rotation = rotation
-            cl_01a.scale = scale
-        else:                         # v2.81+
+        if bpy.app.version >= BlenderVersion.V2_81:  # v2.81+
             cl_01a.inputs['Location'].default_value = location
             cl_01a.inputs['Rotation'].default_value = rotation
             cl_01a.inputs['Scale'].default_value = scale
+        else:                                        # v2.80
+            cl_01a.translation = location
+            cl_01a.rotation = rotation
+            cl_01a.scale = scale
         links.new(tex_coord.outputs['Generated'], cl_01a.inputs['Vector'])
         # color ramp
         cl_01b = nodes.new("ShaderNodeValToRGB")

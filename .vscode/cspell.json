@@ -52,6 +52,7 @@
     // Words to be ignored and not suggested
     "ignoreWords": [
         "atexit",
+        "blenkernel",
         "bsdfs",
         "depsgraph",
         "dists",

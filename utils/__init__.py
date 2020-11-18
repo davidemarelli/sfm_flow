@@ -1,5 +1,6 @@
 
 from .animation import *
+from .blender_version import BlenderVersion
 from .camera import *
 from .gt_writer import GroundTruthWriter
 from .math import *

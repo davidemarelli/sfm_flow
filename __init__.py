@@ -33,8 +33,9 @@ import logging
 import sys
 
 import bpy
-import sfm_flow.utils.logutils as logutils
 from bpy.app.handlers import persistent
+
+import sfm_flow.utils.logutils as logutils
 from sfm_flow.utils.callbacks import Callbacks
 
 from .operators import *
@@ -51,7 +52,7 @@ bl_info = {   # pylint: disable=invalid-name
     "name": "SfM Flow",
     "description": "Structure-from-Motion tools for synthetic dataset generation and 3D reconstruction evaluation.",
     "author": "Davide Marelli, Simone Bianco, Gianluigi Ciocca",
-    "version": (1, 0, 1),
+    "version": (1, 0, 2),
     "blender": (2, 80, 75),
     "location": "Properties > Scene > SfM Flow",
     "wiki_url": "https://github.com/davidemarelli/sfm_flow/wiki",

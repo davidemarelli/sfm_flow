@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [1.0.2] - 2020-11-27
+
+### Added
+
+- Support for Blender 2.91.
+- Blender version enumeration for easy version comparison.
+
+### Fixed
+
+- Fix project docstring format to 'docblockr'.
+- Fix parameters of ray_cast API for Blender 2.91.
+
 ## [1.0.1] - 2020-11-11
 
 ### Added
@@ -19,6 +31,7 @@ All notable changes to this project will be documented in this file.
 
 - Initial SfM Flow release.
 
-[unreleased]: https://github.com/davidemarelli/sfm_flow/compare/v1.0.1...HEAD
+[unreleased]: https://github.com/davidemarelli/sfm_flow/compare/v1.0.2...HEAD
+[1.0.2]: https://github.com/davidemarelli/sfm_flow/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/davidemarelli/sfm_flow/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/davidemarelli/sfm_flow/releases/tag/v1.0.0

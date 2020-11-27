@@ -57,5 +57,5 @@ class BlenderVersion(tuple, Enum):
     V2_90_1 = (2, 90, 1)     # 2.90.1 - September 23, 2020
     #
     # --- v2.91
-    V2_91 = (2, 91, 0)       # 2.91.0 - November 25, 2020 TBC
+    V2_91 = (2, 91, 0)       # 2.91.0 - November 25, 2020
     V2_91_0 = (2, 91, 0)

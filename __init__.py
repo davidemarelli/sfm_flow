@@ -39,11 +39,11 @@ import sfm_flow.utils.logutils as logutils
 from sfm_flow.utils.callbacks import Callbacks
 
 from .operators import *
-from .panels import *
 from .prefs import SFMFLOW_AddonProperties
 from .prefs.preferences import preferences_register, preferences_unregister
 from .reconstruction import ReconstructionsManager, SFMFLOW_ReconstructionModelProperties
 from .ui.menus import menu_register, menu_unregister
+from .ui.panels import *
 
 ####################################################################################################
 # Addon globals

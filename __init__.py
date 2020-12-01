@@ -43,6 +43,7 @@ from .panels import *
 from .prefs import SFMFLOW_AddonProperties
 from .prefs.preferences import preferences_register, preferences_unregister
 from .reconstruction import ReconstructionsManager, SFMFLOW_ReconstructionModelProperties
+from .ui.menus import menu_register, menu_unregister
 
 ####################################################################################################
 # Addon globals
@@ -79,6 +80,14 @@ CLASSES = (
     SFMFLOW_OT_import_reconstruction,
     SFMFLOW_OT_sample_geometry_gt,
     SFMFLOW_OT_align_reconstruction,
+    SFMFLOW_OT_add_gcp_cross1,
+    SFMFLOW_OT_add_gcp_cross2,
+    SFMFLOW_OT_add_gcp_hourglass,
+    SFMFLOW_OT_add_gcp_l,
+    SFMFLOW_OT_add_gcp_round1,
+    SFMFLOW_OT_add_gcp_round2,
+    SFMFLOW_OT_add_gcp_round3,
+    SFMFLOW_OT_add_gcp_square,
     #
     # UI panels
     SFMFLOW_PT_main,
@@ -108,6 +117,9 @@ def register() -> None:
         bpy.utils.register_class(c)
         logger.debug("Registered class: %s", c.__name__)
 
+    # ui menus
+    menu_register()
+
     # handlers
     bpy.app.handlers.render_write.append(SFMFLOW_OT_render_images.render_complete_callback)
     bpy.app.handlers.depsgraph_update_post.append(Callbacks.cam_pose_update)
@@ -125,6 +137,9 @@ def unregister() -> None:
     bpy.app.handlers.depsgraph_update_post.remove(Callbacks.cam_pose_update)
     bpy.app.handlers.save_post.remove(Callbacks.post_save)
     bpy.app.handlers.load_post.remove(Callbacks.post_load)
+
+    # ui menus
+    menu_unregister()
 
     # un-register preferences and classes
     preferences_unregister()

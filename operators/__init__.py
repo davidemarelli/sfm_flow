@@ -1,4 +1,8 @@
 
+from .add_gcp import (SFMFLOW_OT_add_gcp_cross1, SFMFLOW_OT_add_gcp_cross2,
+                      SFMFLOW_OT_add_gcp_hourglass, SFMFLOW_OT_add_gcp_l, SFMFLOW_OT_add_gcp_round1,
+                      SFMFLOW_OT_add_gcp_round2, SFMFLOW_OT_add_gcp_round3,
+                      SFMFLOW_OT_add_gcp_square)
 from .align_reconstruction import SFMFLOW_OT_align_reconstruction
 from .animate_camera import SFMFLOW_OT_animate_camera, SFMFLOW_OT_animate_camera_clear
 from .animate_sun import SFMFLOW_OT_animate_sun, SFMFLOW_OT_animate_sun_clear

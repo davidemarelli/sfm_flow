@@ -45,6 +45,16 @@ def get_environment_collection() -> bpy.types.Collection:
 
 
 # ==================================================================================================
+def get_gcp_collection() -> bpy.types.Collection:
+    """Get the `SFMFLOW_GCPs` collection, create it if does not exists.
+
+    Returns:
+        bpy.types.Collection -- SFMFLOW_GCPs collection
+    """
+    return get_collection("SFMFLOW_GCPs")
+
+
+# ==================================================================================================
 def get_objs(scene: bpy.types.Scene, exclude_collections: Tuple[str] = None, mesh_only: bool = True
              ) -> List[bpy.types.Object]:
     """Get all objects in the given scene. Eventually filter by type and collections.

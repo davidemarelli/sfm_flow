@@ -9,29 +9,38 @@ from mathutils import Vector
 logger = logging.getLogger(__name__)
 
 
-# ==============================================================================================
-def get_collection(name: str) -> bpy.types.Collection:
+# ==================================================================================================
+def get_collection(name: str, previous_name: str = None) -> bpy.types.Collection:
     """Get the desired collection, create it if does not exists.
 
+    Arguments:
+        name {str} -- name of the collection
+
+    Keyword Arguments:
+        previous_name {str} -- name of the collection in previous SfM Flow versions (default: {None})
+
     Returns:
-        bpy.types.Collection -- Collection of object data-blocks
+        bpy.types.Collection -- collection of object data-blocks
     """
-    recon_collection = bpy.data.collections.get(name)
-    if not recon_collection:
+    if previous_name is not None:   # try to get the old-named collection
+        recon_collection = bpy.data.collections.get(previous_name)
+    if not recon_collection:        # try to get the collection
+        recon_collection = bpy.data.collections.get(name)
+    if not recon_collection:        # if none create the collection
         recon_collection = bpy.data.collections.new(name)
         bpy.context.scene.collection.children.link(recon_collection)
         logger.info("Created collection `%s`", name)
     return recon_collection
 
 
-# ==============================================================================================
+# ==================================================================================================
 def get_reconstruction_collection() -> bpy.types.Collection:
     """Get the `SfM_Reconstructions` collection, create it if does not exists.
 
     Returns:
         bpy.types.Collection -- SfM_Reconstructions collection
     """
-    return get_collection("SfM_Reconstructions")
+    return get_collection("SFMFLOW_Reconstructions", previous_name="SfM_Reconstructions")
 
 
 # ==================================================================================================
@@ -41,7 +50,7 @@ def get_environment_collection() -> bpy.types.Collection:
     Returns:
         bpy.types.Collection -- SfM_Environment collection
     """
-    return get_collection("SfM_Environment")
+    return get_collection("SFMFLOW_Environment", previous_name="SfM_Environment")
 
 
 # ==================================================================================================

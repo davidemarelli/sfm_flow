@@ -5,8 +5,8 @@ SfM Flow is a comprehensive toolset for the evaluation of 3D reconstruction pipe
 
 ## Requirements
 
-- [Blender](https://www.blender.org/download/releases/) 2.80.75+ &nbsp; - &nbsp; tested on Ubuntu 18.04, Windows 10 and macOS Mojave
-- [ExifTool](https://exiftool.org/) v10+
+- [Blender](https://www.blender.org/download/releases/) 2.80.75 or later &nbsp; - &nbsp; tested on Ubuntu 18.04, Windows 10 and macOS Mojave
+- [ExifTool](https://exiftool.org/) v10 or later
 - A Structure from Motion 3D reconstruction pipeline, see [pipeline support](https://github.com/davidemarelli/sfm_flow/wiki/Reconstruction-pipelines)
 
 ## Getting started

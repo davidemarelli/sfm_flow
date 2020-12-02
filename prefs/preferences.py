@@ -341,8 +341,8 @@ class AddonPreferences(bpy.types.AddonPreferences):
         row.template_list("CUSTOMPIPELINE_UL_property_list_item", "", self,
                           "custom_pipelines", self, "custom_pipelines_idx", rows=2)
         controls_col = row.column(align=True)
-        controls_col.operator("sfmflow.prefs_add_custom_pipeline", text="", icon='ADD')
-        controls_col.operator("sfmflow.prefs_remove_custom_pipeline", text="", icon='REMOVE')
+        controls_col.operator(CustomPipelineAddOperator.bl_idname, text="", icon='ADD')
+        controls_col.operator(CustomPipelineRemoveOperator.bl_idname, text="", icon='REMOVE')
         #
         if self.custom_pipelines_idx != -1:
             col = box.column()

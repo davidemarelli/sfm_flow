@@ -1,7 +1,12 @@
 
 import bpy
-from sfm_flow.reconstruction import ReconstructionsManager
-from sfm_flow.utils import is_active_object_reconstruction
+
+from ...operators import (SFMFLOW_OT_align_reconstruction, SFMFLOW_OT_evaluate_reconstruction,
+                          SFMFLOW_OT_import_reconstruction, SFMFLOW_OT_reconstruction_filter,
+                          SFMFLOW_OT_reconstruction_filter_clear, SFMFLOW_OT_run_pipelines,
+                          SFMFLOW_OT_sample_geometry_gt)
+from ...reconstruction import ReconstructionsManager
+from ...utils import is_active_object_reconstruction
 
 
 class SFMFLOW_PT_pipelines_tools(bpy.types.Panel):
@@ -35,13 +40,13 @@ class SFMFLOW_PT_pipelines_tools(bpy.types.Panel):
         layout.row().separator()
         row = layout.split(factor=0.33, align=True)
         row.prop(properties, "reconstruction_pipeline", text="")
-        row.operator("sfmflow.run_pipelines", icon='SETTINGS')
+        row.operator(SFMFLOW_OT_run_pipelines.bl_idname, icon='SETTINGS')
         #
         # import reconstruction
         layout.row().separator()
         row = layout.row(align=True)
-        row.operator("sfmflow.import_reconstruction", icon='IMPORT')
-        row.operator("sfmflow.sample_geometry_gt", text="", icon='GROUP_VERTEX')
+        row.operator(SFMFLOW_OT_import_reconstruction.bl_idname, icon='IMPORT')
+        row.operator(SFMFLOW_OT_sample_geometry_gt.bl_idname, text="", icon='GROUP_VERTEX')
         #
         # reconstruction display
         row = layout.row(align=True)
@@ -53,8 +58,8 @@ class SFMFLOW_PT_pipelines_tools(bpy.types.Panel):
         # reconstruction filtering
         col = layout.column(align=True)
         row = col.row(align=True)
-        row.operator("sfmflow.reconstruction_filter", icon='FILTER')
-        row.operator("sfmflow.reconstruction_filter_clear", text="", icon='X')
+        row.operator(SFMFLOW_OT_reconstruction_filter.bl_idname, icon='FILTER')
+        row.operator(SFMFLOW_OT_reconstruction_filter_clear.bl_idname, text="", icon='X')
         row = col.row(align=True)
         if context.view_layer.objects.active is not None:
             enable = False
@@ -67,8 +72,8 @@ class SFMFLOW_PT_pipelines_tools(bpy.types.Panel):
             row.enabled = enable
         #
         # reconstruction fine alignment
-        layout.operator("sfmflow.align_reconstruction", icon='TRACKING_REFINE_FORWARDS')
+        layout.operator(SFMFLOW_OT_align_reconstruction.bl_idname, icon='TRACKING_REFINE_FORWARDS')
         #
         # reconstruction evaluation
         layout.row().separator()
-        layout.operator("sfmflow.evaluate_reconstruction", icon='DRIVER_DISTANCE')
+        layout.operator(SFMFLOW_OT_evaluate_reconstruction.bl_idname, icon='DRIVER_DISTANCE')

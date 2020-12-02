@@ -1,6 +1,8 @@
 
 import bpy
 
+from ...operators import SFMFLOW_OT_export_ground_truth, SFMFLOW_OT_render_images
+
 
 class SFMFLOW_PT_render_tools(bpy.types.Panel):
     """SfM Flow addon, data generation and export UI panel"""
@@ -32,5 +34,5 @@ class SFMFLOW_PT_render_tools(bpy.types.Panel):
             col.prop(scene.camera.data.dof, "use_dof")
         col.prop(properties, "render_with_shadows")
         layout.row().separator()
-        layout.operator("sfmflow.render_images", icon='RENDER_STILL')     # render dataset button
-        layout.operator("sfmflow.export_ground_truth", icon='EXPORT')     # export ground truth button
+        layout.operator(SFMFLOW_OT_render_images.bl_idname, icon='RENDER_STILL')     # render dataset button
+        layout.operator(SFMFLOW_OT_export_ground_truth.bl_idname, icon='EXPORT')     # export ground truth button

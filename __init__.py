@@ -38,12 +38,12 @@ from bpy.app.handlers import persistent
 import sfm_flow.utils.logutils as logutils
 from sfm_flow.utils.callbacks import Callbacks
 
-from .operators import *
-from .prefs import SFMFLOW_AddonProperties
+from .operators import SFMFLOW_OT_render_images, operators_register, operators_unregister
+from .prefs import properties_register, properties_unregister
 from .prefs.preferences import preferences_register, preferences_unregister
 from .reconstruction import ReconstructionsManager, SFMFLOW_ReconstructionModelProperties
 from .ui.menus import menu_register, menu_unregister
-from .ui.panels import *
+from .ui.panels import panels_register, panels_unregister
 
 ####################################################################################################
 # Addon globals
@@ -59,41 +59,6 @@ bl_info = {   # pylint: disable=invalid-name
     "wiki_url": "https://github.com/davidemarelli/sfm_flow/wiki",
     "category": "3D Reconstruction"
 }
-
-CLASSES = (
-    # Properties
-    SFMFLOW_AddonProperties,
-    SFMFLOW_ReconstructionModelProperties,
-    #
-    # Operators
-    SFMFLOW_OT_init_scene,
-    SFMFLOW_OT_animate_camera,
-    SFMFLOW_OT_animate_camera_clear,
-    SFMFLOW_OT_render_images,
-    SFMFLOW_OT_export_ground_truth,
-    SFMFLOW_OT_evaluate_reconstruction,
-    SFMFLOW_OT_reconstruction_filter,
-    SFMFLOW_OT_reconstruction_filter_clear,
-    SFMFLOW_OT_animate_sun,
-    SFMFLOW_OT_animate_sun_clear,
-    SFMFLOW_OT_run_pipelines,
-    SFMFLOW_OT_import_reconstruction,
-    SFMFLOW_OT_sample_geometry_gt,
-    SFMFLOW_OT_align_reconstruction,
-    SFMFLOW_OT_add_gcp_cross1,
-    SFMFLOW_OT_add_gcp_cross2,
-    SFMFLOW_OT_add_gcp_hourglass,
-    SFMFLOW_OT_add_gcp_l,
-    SFMFLOW_OT_add_gcp_round1,
-    SFMFLOW_OT_add_gcp_round2,
-    SFMFLOW_OT_add_gcp_round3,
-    SFMFLOW_OT_add_gcp_square,
-    #
-    # UI panels
-    SFMFLOW_PT_main,
-    SFMFLOW_PT_render_tools,
-    SFMFLOW_PT_pipelines_tools,
-)
 
 
 ####################################################################################################
@@ -112,12 +77,10 @@ def register() -> None:
     logutils.setup_logger(log_level=log_level)
     logger = logging.getLogger(__name__)
 
-    # register classes
-    for c in CLASSES:
-        bpy.utils.register_class(c)
-        logger.debug("Registered class: %s", c.__name__)
-
-    # ui menus
+    # properties, operators, ui
+    properties_register()
+    operators_register()
+    panels_register()
     menu_register()
 
     # handlers
@@ -125,6 +88,8 @@ def register() -> None:
     bpy.app.handlers.depsgraph_update_post.append(Callbacks.cam_pose_update)
     bpy.app.handlers.save_post.append(Callbacks.post_save)
     bpy.app.handlers.load_post.append(Callbacks.post_load)
+
+    logger.info("SFM Flow initialization complete!")
 
 
 # ==================================================================================================
@@ -138,11 +103,11 @@ def unregister() -> None:
     bpy.app.handlers.save_post.remove(Callbacks.post_save)
     bpy.app.handlers.load_post.remove(Callbacks.post_load)
 
-    # ui menus
+    # ui, operators, preferences, properties
     menu_unregister()
-
-    # un-register preferences and classes
+    panels_unregister()
+    operators_unregister()
     preferences_unregister()
-    for c in reversed(CLASSES):
-        bpy.utils.unregister_class(c)
-        logger.debug("Un-registered class: %s", c.__name__)
+    properties_unregister()
+
+    logger.info("SFM Flow unload complete!")

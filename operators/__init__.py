@@ -1,4 +1,6 @@
 
+from ..utils import register_classes as _register_classes
+from ..utils import unregister_classes as _unregister_classes
 from .add_gcp import (SFMFLOW_OT_add_gcp_cross1, SFMFLOW_OT_add_gcp_cross2,
                       SFMFLOW_OT_add_gcp_hourglass, SFMFLOW_OT_add_gcp_l, SFMFLOW_OT_add_gcp_round1,
                       SFMFLOW_OT_add_gcp_round2, SFMFLOW_OT_add_gcp_round3,
@@ -15,3 +17,44 @@ from .init_scene import SFMFLOW_OT_init_scene
 from .render import SFMFLOW_OT_render_images
 from .run_pipelines import SFMFLOW_OT_run_pipelines
 from .sample_geometry_gt import SFMFLOW_OT_sample_geometry_gt
+
+####################################################################################################
+# Register and unregister
+#
+
+_CLASSES = (
+    SFMFLOW_OT_init_scene,
+    SFMFLOW_OT_animate_camera,
+    SFMFLOW_OT_animate_camera_clear,
+    SFMFLOW_OT_render_images,
+    SFMFLOW_OT_export_ground_truth,
+    SFMFLOW_OT_evaluate_reconstruction,
+    SFMFLOW_OT_reconstruction_filter,
+    SFMFLOW_OT_reconstruction_filter_clear,
+    SFMFLOW_OT_animate_sun,
+    SFMFLOW_OT_animate_sun_clear,
+    SFMFLOW_OT_run_pipelines,
+    SFMFLOW_OT_import_reconstruction,
+    SFMFLOW_OT_sample_geometry_gt,
+    SFMFLOW_OT_align_reconstruction,
+    SFMFLOW_OT_add_gcp_cross1,
+    SFMFLOW_OT_add_gcp_cross2,
+    SFMFLOW_OT_add_gcp_hourglass,
+    SFMFLOW_OT_add_gcp_l,
+    SFMFLOW_OT_add_gcp_round1,
+    SFMFLOW_OT_add_gcp_round2,
+    SFMFLOW_OT_add_gcp_round3,
+    SFMFLOW_OT_add_gcp_square,
+)
+
+
+# ==================================================================================================
+def operators_register() -> None:
+    """Register additional functionalities."""
+    _register_classes(_CLASSES)
+
+
+# ==================================================================================================
+def operators_unregister() -> None:
+    """Unregister additional functionalities."""
+    _unregister_classes(_CLASSES)

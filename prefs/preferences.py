@@ -12,6 +12,8 @@ from bpy.props import (CollectionProperty, EnumProperty, FloatVectorProperty, In
                        StringProperty)
 
 from ..reconstruction import ReconstructionsManager
+from ..utils import register_classes as _register_classes
+from ..utils import unregister_classes as _unregister_classes
 from .custom_pipelines import (CUSTOMPIPELINE_UL_property_list_item, CustomPipelineAddOperator,
                                CustomPipelineProperty, CustomPipelineRemoveOperator)
 
@@ -21,45 +23,7 @@ logger = logging.getLogger(__name__)
 EXIFTOOL_VERSION = (11, 76)
 
 
-################################################################################################
-# Register and unregister
-#
-
-# ==============================================================================================
-def preferences_register() -> None:
-    """Register user's preferences."""
-    bpy.utils.register_class(CUSTOMPIPELINE_UL_property_list_item)
-    bpy.utils.register_class(CustomPipelineProperty)
-    bpy.utils.register_class(AddonPreferences)
-    bpy.utils.register_class(CustomPipelineAddOperator)
-    bpy.utils.register_class(CustomPipelineRemoveOperator)
-    #
-    addon_user_preferences_name = (__name__)[:__name__.index('.')]
-    prefs = bpy.context.preferences.addons[addon_user_preferences_name].preferences   # type: AddonPreferences
-    prefs.restore()   # try to restore preferences from temporary backup
-    ReconstructionsManager.restore()   # try to restore existing reconstructions
-
-
-# ==============================================================================================
-def preferences_unregister() -> None:
-    """Unregister user's preferences."""
-    ReconstructionsManager.backup()   # temporary backup existing reconstructions
-    addon_user_preferences_name = (__name__)[:__name__.index('.')]
-    prefs = bpy.context.preferences.addons[addon_user_preferences_name].preferences   # type: AddonPreferences
-    prefs.backup()   # temporary backup current preferences
-    #
-    bpy.utils.unregister_class(AddonPreferences)
-    bpy.utils.unregister_class(CustomPipelineProperty)
-    bpy.utils.unregister_class(CUSTOMPIPELINE_UL_property_list_item)
-    bpy.utils.unregister_class(CustomPipelineAddOperator)
-    bpy.utils.unregister_class(CustomPipelineRemoveOperator)
-
-
-#
-#
-#
-#
-
+# ==================================================================================================
 def force_absolute_path(prefs: 'AddonPreferences', context: bpy.types.Context,    # pylint: disable=unused-argument
                         path_property_name: str) -> None:
     """Force to use the absolute path on string path properties.
@@ -396,3 +360,44 @@ class AddonPreferences(bpy.types.AddonPreferences):
                     setattr(self, key, value)
             del bpy.types.Scene.sfmflow_preferences_backup  # remove temporary backup
             logger.debug("User preferences restored from 'bpy.types.Scene.sfmflow_preferences_backup'")
+
+
+#
+#
+#
+#
+
+
+####################################################################################################
+# Register and unregister
+#
+
+_CLASSES = (
+    CUSTOMPIPELINE_UL_property_list_item,
+    CustomPipelineProperty,
+    CustomPipelineAddOperator,
+    CustomPipelineRemoveOperator,
+    AddonPreferences,
+)
+
+
+# ==================================================================================================
+def preferences_register() -> None:
+    """Register user's preferences."""
+    _register_classes(_CLASSES)
+    #
+    addon_user_preferences_name = (__name__)[:__name__.index('.')]
+    prefs = bpy.context.preferences.addons[addon_user_preferences_name].preferences   # type: AddonPreferences
+    prefs.restore()   # try to restore preferences from temporary backup
+    ReconstructionsManager.restore()   # try to restore existing reconstructions
+
+
+# ==================================================================================================
+def preferences_unregister() -> None:
+    """Unregister user's preferences."""
+    ReconstructionsManager.backup()   # temporary backup existing reconstructions
+    addon_user_preferences_name = (__name__)[:__name__.index('.')]
+    prefs = bpy.context.preferences.addons[addon_user_preferences_name].preferences   # type: AddonPreferences
+    prefs.backup()   # temporary backup current preferences
+    #
+    _unregister_classes(_CLASSES)

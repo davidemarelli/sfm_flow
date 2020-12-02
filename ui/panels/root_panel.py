@@ -1,6 +1,10 @@
 
 import bpy
 
+from ...operators import (SFMFLOW_OT_animate_camera, SFMFLOW_OT_animate_camera_clear,
+                          SFMFLOW_OT_animate_sun, SFMFLOW_OT_animate_sun_clear,
+                          SFMFLOW_OT_init_scene)
+
 
 class SFMFLOW_PT_main(bpy.types.Panel):
     """SfM Flow addon main UI panel"""
@@ -56,12 +60,12 @@ class SFMFLOW_PT_main(bpy.types.Panel):
         #
         # scene initialization
         layout.row().separator()
-        layout.operator("sfmflow.init_scene", icon='MOD_BUILD')
+        layout.operator(SFMFLOW_OT_init_scene.bl_idname, icon='MOD_BUILD')
         #
         # camera and sun animation
         r = layout.row(align=True)
-        r.operator("sfmflow.animate_camera", icon='ANIM')
-        r.operator("sfmflow.animate_camera_clear", text="", icon='X')
+        r.operator(SFMFLOW_OT_animate_camera.bl_idname, icon='ANIM')
+        r.operator(SFMFLOW_OT_animate_camera_clear.bl_idname, text="", icon='X')
         r.separator_spacer()
-        r.operator("sfmflow.animate_sun", icon='ANIM')
-        r.operator("sfmflow.animate_sun_clear", text="", icon='X')
+        r.operator(SFMFLOW_OT_animate_sun.bl_idname, icon='ANIM')
+        r.operator(SFMFLOW_OT_animate_sun_clear.bl_idname, text="", icon='X')

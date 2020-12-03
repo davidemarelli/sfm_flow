@@ -60,6 +60,7 @@
         "fcurves",
         "functools",
         "fstop",
+        "gcps",
         "hosek",
         "icce",
         "idname",

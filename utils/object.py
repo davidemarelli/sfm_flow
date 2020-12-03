@@ -22,6 +22,7 @@ def get_collection(name: str, previous_name: str = None) -> bpy.types.Collection
     Returns:
         bpy.types.Collection -- collection of object data-blocks
     """
+    recon_collection = None
     if previous_name is not None:   # try to get the old-named collection
         recon_collection = bpy.data.collections.get(previous_name)
     if not recon_collection:        # try to get the collection

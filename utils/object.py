@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 
 # ==================================================================================================
-def get_collection(name: str, previous_name: str = None) -> bpy.types.Collection:
+def get_collection(name: str, previous_name: str = None, create: bool = True) -> bpy.types.Collection:
     """Get the desired collection, create it if does not exists.
 
     Arguments:
@@ -18,6 +18,7 @@ def get_collection(name: str, previous_name: str = None) -> bpy.types.Collection
 
     Keyword Arguments:
         previous_name {str} -- name of the collection in previous SfM Flow versions (default: {None})
+        create {bool} -- when True creates the collection if it does not exist (default: {True})
 
     Returns:
         bpy.types.Collection -- collection of object data-blocks
@@ -27,7 +28,7 @@ def get_collection(name: str, previous_name: str = None) -> bpy.types.Collection
         recon_collection = bpy.data.collections.get(previous_name)
     if not recon_collection:        # try to get the collection
         recon_collection = bpy.data.collections.get(name)
-    if not recon_collection:        # if none create the collection
+    if (not recon_collection) and create:        # if none create the collection
         recon_collection = bpy.data.collections.new(name)
         bpy.context.scene.collection.children.link(recon_collection)
         logger.info("Created collection `%s`", name)
@@ -55,13 +56,16 @@ def get_environment_collection() -> bpy.types.Collection:
 
 
 # ==================================================================================================
-def get_gcp_collection() -> bpy.types.Collection:
+def get_gcp_collection(create: bool = True) -> bpy.types.Collection:
     """Get the `SFMFLOW_GCPs` collection, create it if does not exists.
+
+    Keyword Arguments:
+        create {bool} -- when True creates the collection if it does not exist (default: {True})
 
     Returns:
         bpy.types.Collection -- SFMFLOW_GCPs collection
     """
-    return get_collection("SFMFLOW_GCPs")
+    return get_collection("SFMFLOW_GCPs", create=create)
 
 
 # ==================================================================================================

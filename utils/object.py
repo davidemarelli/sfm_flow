@@ -8,6 +8,12 @@ from mathutils import Vector
 
 logger = logging.getLogger(__name__)
 
+SFMFLOW_COLLECTIONS = (
+    "SFMFLOW_Reconstructions", "SfM_Reconstructions",
+    "SFMFLOW_Environment", "SfM_Environment",
+    "SFMFLOW_GCPs"
+)
+
 
 # ==================================================================================================
 def get_collection(name: str, previous_name: str = None, create: bool = True) -> bpy.types.Collection:
@@ -37,20 +43,20 @@ def get_collection(name: str, previous_name: str = None, create: bool = True) ->
 
 # ==================================================================================================
 def get_reconstruction_collection() -> bpy.types.Collection:
-    """Get the `SfM_Reconstructions` collection, create it if does not exists.
+    """Get the `SFMFLOW_Reconstructions` collection, create it if does not exists.
 
     Returns:
-        bpy.types.Collection -- SfM_Reconstructions collection
+        bpy.types.Collection -- Reconstructions collection
     """
     return get_collection("SFMFLOW_Reconstructions", previous_name="SfM_Reconstructions")
 
 
 # ==================================================================================================
 def get_environment_collection() -> bpy.types.Collection:
-    """Get the `SfM_Environment` collection, create it if does not exists.
+    """Get the `SFMFLOW_Environment` collection, create it if does not exists.
 
     Returns:
-        bpy.types.Collection -- SfM_Environment collection
+        bpy.types.Collection -- Environment collection
     """
     return get_collection("SFMFLOW_Environment", previous_name="SfM_Environment")
 
@@ -63,7 +69,7 @@ def get_gcp_collection(create: bool = True) -> bpy.types.Collection:
         create {bool} -- when True creates the collection if it does not exist (default: {True})
 
     Returns:
-        bpy.types.Collection -- SFMFLOW_GCPs collection
+        bpy.types.Collection -- GCPs collection
     """
     return get_collection("SFMFLOW_GCPs", create=create)
 

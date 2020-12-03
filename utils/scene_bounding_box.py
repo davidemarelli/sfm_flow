@@ -5,7 +5,7 @@ from typing import Tuple
 import bpy
 from mathutils import Vector
 
-from .object import get_objs
+from .object import SFMFLOW_COLLECTIONS, get_objs
 
 logger = logging.getLogger(__name__)
 
@@ -46,8 +46,7 @@ class SceneBoundingBox():
     #
 
     # ==============================================================================================
-    def __init__(self, scene: bpy.types.Scene,
-                 exclude_collections: Tuple[str] = ("SfM_Environment", "SfM_Reconstructions")):
+    def __init__(self, scene: bpy.types.Scene, exclude_collections: Tuple[str] = SFMFLOW_COLLECTIONS):
         self.scene = scene
         self.exclude_collections = exclude_collections
         #

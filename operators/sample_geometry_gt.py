@@ -5,7 +5,7 @@ from typing import List
 import bpy
 from mathutils import Vector
 from sfm_flow.reconstruction import ReconstructionsManager
-from sfm_flow.utils import get_objs, sample_points_on_mesh
+from sfm_flow.utils import SFMFLOW_COLLECTIONS, get_objs, sample_points_on_mesh
 
 logger = logging.getLogger(__name__)
 
@@ -56,8 +56,7 @@ class SFMFLOW_OT_sample_geometry_gt(bpy.types.Operator):
     # ==============================================================================================
     @staticmethod
     def sample_geometry_gt_points(scene: bpy.types.Scene) -> List[Vector]:
-        """Sample ground truth point cloud on all objects that are not part of the
-        `SfM_Environment` and `SfM_Reconstructions` collections.
+        """Sample ground truth point cloud on all objects that are not part of the `SFMFLOW_*` collections.
 
         Arguments:
             scene {bpy.types.Scene} -- scene to sample
@@ -65,7 +64,7 @@ class SFMFLOW_OT_sample_geometry_gt(bpy.types.Operator):
         Returns:
             List[Vector] -- ground truth point cloud
         """
-        gt_objs = get_objs(scene, exclude_collections=("SfM_Environment", "SfM_Reconstructions"))
+        gt_objs = get_objs(scene, exclude_collections=SFMFLOW_COLLECTIONS)
         gt_points = sample_points_on_mesh(gt_objs)
         # self._show_sampled_points(gt_points)
         return gt_points

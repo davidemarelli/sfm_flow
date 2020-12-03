@@ -4,7 +4,7 @@ import os
 
 import bpy
 
-from ..utils import get_objs
+from ..utils import SFMFLOW_COLLECTIONS, get_objs
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +24,7 @@ class SFMFLOW_OT_export_ground_truth(bpy.types.Operator):
         description="Geometry ground truth export type",
         items=[
             ("exporttype.all", "All",
-             "Export all meshes not part of the `SfM_Environment` or 'SfM_Reconstructions' collections"),
+             "Export all meshes not part of the `SFMFLOW_*` collections"),
             ("exporttype.selected", "Selected only", "Export selected objects only"),
         ],
         default="exporttype.all",
@@ -86,8 +86,7 @@ class SFMFLOW_OT_export_ground_truth(bpy.types.Operator):
             set -- {'FINISHED'}
         """
         if self.export_type == "exporttype.all":
-            objs = get_objs(context.scene, exclude_collections=(
-                "SfM_Environment", "SfM_Reconstructions"), mesh_only=True)
+            objs = get_objs(context.scene, exclude_collections=SFMFLOW_COLLECTIONS, mesh_only=True)
             bpy.ops.object.select_all(action='DESELECT')
             for o in objs:
                 o.select_set(True)

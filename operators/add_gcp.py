@@ -217,26 +217,26 @@ class SFMFLOW_OT_add_gcp_hourglass(bpy.types.Operator, AddObjectHelper, SFMFLOW_
 #
 
 
-class SFMFLOW_OT_add_gcp_l(bpy.types.Operator, AddObjectHelper, SFMFLOW_OT_add_gcp):
-    """Add a ground control point in the scene"""
-    bl_idname = "sfmflow.add_gcp_l"
-    bl_label = "Add GCP L"
-    bl_options = {'REGISTER', 'UNDO'}
+# class SFMFLOW_OT_add_gcp_l(bpy.types.Operator, AddObjectHelper, SFMFLOW_OT_add_gcp):
+#     """Add a ground control point in the scene"""
+#     bl_idname = "sfmflow.add_gcp_l"
+#     bl_label = "Add GCP L"
+#     bl_options = {'REGISTER', 'UNDO'}
 
-    ################################################################################################
-    # Behavior
-    #
+#     ################################################################################################
+#     # Behavior
+#     #
 
-    # ==============================================================================================
-    def execute(self, context: bpy.types.Context) -> set:   # pylint: disable=unused-argument
-        """Add a ground control point.
+#     # ==============================================================================================
+#     def execute(self, context: bpy.types.Context) -> set:   # pylint: disable=unused-argument
+#         """Add a ground control point.
 
-        Returns:
-            set -- {'FINISHED'}
-        """
-        gcp = self.add_gcp_geometry(context)
-        self.add_gcp_texture(gcp, 'L')
-        return {'FINISHED'}
+#         Returns:
+#             set -- {'FINISHED'}
+#         """
+#         gcp = self.add_gcp_geometry(context)
+#         self.add_gcp_texture(gcp, 'L')
+#         return {'FINISHED'}
 
 #
 #

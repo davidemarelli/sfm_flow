@@ -28,7 +28,8 @@ def get_asset(name: str) -> str:
 def add_texture_mapping_node(node_tree: bpy.types.NodeTree, location: Vector = Vector((0, 0, 0)),
                              rotation: Vector = Vector((0, 0, 0)),
                              scale: Vector = Vector((1, 1, 1)),
-                             nodes_location: Vector = Vector((0, 0))) -> bpy.types.Node:
+                             nodes_location: Vector = Vector((0, 0)),
+                             use_generated_uv: bool = False) -> bpy.types.Node:
     """Add texture mapping nodes to a given shader node tree.
 
     Arguments:
@@ -38,6 +39,8 @@ def add_texture_mapping_node(node_tree: bpy.types.NodeTree, location: Vector = V
         location {Vector} -- mapping location (default: {Vector((0, 0, 0))})
         rotation {Vector} -- mapping rotation (default: {Vector((0, 0, 0))})
         scale {Vector} -- mapping scale (default: {Vector((1, 1, 1))})
+        nodes_location {Vector} -- nodes insertion location (default: {Vector((0,0))})
+        use_generated_uv {bool} -- use texture coordinate 'generated' instead of 'UV' (default: {False})
 
     Returns:
         bpy.types.Node -- texture mapping node
@@ -46,7 +49,11 @@ def add_texture_mapping_node(node_tree: bpy.types.NodeTree, location: Vector = V
     tex_coords.location = nodes_location
     tex_mapping_node = node_tree.nodes.new("ShaderNodeMapping")
     tex_mapping_node.location = nodes_location + Vector((150, 0))
-    node_tree.links.new(tex_coords.outputs['UV'], tex_mapping_node.inputs['Vector'])
+    if use_generated_uv:
+        node_tree.links.new(tex_coords.outputs['Generated'], tex_mapping_node.inputs['Vector'])
+    else:
+        node_tree.links.new(tex_coords.outputs['UV'], tex_mapping_node.inputs['Vector'])
+    #
     if bpy.app.version >= BlenderVersion.V2_81:   # v2.81+
         tex_mapping_node.inputs['Location'].default_value = location
         tex_mapping_node.inputs['Rotation'].default_value = rotation
@@ -213,6 +220,7 @@ def add_principled_bsdf_material_nodes(node_tree: bpy.types.NodeTree,
         tex_roughness {str} -- roughness map file path (default: {None})
         tex_normal {str} -- normal map file path (default: {None})
         tex_displacement {str} -- displacement map file path (default: {None})
+        nodes_location {Vector} -- nodes insertion location (default: {Vector((0,0))})
 
     Returns:
         Tuple[bpy.types.Node, Optional[bpy.types.Node]] -- BSDF node, displacement node

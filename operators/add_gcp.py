@@ -10,11 +10,8 @@ from ..utils import get_gcp_collection, nodes
 logger = logging.getLogger(__name__)
 
 
-class SFMFLOW_OT_add_gcp():  # bpy.types.Operator, AddObjectHelper):
+class SFMFLOW_OT_add_gcp():
     """Helper class with common methods to multiple Ground Control Point operators."""
-    # bl_idname = "sfmflow.add_gcp"
-    # bl_label = "Add GCP"
-    # bl_options = {'REGISTER', 'UNDO'}
 
     ################################################################################################
     # Behavior
@@ -74,6 +71,16 @@ class SFMFLOW_OT_add_gcp():  # bpy.types.Operator, AddObjectHelper):
         bpy.context.collection.objects.unlink(gcp)
         gcp_collection.objects.link(gcp)
 
+        # TODO switch to uv-unwrap instead of using generated in node setup
+        # context.view_layer.objects.active = gcp
+        # bpy.ops.object.mode_set(mode='EDIT')
+        # bm = bmesh.from_edit_mesh(mesh)
+        # uv_layer = bm.loops.layers.uv.verify()
+        # bmesh.update_edit_mesh(mesh)
+        # bpy.ops.object.mode_set(mode='OBJECT')
+
+        logger.debug("Added GCP geometry")
+
         return gcp
 
     # ==============================================================================================
@@ -101,15 +108,31 @@ class SFMFLOW_OT_add_gcp():  # bpy.types.Operator, AddObjectHelper):
 
             node_tree.nodes.clear()
             output = node_tree.nodes.new("ShaderNodeOutputMaterial")
-            bsdf_node = node_tree.nodes.new("ShaderNodeBsdfPrincipled")   # TODO adjust specular and roughness
-            tex_node = nodes.add_diffusive_texture_node(node_tree, nodes.get_asset("GCP_{}.png".format(gcp_type)))
-            tex_coords = node_tree.nodes.new("ShaderNodeTexCoord")
+            output.location = Vector((1300, 0))
 
-            links.new(tex_coords.outputs['Generated'], tex_node.inputs['Vector'])
-            links.new(tex_node.outputs['Color'], bsdf_node.inputs[0])
+            # old diffusive only material
+            # bsdf_node = node_tree.nodes.new("ShaderNodeBsdfPrincipled")
+            # tex_node = nodes.add_diffusive_texture_node(node_tree, nodes.get_asset("GCP_{}.png".format(gcp_type)))
+            # tex_coords = node_tree.nodes.new("ShaderNodeTexCoord")
+            # links.new(tex_coords.outputs['Generated'], tex_node.inputs['Vector'])
+            # links.new(tex_node.outputs['Color'], bsdf_node.inputs[0])
+
+            tex_mapping_node = nodes.add_texture_mapping_node(node_tree, scale=Vector((1., 1., 1.)),
+                                                              nodes_location=Vector((0, 0)), use_generated_uv=True)
+            bsdf_node, disp_node = nodes.add_principled_bsdf_material_nodes(
+                node_tree, tex_mapping_node,
+                nodes.get_asset("GCP_{}.png".format(gcp_type)),
+                nodes.get_asset("GCP_Roughness.jpg"),
+                nodes.get_asset("GCP_Normal.jpg"),
+                nodes.get_asset("GCP_Displacement.jpg"),
+                nodes_location=Vector((500, 500)))
+
             links.new(bsdf_node.outputs[0], output.inputs['Surface'])
+            links.new(disp_node.outputs[0], output.inputs['Displacement'])
 
         gcp.active_material = material
+
+        logger.debug("Created GCP material: %s", material_name)
 
 #
 #

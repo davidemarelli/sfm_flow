@@ -1,13 +1,16 @@
 
 import logging
+from math import radians
 
 import bpy
+from mathutils import Vector
 
 from ..utils import SceneBoundingBox, euclidean_distance
 from ..utils.animation import (get_last_keyframe, get_track_to_constraint_target,
                                sample_points_on_circle, sample_points_on_helix,
                                sample_points_on_hemisphere, set_camera_focus_to_intersection,
                                set_camera_target)
+from ..utils.camera import get_camera_right, get_camera_up, get_ground_sample_distance
 
 logger = logging.getLogger(__name__)
 
@@ -30,13 +33,14 @@ class SFMFLOW_OT_animate_camera(bpy.types.Operator):
         name="Animation type",
         description="Render camera animation type",
         items=[
-            ("animtype.helix", "Helix", "Helix around objects, "),
+            ("animtype.helix", "Helix", "Helix around objects."),
             ("animtype.hemisphere", "Hemisphere",
              "Sample positions on an hemisphere. NOTE: start position not preserved"),
             ("animtype.circular", "Circular", "Animate a singe circle around the center of the scene"),
             ("animtype.circular_up", "Circular - UP",
              "Animate multiple circles, the camera positions are shared between circles but the target"
              " position increases its height until the scene top is reached."),
+            ("animtype.aerial_grid", "Aerial grid", "Acquire images with a regular grid pattern."),
         ],
         default="animtype.helix",
         options={'SKIP_SAVE'}
@@ -98,6 +102,76 @@ class SFMFLOW_OT_animate_camera(bpy.types.Operator):
         options={'SKIP_SAVE'}
     )
 
+    # ==============================================================================================
+    # number of passes (used only for `aerial_grid`)
+    number_pass: bpy.props.IntProperty(
+        name="Number of parallel pass",
+        description="Number of parallel pass",
+        min=1,
+        soft_max=100,
+        default=6,
+        options={'SKIP_SAVE'}
+    )
+
+    # ==============================================================================================
+    # number of images in each pass (used only for `aerial_grid`)
+    number_images_per_pass: bpy.props.IntProperty(
+        name="Number of images per pass",
+        description="Number of images per pass",
+        min=1,
+        soft_max=100,
+        default=10,
+        options={'SKIP_SAVE'}
+    )
+
+    # ==============================================================================================
+    # animation side direction (used only for `aerial_grid`)
+    side_direction: bpy.props.EnumProperty(
+        name="Side direction",
+        description="Side animation direction",
+        items=[
+            ("animdirection.right", "Right", "Right"),
+            ("animdirection.left", "Left", "Left"),
+        ],
+        default="animdirection.right",
+        options={'SKIP_SAVE'}
+    )
+
+    # ==============================================================================================
+    # ground average level (used only for `aerial_grid`)
+    ground_level: bpy.props.FloatProperty(
+        name="Ground average level",
+        description="Average Z/altitude of the ground",
+        unit='LENGTH',
+        options={'SKIP_SAVE'}
+    )
+
+    # ==============================================================================================
+    # image overlap in forward direction (used only for `aerial_grid`)
+    overlap_percentage_forward: bpy.props.IntProperty(
+        name="Image forward overlap",
+        description="Image overlap in the forward direction",
+        min=0,
+        max=100,
+        soft_max=99,
+        default=80,
+        subtype='PERCENTAGE',
+        options={'SKIP_SAVE'}
+    )
+
+    # ==============================================================================================
+    # image overlap in side direction (used only for `aerial_grid`)
+    overlap_percentage_side: bpy.props.IntProperty(
+        name="Image side overlap",
+        description="Image overlap in the side direction",
+        min=0,
+        max=100,
+        soft_max=99,
+        default=60,
+        subtype='PERCENTAGE',
+        options={'SKIP_SAVE'}
+    )
+
     ################################################################################################
     # Layout
     #
@@ -117,6 +191,17 @@ class SFMFLOW_OT_animate_camera(bpy.types.Operator):
             row = row.row(align=True)
             row.prop(self, "animation_height", text="Height")
             row.prop(self, "animation_turns", text="Turns")
+        #
+        if self.animation_type == "animtype.aerial_grid":
+            layout.prop(self, "number_pass")
+            layout.prop(self, "number_images_per_pass")
+            layout.prop(self, "side_direction", expand=True)
+            row = layout.row(align=True)
+            row.prop(self, "overlap_percentage_forward", text="Forward overlap")
+            row.prop(self, "overlap_percentage_side", text="Side overlap")
+            layout.prop(self, "ground_level")
+            #
+            return    # TODO use randomized position on aerial grid?
         layout.prop(self, "images_count")
         layout.prop(self, "randomize_camera_pose")
 
@@ -269,6 +354,35 @@ class SFMFLOW_OT_animate_camera(bpy.types.Operator):
                     set_camera_focus_to_intersection(context.view_layer, camera, scene, current_frame)
                     current_frame += 1
                 target_empty.keyframe_insert(data_path="location", frame=current_frame-1)
+        #
+        # ------------------------------------------------------------------------------------------
+        elif self.animation_type == "animtype.aerial_grid":
+            _, footprint = get_ground_sample_distance(camera, scene, self.ground_level)
+            step_forward = footprint[1] - footprint[1] * self.overlap_percentage_forward / 100
+            step_side = footprint[0] - footprint[0] * self.overlap_percentage_side / 100
+            #
+            sign_side = 1. if self.side_direction == "animdirection.right" else -1.  # right = +, left = -
+            p = camera.location
+            for _ in range(self.number_pass):   # for each pass
+                camera_up = get_camera_up(camera)
+                forward_direction = Vector((camera_up.x, camera_up.y, 0)).normalized()
+                side_direction = sign_side * get_camera_right(camera)
+                #
+                for i in range(self.number_images_per_pass):   # for each image
+                    camera.location = p
+                    camera.keyframe_insert(data_path="location", frame=current_frame)
+                    camera.keyframe_insert(data_path="rotation_euler", frame=current_frame)
+                    set_camera_focus_to_intersection(context.view_layer, camera, scene,
+                                                     current_frame)   # FIXME do we really want this on aerial images?
+                    #
+                    current_frame += 1
+                    if i < self.number_images_per_pass - 1:
+                        p += step_forward * forward_direction    # step forward
+                #
+                p += step_side * side_direction                  # step aside
+                camera.rotation_euler.z += sign_side * radians(180)
+                context.view_layer.update()   # update matrix_world after rotation
+                sign_side *= -1.
         #
         # ------------------------------------------------------------------------------------------
         else:

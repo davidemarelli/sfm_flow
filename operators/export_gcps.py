@@ -2,12 +2,12 @@
 import csv
 import logging
 import os
+from math import degrees
 
 import bpy
 from bpy_extras.object_utils import world_to_camera_view
 
 from ..utils.blender_version import BlenderVersion
-from ..utils.camera import get_camera_lookat
 from ..utils.object import get_gcp_collection
 
 logger = logging.getLogger(__name__)
@@ -20,7 +20,8 @@ class SFMFLOW_OT_export_gcps(bpy.types.Operator):
     bl_options = {'REGISTER'}
 
     # CSV field names in header for gcps
-    GCPS_CSV_FIELDNAMES = ("image_number", "x", "y", "z", "image_x", "image_y")
+    GCPS_CSV_FIELDNAMES = ("gcp_name", "x/east", "y/north", "z/altitude", "yaw", "pitch", "roll")
+    GCPS_IMAGES_CSV_FIELDNAMES = ("image_name", "gcp_name", "image_x", "image_y")
 
     ################################################################################################
     # Behavior
@@ -87,42 +88,56 @@ class SFMFLOW_OT_export_gcps(bpy.types.Operator):
             self.report({'ERROR'}, msg)
             return {'CANCELLED'}
         #
+        gcps = gcp_collection.objects
+        #
+        # --- export gcp list
+        export_folder = bpy.path.abspath(context.scene.render.filepath)
+        os.makedirs(export_folder, exist_ok=True)
+        csv_file_path = os.path.join(export_folder, "gcp_list.txt")
+        with open(csv_file_path, 'w', newline='') as csvfile:
+            csv_writer = csv.writer(csvfile, delimiter='\t')
+            csv_writer.writerow(SFMFLOW_OT_export_gcps.GCPS_CSV_FIELDNAMES)
+            for gcp in gcps:
+                csv_writer.writerow((gcp.name, gcp.location.x, gcp.location.y, gcp.location.z,
+                                     degrees(gcp.rotation_euler[1]), degrees(gcp.rotation_euler[0]),
+                                     degrees(gcp.rotation_euler[2])))
+        #
+        # --- export gcp list in images
         frame_start = scene.frame_start
         frame_end = scene.frame_end
         clip_start = camera.data.clip_start
         clip_end = camera.data.clip_end
-        gcps = gcp_collection.objects
         render_scale = scene.render.resolution_percentage / 100
         render_size = (int(scene.render.resolution_x * render_scale), int(scene.render.resolution_y * render_scale))
         #
         frame_backup = scene.frame_current
         #
-        export_folder = bpy.path.abspath(context.scene.render.filepath)
-        os.makedirs(export_folder, exist_ok=True)
-        csv_file_path = os.path.join(export_folder, "gcps.csv")
+        csv_file_path = os.path.join(export_folder, "gcp_images_list.txt")
         with open(csv_file_path, 'w', newline='') as csvfile:
-            csv_writer = csv.writer(csvfile, delimiter=',')
-            csv_writer.writerow(SFMFLOW_OT_export_gcps.GCPS_CSV_FIELDNAMES)
+            csv_writer = csv.writer(csvfile, delimiter='\t')
+            csv_writer.writerow(SFMFLOW_OT_export_gcps.GCPS_IMAGES_CSV_FIELDNAMES)
             #
             for frame in range(frame_start, frame_end+1):
                 scene.frame_set(frame)
+                image_filename = bpy.path.basename(scene.render.frame_path(frame=frame))
                 #
-                camera_lookat = get_camera_lookat(camera)
                 view_layer = context.view_layer
                 if bpy.app.version >= BlenderVersion.V2_91:
                     view_layer = context.view_layer.depsgraph
                 #
                 for gcp in gcps:
                     v = gcp.location
+                    ray_direction = (v - camera.location)
+                    ray_direction.normalize()
                     #
-                    result, _, _, _, obj, _ = scene.ray_cast(view_layer, camera.location, camera_lookat)
+                    result, _, _, _, obj, _ = scene.ray_cast(view_layer, camera.location, ray_direction)
                     if result and obj is gcp:   # gcp is not occluded
-                        v_ndc = world_to_camera_view(scene, camera, gcp.matrix_world @ v)
+                        v_ndc = world_to_camera_view(scene, camera, v)  # gcp.matrix_world @ v)
                         if (0.0 < v_ndc.x < 1.0 and 0.0 < v_ndc.y < 1.0 and clip_start < v_ndc.z < clip_end):
                             # gcp is in the view frustum
-                            gcp_px = (round(v_ndc.x * render_size[0]), round(v_ndc.y * render_size[1]))
-                            csv_writer.writerow((frame, gcp.location.x, gcp.location.y,
-                                                 gcp.location.z, gcp_px[0], gcp_px[1]))
+                            # FIXME use float values for gcp image coordinates? or rounded are enough?
+                            gcp_px = (round(v_ndc.x * render_size[0]), render_size[1] - round(v_ndc.y * render_size[1]))
+                            csv_writer.writerow((image_filename, gcp.name, gcp_px[0], gcp_px[1]))
         #
         scene.frame_set(frame_backup)
         #

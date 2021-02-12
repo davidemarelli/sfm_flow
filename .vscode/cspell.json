@@ -53,8 +53,10 @@
     "ignoreWords": [
         "atexit",
         "blenkernel",
+        "bmesh",
         "bsdfs",
         "depsgraph",
+        "disp",
         "dists",
         "dtype",
         "fcurves",

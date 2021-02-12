@@ -162,7 +162,7 @@ def get_ground_sample_distance(camera: bpy.types.Camera, scene: bpy.types.Scene,
     if altitude <= 0.:
         raise RuntimeError("Ground isn't below camera! (altitude={}, camera.z={}, ground.z={})".format(
             altitude, camera.location.z, ground_level))
-    if not (scene.render.pixel_aspect_x == scene.render.pixel_aspect_y == 1.):
+    if not scene.render.pixel_aspect_x == scene.render.pixel_aspect_y == 1.:
         # TODO handle non-square pixels in GSD computation
         raise NotImplementedError("Currently is not possible to handle non-square pixels in GSD computation!")
     #

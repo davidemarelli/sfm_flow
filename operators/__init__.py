@@ -8,6 +8,7 @@ from .add_gcp import (SFMFLOW_OT_add_gcp_cross1, SFMFLOW_OT_add_gcp_cross2,
 from .align_reconstruction import SFMFLOW_OT_align_reconstruction
 from .animate_camera import SFMFLOW_OT_animate_camera, SFMFLOW_OT_animate_camera_clear
 from .animate_sun import SFMFLOW_OT_animate_sun, SFMFLOW_OT_animate_sun_clear
+from .camera_add import SFMFLOW_OT_camera_add
 from .evaluate_reconstruction import SFMFLOW_OT_evaluate_reconstruction
 from .export_gcps import SFMFLOW_OT_export_gcps
 from .export_ground_truth import SFMFLOW_OT_export_ground_truth
@@ -47,6 +48,7 @@ _CLASSES = (
     SFMFLOW_OT_add_gcp_round3,
     SFMFLOW_OT_add_gcp_square,
     SFMFLOW_OT_export_gcps,
+    SFMFLOW_OT_camera_add,
 )
 
 

@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 SFMFLOW_COLLECTIONS = (
     "SFMFLOW_Reconstructions", "SfM_Reconstructions",
     "SFMFLOW_Environment", "SfM_Environment",
-    "SFMFLOW_GCPs"
+    "SFMFLOW_GCPs", "SFMFLOW_cameras"
 )
 
 
@@ -72,6 +72,19 @@ def get_gcp_collection(create: bool = True) -> bpy.types.Collection:
         bpy.types.Collection -- GCPs collection
     """
     return get_collection("SFMFLOW_GCPs", create=create)
+
+
+# ==================================================================================================
+def get_cameras_collection(create: bool = True) -> bpy.types.Collection:
+    """Get the `SFMFLOW_cameras` collection, create it if does not exists.
+
+    Keyword Arguments:
+        create {bool} -- when True creates the collection if it does not exist (default: {True})
+
+    Returns:
+        bpy.types.Collection -- Cameras collection
+    """
+    return get_collection("SFMFLOW_cameras", create=create)
 
 
 # ==================================================================================================
@@ -151,3 +164,56 @@ def is_active_object_reconstruction(context: bpy.types.Context = None) -> bool:
     else:
         obj = bpy.context.view_layer.objects.active if bpy.context.view_layer is not None else None
     return (obj is not None) and ('sfmflow_model_uuid' in obj) and obj.select_get()
+
+
+# ==================================================================================================
+def show_motion_path(obj: bpy.types.Object, scene: bpy.types.Scene) -> None:
+    """Show the motion path of an object.
+
+    Arguments:
+        obj {bpy.types.Object} -- an object of a scene
+        scene {bpy.types.Scene} -- scene containing the object
+    """
+    if not obj.motion_path:
+        selected_objs = bpy.context.selected_objects
+        bpy.ops.object.select_all(action='DESELECT')
+        obj.select_set(True)
+        #
+        bpy.ops.object.paths_calculate(start_frame=scene.frame_start, end_frame=scene.frame_end)
+        motion_path = obj.motion_path
+        motion_path.lines = False
+        motion_path.color = Vector((1, 0, 0))  # Red
+        motion_path.use_custom_color = True
+        motion_path_viz = obj.animation_visualization.motion_path
+        motion_path_viz.show_keyframe_numbers = False
+        motion_path_viz.show_keyframe_highlight = False
+        #
+        bpy.ops.object.select_all(action='DESELECT')
+        list(map(lambda o: o.select_set(True), selected_objs))  # restore selection
+    elif obj.motion_path.is_modified:
+        selected_objs = bpy.context.selected_objects
+        bpy.ops.object.select_all(action='DESELECT')
+        obj.select_set(True)
+        #
+        bpy.ops.object.paths_update()
+        #
+        bpy.ops.object.select_all(action='DESELECT')
+        list(map(lambda o: o.select_set(True), selected_objs))  # restore selection
+
+
+# ==================================================================================================
+def hide_motion_path(obj: bpy.types.Object) -> None:
+    """Show the motion path of an object.
+
+    Arguments:
+        obj {bpy.types.Object} -- an object of a scene
+    """
+    if obj.name in bpy.data.objects:  # ensure that obj still exists
+        selected_objs = bpy.context.selected_objects
+        bpy.ops.object.select_all(action='DESELECT')
+        obj.select_set(True)
+        bpy.ops.object.paths_clear(only_selected=True)
+        #
+        # restore selection
+        bpy.ops.object.select_all(action='DESELECT')
+        list(map(lambda o: o.select_set(True), selected_objs))

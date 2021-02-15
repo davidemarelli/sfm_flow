@@ -171,3 +171,16 @@ def get_ground_sample_distance(camera: bpy.types.Camera, scene: bpy.types.Scene,
     img_footprint_height = (gsd * img_height) / 100
     #
     return gsd, (img_footprint_width, img_footprint_height)
+
+
+# ==================================================================================================
+def is_active_object_camera(context: bpy.types.Context) -> bool:
+    """Check if the active object is a camera.
+
+    Arguments:
+        context {bpy.types.Context} -- current context
+
+    Returns:
+        bool -- True iff the active object is a camera object
+    """
+    return context.active_object and isinstance(context.active_object.data, bpy.types.Camera)

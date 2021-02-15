@@ -7,8 +7,9 @@ import tempfile
 
 import bpy
 from bpy.app.handlers import persistent
-from mathutils import Vector
 from sfm_flow.reconstruction import ReconstructionsManager
+from sfm_flow.utils.camera import is_active_object_camera
+from sfm_flow.utils.object import hide_motion_path, show_motion_path
 
 from . import GroundTruthWriter
 
@@ -22,7 +23,8 @@ class Callbacks:
     # Camera motion path updates
     #
 
-    _is_cam_pose_updating = False  # Flag to avoid multiple callback calls
+    _is_cam_pose_updating = False  # flag to avoid multiple callback calls
+    _last_active_camera = None     # last active camera with motion path
 
     @staticmethod
     @persistent
@@ -36,42 +38,17 @@ class Callbacks:
         """
         if not Callbacks._is_cam_pose_updating:
             Callbacks._is_cam_pose_updating = True
-            if scene.camera:
-                show = False
-                #
-                # check visibility
-                sel_objs = bpy.context.selected_objects
-                if scene.sfmflow.is_show_camera_pose and scene.frame_start != scene.frame_end:
-                    for o in sel_objs:
-                        if o is scene.camera:
-                            # camera is selected and makes sense to show the motion path
-                            show = True
-                #
-                # show/hide path
-                if show:
-                    bpy.ops.object.select_all(action='DESELECT')
-                    scene.camera.select_set(True)
-                    if not scene.camera.motion_path:
-                        bpy.ops.object.paths_calculate(start_frame=scene.frame_start, end_frame=scene.frame_end)
-                        motion_path = scene.camera.motion_path
-                        motion_path.lines = False
-                        motion_path.color = Vector((1, 0, 0))  # Red
-                        motion_path.use_custom_color = True
-                        motion_path_viz = scene.camera.animation_visualization.motion_path
-                        motion_path_viz.show_keyframe_numbers = False
-                        motion_path_viz.show_keyframe_highlight = False
-                    else:
-                        bpy.ops.object.paths_update()
-                elif scene.camera.motion_path:
-                    bpy.ops.object.select_all(action='DESELECT')
-                    scene.camera.select_set(True)
-                    bpy.ops.object.paths_clear(only_selected=True)
-                #
-                # restore selection
-                bpy.ops.object.select_all(action='DESELECT')
-                list(map(lambda o: o.select_set(True), sel_objs))
-                #
-                Callbacks._is_cam_pose_updating = False
+            if scene.sfmflow.is_show_camera_pose and is_active_object_camera(bpy.context):
+                camera = bpy.context.active_object
+                if Callbacks._last_active_camera and (camera is not Callbacks._last_active_camera):
+                    hide_motion_path(Callbacks._last_active_camera)
+                Callbacks._last_active_camera = camera
+                show_motion_path(camera, scene)
+            elif Callbacks._last_active_camera and Callbacks._last_active_camera.motion_path:
+                hide_motion_path(Callbacks._last_active_camera)
+                Callbacks._last_active_camera = None
+            #
+            Callbacks._is_cam_pose_updating = False
 
     ################################################################################################
     # Post .blend save update

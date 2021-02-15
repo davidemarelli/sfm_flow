@@ -10,15 +10,16 @@ from ..utils.animation import (get_last_keyframe, get_track_to_constraint_target
                                sample_points_on_circle, sample_points_on_helix,
                                sample_points_on_hemisphere, set_camera_focus_to_intersection,
                                set_camera_target)
-from ..utils.camera import get_camera_right, get_camera_up, get_ground_sample_distance
+from ..utils.camera import (get_camera_right, get_camera_up, get_ground_sample_distance,
+                            is_active_object_camera)
 
 logger = logging.getLogger(__name__)
 
 
 class SFMFLOW_OT_animate_camera(bpy.types.Operator):
-    """Animate the render camera for SfM dataset generation"""
+    """Animate the selected camera for SfM dataset generation"""
     bl_idname = "sfmflow.animate_camera"
-    bl_label = "Animate camera"
+    bl_label = "Animate selected camera"
     bl_options = {'REGISTER', 'UNDO'}
 
     # scene bounding box, set on invoke and used in execute
@@ -179,7 +180,7 @@ class SFMFLOW_OT_animate_camera(bpy.types.Operator):
     def draw(self, context: bpy.types.Context):
         """Operator layout"""
         layout = self.layout
-        if context.scene.camera.animation_data is not None:
+        if context.active_object.animation_data is not None:   # camera has animation data
             layout.prop(self, "overwrite_existing_animation")
         row = layout.split(factor=0.33, align=True)
         row.label(text="Animation type")
@@ -213,7 +214,7 @@ class SFMFLOW_OT_animate_camera(bpy.types.Operator):
     @classmethod
     def poll(cls, context: bpy.types.Context) -> bool:
         """Panel's enabling condition.
-        The operator is enabled only if a render camera is configured.
+        The operator is enabled only if a render camera is selected and active.
 
         Arguments:
             context {bpy.types.Context} -- poll context
@@ -221,7 +222,7 @@ class SFMFLOW_OT_animate_camera(bpy.types.Operator):
         Returns:
             bool -- True to enable, False to disable
         """
-        return context.scene.camera is not None
+        return is_active_object_camera(context)
 
     # ==============================================================================================
     def invoke(self, context: bpy.types.Context, event: bpy.types.Event) -> set:  # pylint: disable=unused-argument
@@ -242,7 +243,7 @@ class SFMFLOW_OT_animate_camera(bpy.types.Operator):
         return wm.invoke_props_dialog(self)
 
     # ==============================================================================================
-    def execute(self, context: bpy.types.Context) -> set:   # pylint: disable=unused-argument
+    def execute(self, context: bpy.types.Context) -> set:
         """Animate the camera based on user's settings.
 
         Returns:
@@ -250,14 +251,14 @@ class SFMFLOW_OT_animate_camera(bpy.types.Operator):
         """
         logger.info("Animating camera...")
 
-        scene = context.scene
-        camera = scene.camera
-        if not camera:
+        if not is_active_object_camera(context):
             msg = "No render camera selected!"
             logger.error(msg)
             self.report({'ERROR'}, msg)
             return {'CANCELLED'}
         #
+        scene = context.scene
+        camera = context.active_object
         bbox = self._scene_bbox
         #
         # define animation start frame
@@ -388,8 +389,8 @@ class SFMFLOW_OT_animate_camera(bpy.types.Operator):
         else:
             msg = "Unknown camera animation type!"
             logger.error(msg)
-            self.report('ERROR', msg)
-            return {'CANCELED'}
+            self.report({'ERROR'}, msg)
+            return {'CANCELLED'}
         #
         # set sequence frames
         if scene.frame_start > start_frame:
@@ -431,7 +432,7 @@ class SFMFLOW_OT_animate_camera_clear(bpy.types.Operator):
         Returns:
             bool -- True to enable, False to disable
         """
-        return (context.scene.camera is not None) and (context.scene.camera.animation_data is not None)
+        return is_active_object_camera(context) and context.active_object.animation_data is not None
 
     # ==============================================================================================
     def execute(self, context: bpy.types.Context) -> set:
@@ -440,13 +441,13 @@ class SFMFLOW_OT_animate_camera_clear(bpy.types.Operator):
         Returns:
             set -- {'FINISHED'}
         """
-        camera = context.scene.camera
-        if not camera:
+        if not is_active_object_camera(context):
             msg = "No render camera selected!"
             logger.error(msg)
             self.report({'ERROR'}, msg)
             return {'CANCELLED'}
         #
+        camera = context.active_object
         camera.animation_data_clear()
         #
         # remove track-to constraint

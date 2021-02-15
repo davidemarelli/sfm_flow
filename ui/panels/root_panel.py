@@ -4,6 +4,7 @@ import bpy
 from ...operators import (SFMFLOW_OT_animate_camera, SFMFLOW_OT_animate_camera_clear,
                           SFMFLOW_OT_animate_sun, SFMFLOW_OT_animate_sun_clear,
                           SFMFLOW_OT_init_scene)
+from ..components.render_cameras import render_cameras_box
 
 
 class SFMFLOW_PT_main(bpy.types.Panel):
@@ -44,13 +45,8 @@ class SFMFLOW_PT_main(bpy.types.Panel):
         properties = scene.sfmflow
         col = layout.column()
         #
-        # render camera
-        row = col.split(factor=0.33)
-        row.alignment = 'RIGHT'
-        row.label(text="Render camera")
-        row = row.split(factor=0.5, align=True)
-        row.prop(scene, "camera", text="")
-        row.prop(properties, "is_show_camera_pose", text="Show keyframes", toggle=True)
+        # render cameras
+        render_cameras_box(col, properties)
         #
         # images path (in/out)
         row = col.split(factor=0.33)

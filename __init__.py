@@ -42,8 +42,7 @@ from .operators import SFMFLOW_OT_render_images, operators_register, operators_u
 from .prefs import properties_register, properties_unregister
 from .prefs.preferences import preferences_register, preferences_unregister
 from .reconstruction import ReconstructionsManager, SFMFLOW_ReconstructionModelProperties
-from .ui.menus import menu_register, menu_unregister
-from .ui.panels import panels_register, panels_unregister
+from .ui import ui_register, ui_unregister
 
 ####################################################################################################
 # Addon globals
@@ -80,8 +79,7 @@ def register() -> None:
     # properties, operators, ui
     properties_register()
     operators_register()
-    panels_register()
-    menu_register()
+    ui_register()
 
     # handlers
     bpy.app.handlers.render_write.append(SFMFLOW_OT_render_images.render_complete_callback)
@@ -104,8 +102,7 @@ def unregister() -> None:
     bpy.app.handlers.load_post.remove(Callbacks.post_load)
 
     # ui, operators, preferences, properties
-    menu_unregister()
-    panels_unregister()
+    ui_unregister()
     operators_unregister()
     preferences_unregister()
     properties_unregister()

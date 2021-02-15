@@ -3,13 +3,14 @@ from ..reconstruction.properties import SFMFLOW_ReconstructionModelProperties
 from ..utils import register_classes as _register_classes
 from ..utils import unregister_classes as _unregister_classes
 from .preferences import AddonPreferences
-from .properties import SFMFLOW_AddonProperties
+from .properties import SFMFLOW_AddonProperties, SFMFLOW_RenderCameraProperty
 
 ####################################################################################################
 # Register and unregister
 #
 
 _CLASSES = (
+    SFMFLOW_RenderCameraProperty,
     SFMFLOW_AddonProperties,
     SFMFLOW_ReconstructionModelProperties,
 )

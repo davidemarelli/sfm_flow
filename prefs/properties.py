@@ -6,6 +6,18 @@ import bpy
 from ..utils import get_objs
 
 
+class SFMFLOW_RenderCameraProperty(bpy.types.PropertyGroup):
+    """Render camera property, holds the pointer to a camera object.
+    Used to build a collection of rendering cameras."""
+
+    camera: bpy.props.PointerProperty(type=bpy.types.Camera)
+
+
+#
+#
+#
+
+
 class SFMFLOW_AddonProperties(bpy.types.PropertyGroup):
     """Add-on's scene data type definition."""
 
@@ -78,6 +90,11 @@ class SFMFLOW_AddonProperties(bpy.types.PropertyGroup):
     # ==============================================================================================
     # flag for scene initialization, when {True} prevents scene re-initialization
     is_scene_init: bpy.props.BoolProperty(default=False)
+
+    # ==============================================================================================
+    # render cameras list
+    render_cameras: bpy.props.CollectionProperty(type=SFMFLOW_RenderCameraProperty)
+    render_cameras_idx: bpy.props.IntProperty(default=-1, options={'HIDDEN', 'SKIP_SAVE'})
 
     # ==============================================================================================
     # select 3D reconstruction pipeline to run

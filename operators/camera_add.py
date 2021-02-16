@@ -98,30 +98,33 @@ class SFMFLOW_OT_camera_add(bpy.types.Operator):
             set -- {'FINISHED'}
         """
         cameras_collection = get_cameras_collection()
-        #
+        properties = context.scene.sfmflow
+        new_cameras = []
         #
         # ------------------------------------------------------------------------------------------
         if self.camera_type == "camtype.single":
             camera = self._create_new_camera(location=self.location)
             cameras_collection.objects.link(camera)
+            new_cameras.append(camera)
         #
         # ------------------------------------------------------------------------------------------
         elif self.camera_type == "camtype.uav_1":
-            camera = self._create_new_camera(name="UAV - nadir", location=self.location,
+            camera = self._create_new_camera(name="UAV nadir", location=self.location,
                                              rotation_euler=Vector((0., 0., 0.)))
             cameras_collection.objects.link(camera)
+            new_cameras.append(camera)
         #
         # ------------------------------------------------------------------------------------------
         elif self.camera_type == "camtype.uav_5":
-            camera_n = self._create_new_camera(name="UAV - nadir", location=self.location,
+            camera_n = self._create_new_camera(name="UAV nadir", location=self.location,
                                                rotation_euler=Vector((0., 0., 0.)))
-            camera_f = self._create_new_camera(name="UAV - forward", location=self.location,
+            camera_f = self._create_new_camera(name="UAV forward", location=self.location,
                                                rotation_euler=Vector((pi/4, 0., 0.)))
-            camera_b = self._create_new_camera(name="UAV - backward", location=self.location,
+            camera_b = self._create_new_camera(name="UAV backward", location=self.location,
                                                rotation_euler=Vector((pi/4, 0., pi)))
-            camera_l = self._create_new_camera(name="UAV - left", location=self.location,
+            camera_l = self._create_new_camera(name="UAV left", location=self.location,
                                                rotation_euler=Vector((pi/4, 0., pi/2)))
-            camera_r = self._create_new_camera(name="UAV - right", location=self.location,
+            camera_r = self._create_new_camera(name="UAV right", location=self.location,
                                                rotation_euler=Vector((pi/4, 0., -pi/2)))
             #
             cameras_collection.objects.link(camera_n)
@@ -141,6 +144,12 @@ class SFMFLOW_OT_camera_add(bpy.types.Operator):
             camera_l.matrix_parent_inverse = parent_inv_mw
             camera_r.parent = camera_n
             camera_r.matrix_parent_inverse = parent_inv_mw
+            #
+            new_cameras.append(camera_n)
+            new_cameras.append(camera_f)
+            new_cameras.append(camera_b)
+            new_cameras.append(camera_l)
+            new_cameras.append(camera_r)
         #
         # ------------------------------------------------------------------------------------------
         else:
@@ -148,6 +157,17 @@ class SFMFLOW_OT_camera_add(bpy.types.Operator):
             logger.error(msg)
             self.report({'ERROR'}, msg)
             return {'CANCELLED'}
+        #
+        # add new cameras to the render cameras
+        idx_backup = properties.render_cameras_idx
+        for c in new_cameras:
+            if 0 <= properties.render_cameras_idx < len(properties.render_cameras):
+                properties.render_cameras[properties.render_cameras_idx].camera = c
+                properties.render_cameras_idx = -1
+            else:
+                c_prop = properties.render_cameras.add()
+                c_prop.camera = c
+        properties.render_cameras_idx = idx_backup
         #
         context.view_layer.update()   # update matrix_world after rotation
         return {'FINISHED'}

@@ -272,6 +272,7 @@ class SFMFLOW_OT_render_images(bpy.types.Operator):
                 exit_code = -1
                 logger.error("Timeout expired for EXIF metadata update!")
             except Exception as e:  # pylint: disable=broad-except
+                exit_code = -2
                 logger.error("Exiftool execution exception: %s)", e)
             finally:
                 if exit_code != 0:

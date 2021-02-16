@@ -1,8 +1,8 @@
 
 import bpy
 
-from ...operators import (SFMFLOW_OT_export_gcps, SFMFLOW_OT_export_ground_truth,
-                          SFMFLOW_OT_render_images)
+from ...operators import (SFMFLOW_OT_export_cameras_gt, SFMFLOW_OT_export_gcps,
+                          SFMFLOW_OT_export_ground_truth, SFMFLOW_OT_render_images)
 
 
 class SFMFLOW_PT_render_tools(bpy.types.Panel):
@@ -35,6 +35,7 @@ class SFMFLOW_PT_render_tools(bpy.types.Panel):
             col.prop(scene.camera.data.dof, "use_dof")
         col.prop(properties, "render_with_shadows")
         layout.row().separator()
-        layout.operator(SFMFLOW_OT_render_images.bl_idname, icon='RENDER_STILL')     # render dataset button
-        layout.operator(SFMFLOW_OT_export_ground_truth.bl_idname, icon='EXPORT')     # export ground truth button
-        layout.operator(SFMFLOW_OT_export_gcps.bl_idname, icon='EXPORT')             # export GCPs button
+        layout.operator(SFMFLOW_OT_render_images.bl_idname, icon='RENDER_STILL')   # render dataset button
+        layout.operator(SFMFLOW_OT_export_ground_truth.bl_idname, icon='EXPORT')   # export geometry ground truth button
+        layout.operator(SFMFLOW_OT_export_gcps.bl_idname, icon='EXPORT')           # export GCPs button
+        layout.operator(SFMFLOW_OT_export_cameras_gt.bl_idname, icon='EXPORT')     # export cameras gt button

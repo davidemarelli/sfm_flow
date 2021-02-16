@@ -10,6 +10,7 @@ from .animate_camera import SFMFLOW_OT_animate_camera, SFMFLOW_OT_animate_camera
 from .animate_sun import SFMFLOW_OT_animate_sun, SFMFLOW_OT_animate_sun_clear
 from .camera_add import SFMFLOW_OT_camera_add
 from .evaluate_reconstruction import SFMFLOW_OT_evaluate_reconstruction
+from .export_cameras_gt import SFMFLOW_OT_export_cameras_gt
 from .export_gcps import SFMFLOW_OT_export_gcps
 from .export_ground_truth import SFMFLOW_OT_export_ground_truth
 from .filter_reconstruction import (SFMFLOW_OT_reconstruction_filter,
@@ -53,6 +54,7 @@ _CLASSES = (
     SFMFLOW_OT_camera_add,
     SFMFLOW_OT_RenderCameraSlotAddOperator,
     SFMFLOW_OT_RenderCameraSlotRemoveOperator,
+    SFMFLOW_OT_export_cameras_gt,
 )
 
 

@@ -90,8 +90,8 @@ class SFMFLOW_OT_export_ground_truth(bpy.types.Operator):
             bpy.ops.object.select_all(action='DESELECT')
             for o in objs:
                 o.select_set(True)
-        gtFilePath = os.path.join(bpy.path.abspath(self.export_folder), "ground_truth.obj")
-        SFMFLOW_OT_export_ground_truth.export_selection_as_obj(gtFilePath)
+        gt_filepath = os.path.join(bpy.path.abspath(self.export_folder), "ground_truth.obj")
+        SFMFLOW_OT_export_ground_truth.export_selection_as_obj(gt_filepath)
         return {'FINISHED'}
 
     ################################################################################################
@@ -100,17 +100,17 @@ class SFMFLOW_OT_export_ground_truth(bpy.types.Operator):
 
     # ==============================================================================================
     @staticmethod
-    def export_selection_as_obj(objFilePath: str) -> None:
+    def export_selection_as_obj(obj_filepath: str) -> None:
         """Export currently selected objects as .obj files.
 
         Arguments:
-            objFilePath {str} -- path to obj file
+            obj_filepath {str} -- path to obj file
         """
         logger.info("SfM - Exporting ground truth")
         #
-        os.makedirs(os.path.dirname(objFilePath), exist_ok=True)
+        os.makedirs(os.path.dirname(obj_filepath), exist_ok=True)
         bpy.ops.export_scene.obj(
-            filepath=objFilePath,
+            filepath=obj_filepath,
             check_existing=True,
             axis_forward='Y',                 # blender reference system
             axis_up='Z',                      # blender reference system

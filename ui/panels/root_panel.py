@@ -51,8 +51,8 @@ class SFMFLOW_PT_main(bpy.types.Panel):
         # images path (in/out)
         row = col.split(factor=0.33)
         row.alignment = 'RIGHT'
-        row.label(text="Images path")
-        row.prop(context.scene.render, "filepath", text="")
+        row.label(text="Output path")
+        row.prop(properties, "output_path", text="")
         #
         # scene initialization
         layout.row().separator()

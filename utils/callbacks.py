@@ -67,16 +67,14 @@ class Callbacks:
         """Post save actions handling.
         1. Adjust data generation path.
         """
-        # set render output folder to a default value if not yet configured
+        # set output folder to a default value if not yet configured
         context = bpy.context
-        if context.preferences.filepaths.temporary_directory == '':
-            temp_dir = tempfile.gettempdir()
-        else:
-            temp_dir = context.preferences.filepaths.temporary_directory
-        if os.path.realpath(context.scene.render.filepath) == temp_dir:
-            projectName = bpy.path.clean_name(
-                bpy.path.display_name_from_filepath(bpy.path.basename(bpy.data.filepath)))
-            context.scene.render.filepath = "//" + projectName + "-render/"  # render output path
+        if context.scene.sfmflow.output_path == "":
+            project_name = bpy.path.clean_name(
+                bpy.path.display_name_from_filepath(bpy.path.basename(bpy.data.filepath)), replace='-')
+            context.scene.sfmflow.output_path = "//" + project_name + "__out/"
+            context.scene.render.filepath = context.scene.sfmflow.output_path
+            bpy.ops.wm.save_mainfile()
 
     ################################################################################################
     # Post .blend load update

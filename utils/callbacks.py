@@ -38,12 +38,19 @@ class Callbacks:
         """
         if not Callbacks._is_cam_pose_updating:
             Callbacks._is_cam_pose_updating = True
+            if Callbacks._last_active_camera and Callbacks._last_active_camera.name not in scene.objects:
+                # camera object deleted
+                Callbacks._last_active_camera = None
+            #
             if scene.sfmflow.is_show_camera_pose and is_active_object_camera(bpy.context):
                 camera = bpy.context.active_object
                 if Callbacks._last_active_camera and (camera is not Callbacks._last_active_camera):
                     hide_motion_path(Callbacks._last_active_camera)
                 Callbacks._last_active_camera = camera
-                show_motion_path(camera, scene)
+                if camera.animation_data:
+                    show_motion_path(camera, scene)
+                else:   # animation data deleted
+                    hide_motion_path(camera)
             elif Callbacks._last_active_camera and Callbacks._last_active_camera.motion_path:
                 hide_motion_path(Callbacks._last_active_camera)
                 Callbacks._last_active_camera = None

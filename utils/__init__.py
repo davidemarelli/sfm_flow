@@ -10,6 +10,7 @@ from .camera import *
 from .gt_writer import GroundTruthWriter
 from .math import *
 from .object import *
+from .path import get_render_image_filename, set_blender_output_path
 from .scene_bounding_box import SceneBoundingBox
 
 ####################################################################################################

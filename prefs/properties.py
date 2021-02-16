@@ -10,7 +10,19 @@ class SFMFLOW_RenderCameraProperty(bpy.types.PropertyGroup):
     """Render camera property, holds the pointer to a camera object.
     Used to build a collection of rendering cameras."""
 
-    camera: bpy.props.PointerProperty(type=bpy.types.Camera)
+    def _camera_poll(self, obj: bpy.types.Object) -> bool:
+        if obj.type == 'CAMERA':
+            if not bpy.context:
+                return True
+            if obj.name not in bpy.context.scene.objects:   # camera from another scene
+                return False
+            for c_prop in bpy.context.scene.sfmflow.render_cameras:
+                if c_prop.camera is obj:   # camera is already a render camera
+                    return False
+            return True
+        return False
+
+    camera: bpy.props.PointerProperty(type=bpy.types.Object, poll=_camera_poll)
 
 
 #
@@ -24,6 +36,16 @@ class SFMFLOW_AddonProperties(bpy.types.PropertyGroup):
     ################################################################################################
     # Properties
     #
+
+    # ==============================================================================================
+    # path to output folder (images and ground truth)
+    output_path: bpy.props.StringProperty(
+        name="Output path",
+        default="",
+        description="Path to the project output folder",
+        subtype='DIR_PATH',
+        # TODO on change set context.scene.render.filepath ?
+    )
 
     # ==============================================================================================
     # path to reconstruction folder
@@ -147,6 +169,32 @@ class SFMFLOW_AddonProperties(bpy.types.PropertyGroup):
         """Set default values for properties that require complex setup."""
         # render_with_shadows is true only if shadows are enabled for all objects
         self.render_with_shadows = all(item.cycles_visibility.shadow is True for item in get_objs(bpy.context.scene))
+
+    # ==============================================================================================
+    def has_render_camera(self) -> bool:
+        """Check if the scene has sfmflow render camera/s.
+
+        Returns:
+            bool -- True iff there is at least a render camera the scene.
+        """
+        ret = False
+        for c in self.render_cameras:
+            if c.camera is not None:
+                ret = True
+        return ret
+
+    # ==============================================================================================
+    def get_render_cameras(self) -> List[bpy.types.Object]:
+        """Return a list of render cameras.
+
+        Returns:
+            List[bpy.types.Object] -- List of SfM Flow's render cameras.
+        """
+        cameras = []
+        for c in self.render_cameras:
+            if c.camera is not None:
+                cameras.append(c.camera)
+        return cameras
 
     ################################################################################################
     # Register and unregister

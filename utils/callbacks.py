@@ -3,15 +3,12 @@
 import logging
 import os
 import sys
-import tempfile
 
 import bpy
 from bpy.app.handlers import persistent
 from sfm_flow.reconstruction import ReconstructionsManager
 from sfm_flow.utils.camera import is_active_object_camera
 from sfm_flow.utils.object import hide_motion_path, show_motion_path
-
-from . import GroundTruthWriter
 
 logger = logging.getLogger(__name__)
 
@@ -108,12 +105,11 @@ class Callbacks:
                 logger.info("Found `--export_csv` flag. Exporting CSV file...")
                 i = sys.argv.index("--export_csv") + 1
                 if len(sys.argv) > i and (os.path.dirname(sys.argv[i]) != ''):
-                    folder_path = sys.argv[i]
+                    scene.sfmflow.output_path = sys.argv[i]
                 else:
                     logger.error("A file path must be specified after `--export_csv`")
                     return {'CANCELLED'}
-                gt_writer = GroundTruthWriter(scene, scene.camera, folder_path, overwrite=True)
-                gt_writer.save_entry_for_all_frames()
+                bpy.ops.sfmflow.export_cameras_gt('EXEC_DEFAULT')
 
 
 ####################################################################################################

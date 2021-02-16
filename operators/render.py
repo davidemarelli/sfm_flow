@@ -4,11 +4,12 @@ import os
 import sys
 from math import floor, sqrt
 from subprocess import CalledProcessError, TimeoutExpired, check_output, run
+from typing import List, Tuple
 
 import bpy
 from bpy.app.handlers import persistent
 
-from ..utils import GroundTruthWriter
+from ..utils import set_blender_output_path
 from ..utils.animation import animate_motion_blur
 
 logger = logging.getLogger(__name__)
@@ -19,15 +20,37 @@ class SFMFLOW_OT_render_images(bpy.types.Operator):
     bl_idname = "sfmflow.render_images"
     bl_label = "Render dataset"
 
-    # Ground truth writer
-    _gt_writer = None   # type: GroundTruthWriter
-
     # file formats with support for EXIF
     _files_with_exif = ("JPEG", "PNG")
 
     ################################################################################################
     # Properties
     #
+
+    # ==============================================================================================
+    # render camera
+
+    def _get_render_cameras(self, context: bpy.types.Context) -> List[Tuple[str, str, str]]:
+        """Get the list of available render cameras.
+
+        Arguments:
+            context {bpy.context} -- current context
+
+        Returns:
+            List[Tuple[str, str, str]] -- List of {EnumProperty} items
+        """
+        items = []
+        for cp in context.scene.sfmflow.render_cameras:
+            items.append((cp.camera.name, cp.camera.name, ""))
+        items.sort(key=lambda t: t[1])   # sort by name
+        return items
+
+    render_camera: bpy.props.EnumProperty(
+        name="Render camera",
+        description="Available cameras for rendering",
+        items=_get_render_cameras,
+        options={'SKIP_SAVE'}
+    )
 
     # ==============================================================================================
     # render output format
@@ -61,6 +84,11 @@ class SFMFLOW_OT_render_images(bpy.types.Operator):
     def draw(self, context: bpy.types.Context):
         """Operator panel layout"""
         layout = self.layout
+        r = layout.split(factor=0.3, align=True)
+        r.alignment = 'RIGHT'
+        r.label(text="Render camera")
+        r.prop(self, "render_camera", text="")
+
         r = layout.split(factor=0.3, align=True)
         r.alignment = 'RIGHT'
         r.label(text="File format")
@@ -112,7 +140,7 @@ class SFMFLOW_OT_render_images(bpy.types.Operator):
         Returns:
             bool -- True to enable, False to disable
         """
-        return context.scene.camera is not None
+        return context.scene.sfmflow.has_render_camera()
 
     # ==============================================================================================
     def invoke(self, context: bpy.types.Context, event: bpy.types.Event) -> set:  # pylint: disable=unused-argument
@@ -181,38 +209,46 @@ class SFMFLOW_OT_render_images(bpy.types.Operator):
         Returns:
             set -- enum set in {‘CANCELLED’, ‘FINISHED’}
         """
+        scene = context.scene
+        properties = scene.sfmflow
+        #
         # cmd args handling
         if "--sfmflow_render" in sys.argv:
             i = sys.argv.index("--sfmflow_render") + 1
-            if len(sys.argv) > i and (os.path.dirname(sys.argv[i]) != ''):
-                context.scene.render.filepath = sys.argv[i]
+            if sys.argv[i] in scene.objects and scene.objects[sys.argv[i]].type == 'CAMERA':
+                camera = scene.objects[sys.argv[i]]
             else:
-                logger.error("A folder path must be specified after `--export_csv`")
+                logger.error("A camera name must be specified after `--sfmflow_render`")
+                return {'CANCELLED'}
+            i += 1
+            if len(sys.argv) > i and (os.path.dirname(sys.argv[i]) != ''):
+                properties.output_path = sys.argv[i]
+            else:
+                logger.error("A folder path must be specified after `--sfmflow_render`")
                 return {'CANCELLED'}
             name_suffix = "_cmd_"
             if "--sfmflow_motion_blur" in sys.argv:
-                context.scene.render.use_motion_blur = True
+                scene.render.use_motion_blur = True
                 name_suffix += "-blur-"
             if "--sfmflow_dof" in sys.argv:
-                context.scene.camera.data.dof.use_dof = True
+                camera.data.dof.use_dof = True
                 name_suffix += "-dof-"
             name_suffix += ".blend"
+        else:
+            camera = scene.objects[self.render_camera]   # set render camera
 
         # animate motion blur
-        if context.scene.render.use_motion_blur:
-            properties = context.scene.sfmflow
-            animate_motion_blur(context.scene, properties.motion_blur_probability / 100, properties.motion_blur_shutter)
-
-        # create ground truth writer
-        SFMFLOW_OT_render_images._gt_writer = GroundTruthWriter(context.scene, context.scene.camera,
-                                                                context.scene.render.filepath,
-                                                                overwrite=context.scene.render.use_overwrite)
+        if scene.render.use_motion_blur:
+            animate_motion_blur(scene, properties.motion_blur_probability / 100, properties.motion_blur_shutter)
 
         # if executed form command line save new project file
         if "--sfmflow_render" in sys.argv:
             bpy.ops.wm.save_mainfile(filepath=(bpy.data.filepath + name_suffix))
 
         # start images rendering
+        scene.camera = camera   # set render camera
+        set_blender_output_path(properties.output_path, scene, camera)
+        logger.info("Start rendering of camera: %s", camera.name)
         bpy.ops.render.render('INVOKE_DEFAULT', animation=True, use_viewport=False)
         return {'FINISHED'}
 
@@ -283,8 +319,3 @@ class SFMFLOW_OT_render_images(bpy.types.Operator):
                     logger.info("Metadata correctly set for frame '%s'", filepath)
         else:
             logger.debug("Skipping EXIF metadata update, not supported by %s format", ff)
-        #
-        # --- save camera pose ground truth
-        SFMFLOW_OT_render_images._gt_writer.save_entry_for_current_frame()
-        if scene.frame_current == scene.frame_end:
-            SFMFLOW_OT_render_images._gt_writer.close()

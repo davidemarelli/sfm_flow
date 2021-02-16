@@ -7,7 +7,6 @@ from bpy.utils import unregister_class as _unregister_class
 from .animation import *
 from .blender_version import BlenderVersion
 from .camera import *
-from .gt_writer import GroundTruthWriter
 from .math import *
 from .object import *
 from .path import get_render_image_filename, set_blender_output_path

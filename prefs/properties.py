@@ -120,7 +120,7 @@ class SFMFLOW_AddonProperties(bpy.types.PropertyGroup):
 
     # ==============================================================================================
     # select 3D reconstruction pipeline to run
-    def get_custom_pipelines(self, context: bpy.context) -> List[Tuple[str, str, str]]:
+    def get_custom_pipelines(self, context: bpy.types.Context) -> List[Tuple[str, str, str]]:
         """Get the list of available reconstruction pipelines.
 
         Arguments:

@@ -246,7 +246,7 @@ class SFMFLOW_OT_init_scene(bpy.types.Operator):
         scene.render.use_stamp_filename = True
         # image format
         scene.render.image_settings.color_mode = 'RGB'
-        scene.render.image_settings.file_format = 'JPEG'
+        scene.sfmflow.render_file_format = 'JPEG'   # scene.render.image_settings.file_format is updated automatically
         scene.render.use_file_extension = True
         scene.render.use_overwrite = True                # force overwrite, be careful!
         scene.render.image_settings.quality = 90         # image compression

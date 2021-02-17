@@ -110,6 +110,31 @@ class SFMFLOW_AddonProperties(bpy.types.PropertyGroup):
     )
 
     # ==============================================================================================
+    # render output format
+    def _update_render_output_format(self, context: bpy.types.Context) -> None:
+        """Callback on render output format selection change.
+
+        Arguments:
+            context {bpy.types.Context} -- current context
+        """
+        context.scene.render.image_settings.file_format = self.render_file_format
+
+    render_file_format: bpy.props.EnumProperty(
+        name="File format",
+        description="Rendering file format",
+        items=[
+            ("JPEG", "JPEG", "Output images in JPEG format", "FILE_IMAGE", 0),
+            ("PNG", "PNG", "Output images in PNG format", "FILE_IMAGE", 1),
+            ("BMP", "BMP", "Output images in bitmap format", "FILE_IMAGE", 2),
+            ("AVI_JPEG", "AVI JPEG", "Output video in AVI JPEG format", "FILE_MOVIE", 3),
+            ("AVI_RAW", "AVI Raw", "Output video in AVI JPEG format", "FILE_MOVIE", 4),
+        ],
+        default="PNG",   # TODO this is blender's default,
+                         # change it to JPEG and update render.image_settings.file_format on load_factory_startup_post?
+        update=_update_render_output_format
+    )
+
+    # ==============================================================================================
     # flag for scene initialization, when {True} prevents scene re-initialization
     is_scene_init: bpy.props.BoolProperty(default=False)
 

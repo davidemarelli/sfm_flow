@@ -58,6 +58,10 @@ class SFMFLOW_OT_export_gcps(bpy.types.Operator):
         Returns:
             set -- enum set in {‘RUNNING_MODAL’, ‘CANCELLED’, ‘FINISHED’, ‘PASS_THROUGH’, ‘INTERFACE’}
         """
+        # use user selected file format, ensures correct image filenames in exported files
+        scene = context.scene
+        scene.render.image_settings.file_format = scene.sfmflow.render_file_format
+        #
         if bpy.data.is_saved:
             if bpy.data.is_dirty:
                 # unsaved changes are present

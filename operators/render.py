@@ -52,31 +52,6 @@ class SFMFLOW_OT_render_images(bpy.types.Operator):
         options={'SKIP_SAVE'}
     )
 
-    # ==============================================================================================
-    # render output format
-
-    def update_render_output_format(self, context: bpy.types.Context) -> None:
-        """Callback on render output format selection change.
-
-        Arguments:
-            context {bpy.types.Context} -- current context
-        """
-        context.scene.render.image_settings.file_format = self.render_output_format
-
-    render_output_format: bpy.props.EnumProperty(
-        name="File format",
-        description="Rendering file format",
-        items=[
-            ("JPEG", "JPEG", "Output images in JPEG format", "FILE_IMAGE", 0),
-            ("PNG", "PNG", "Output images in PNG format", "FILE_IMAGE", 1),
-            ("BMP", "BMP", "Output images in bitmap format", "FILE_IMAGE", 2),
-            ("AVI_JPEG", "AVI JPEG", "Output video in AVI JPEG format", "FILE_MOVIE", 3),
-            ("AVI_RAW", "AVI Raw", "Output video in AVI JPEG format", "FILE_MOVIE", 4),
-        ],
-        update=update_render_output_format,
-        options={'SKIP_SAVE'}
-    )
-
     ################################################################################################
     # Layout
     #
@@ -89,12 +64,7 @@ class SFMFLOW_OT_render_images(bpy.types.Operator):
         r.label(text="Render camera")
         r.prop(self, "render_camera", text="")
 
-        r = layout.split(factor=0.3, align=True)
-        r.alignment = 'RIGHT'
-        r.label(text="File format")
-        r.prop(self, "render_output_format", text="")
-
-        ff = self.render_output_format
+        ff = context.scene.sfmflow.render_file_format
         if ff not in SFMFLOW_OT_render_images._files_with_exif:
             r = layout.row()
             r.alert = True
@@ -119,10 +89,6 @@ class SFMFLOW_OT_render_images(bpy.types.Operator):
             r.alignment = 'RIGHT'
             r.label(text="Quality")
             r.prop(context.scene.render.image_settings, "quality", text="")
-
-        r = layout.row()
-        r.alignment = 'RIGHT'
-        r.prop(context.scene.render, "use_overwrite")
 
     ################################################################################################
     # Behavior
@@ -153,6 +119,10 @@ class SFMFLOW_OT_render_images(bpy.types.Operator):
         Returns:
             set -- enum set in {‘RUNNING_MODAL’, ‘CANCELLED’, ‘FINISHED’, ‘PASS_THROUGH’, ‘INTERFACE’}
         """
+        # use user selected file format for image rendering
+        scene = context.scene
+        scene.render.image_settings.file_format = scene.sfmflow.render_file_format
+        #
         if bpy.data.is_saved:
             if bpy.data.is_dirty:
                 bpy.ops.wm.save_mainfile()
@@ -185,10 +155,6 @@ class SFMFLOW_OT_render_images(bpy.types.Operator):
                 logger.error(msg)
                 self.report({'ERROR'}, msg)
                 return {'CANCELLED'}
-
-            # set file format
-            ff = context.scene.render.image_settings.file_format
-            self.render_output_format = ff if ff in ("JPEG", "PNG", "BMP", "AVI_JPEG", "AVI_RAW") else "JPEG"
 
             wm = context.window_manager
             return wm.invoke_props_dialog(self)

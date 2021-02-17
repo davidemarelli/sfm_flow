@@ -90,6 +90,7 @@ class SFMFLOW_OT_export_gcps(bpy.types.Operator):
             return {'CANCELLED'}
         #
         gcps = gcp_collection.objects
+        unit_scale = scene.unit_settings.scale_length
         #
         # --- export gcp list
         export_folder = bpy.path.abspath(context.scene.sfmflow.output_path)
@@ -99,7 +100,8 @@ class SFMFLOW_OT_export_gcps(bpy.types.Operator):
             csv_writer = csv.writer(csvfile, delimiter='\t')
             csv_writer.writerow(SFMFLOW_OT_export_gcps.GCPS_CSV_FIELDNAMES)
             for gcp in gcps:
-                csv_writer.writerow((gcp.name, gcp.location.x, gcp.location.y, gcp.location.z,
+                gcp_location = gcp.location * unit_scale
+                csv_writer.writerow((gcp.name, gcp_location.x, gcp_location.y, gcp_location.z,
                                      degrees(gcp.rotation_euler[1]), degrees(gcp.rotation_euler[0]),
                                      degrees(gcp.rotation_euler[2])))
         #
@@ -108,7 +110,6 @@ class SFMFLOW_OT_export_gcps(bpy.types.Operator):
         frame_end = scene.frame_end
         render_scale = scene.render.resolution_percentage / 100
         render_size = (int(scene.render.resolution_x * render_scale), int(scene.render.resolution_y * render_scale))
-        unit_scale = scene.unit_settings.scale_length
         #
         frame_backup = scene.frame_current
         camera_backup = scene.camera
@@ -133,8 +134,8 @@ class SFMFLOW_OT_export_gcps(bpy.types.Operator):
                     clip_end = camera.data.clip_end
                     #
                     for gcp in gcps:
-                        gcp_pos = gcp.location * unit_scale
-                        camera_pos = camera.location * unit_scale
+                        gcp_pos = gcp.location
+                        camera_pos = camera.location
                         ray_direction = (gcp_pos - camera_pos)
                         ray_direction.normalize()
                         #

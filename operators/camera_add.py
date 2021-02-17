@@ -37,8 +37,8 @@ class SFMFLOW_OT_camera_add(bpy.types.Operator):
     location: bpy.props.FloatVectorProperty(
         size=3,
         default=(0., 0., 0.),
-        precision=1,
-        subtype="XYZ",
+        precision=4,
+        subtype="TRANSLATION",
         options={'SKIP_SAVE'}
     )
 

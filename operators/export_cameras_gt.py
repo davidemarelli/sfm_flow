@@ -2,9 +2,11 @@
 import csv
 import logging
 import os
+from math import acos, atan2, sqrt
 from statistics import mean
 
 import bpy
+from mathutils import Vector
 from sfm_flow.utils import (camera_detect_dof_distance, euclidean_distance, get_camera_lookat,
                             get_render_image_filename)
 
@@ -220,17 +222,43 @@ class SFMFLOW_OT_export_cameras_gt(bpy.types.Operator):
                     #
                     # get sun position
                     sun_rotation = None
+                    sun_azimuth = None
+                    sun_inclination = None
                     if "SunDriver" in scene.objects:
                         sun = scene.objects["SunDriver"]
                         if sun.rotation_mode == 'QUATERNION':
                             sun_rotation = sun.rotation_quaternion
                         else:
                             sun_rotation = sun.rotation_euler.to_quaternion()
+                        sun_vector = Vector((0, 0, 1))   # zenith
+                        sun_vector.rotate(sun_rotation)
+                        sun_azimuth = atan2(sun_vector.y, sun_vector.x)
+                        sun_inclination = acos(sun_vector.z / sqrt(sun_vector.x**2 + sun_vector.y**2 + sun_vector.z**2))
                     #
                     # save to file
                     has_blur = scene.render.use_motion_blur and (scene.render.motion_blur_shutter != 0.)
-                    w.writerow((image_filename, position, rotation, lookat,
-                                camera.data.dof.use_dof, has_blur, sun_rotation))
+                    w.writerow((
+                        image_filename,
+                        # position
+                        SFMFLOW_OT_export_cameras_gt.NUM_FORMAT.format(position.x),
+                        SFMFLOW_OT_export_cameras_gt.NUM_FORMAT.format(position.y),
+                        SFMFLOW_OT_export_cameras_gt.NUM_FORMAT.format(position.z),
+                        # rotation
+                        SFMFLOW_OT_export_cameras_gt.NUM_FORMAT.format(rotation.w),
+                        SFMFLOW_OT_export_cameras_gt.NUM_FORMAT.format(rotation.x),
+                        SFMFLOW_OT_export_cameras_gt.NUM_FORMAT.format(rotation.y),
+                        SFMFLOW_OT_export_cameras_gt.NUM_FORMAT.format(rotation.z),
+                        # look-at
+                        SFMFLOW_OT_export_cameras_gt.NUM_FORMAT.format(lookat.x),
+                        SFMFLOW_OT_export_cameras_gt.NUM_FORMAT.format(lookat.y),
+                        SFMFLOW_OT_export_cameras_gt.NUM_FORMAT.format(lookat.z),
+                        # effects
+                        camera.data.dof.use_dof,
+                        has_blur,
+                        # sun orientation
+                        SFMFLOW_OT_export_cameras_gt.NUM_FORMAT.format(sun_azimuth) if sun_azimuth else None,
+                        SFMFLOW_OT_export_cameras_gt.NUM_FORMAT.format(sun_inclination) if sun_inclination else None
+                    ))
                     logger.debug("Saved pose ground truth for camera %s at frame %i.", camera.name, frame)
         #
         scene.frame_set(frame_backup)

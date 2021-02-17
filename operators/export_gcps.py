@@ -24,6 +24,10 @@ class SFMFLOW_OT_export_gcps(bpy.types.Operator):
     GCPS_CSV_FIELDNAMES = ("gcp_name", "x/east", "y/north", "z/altitude", "yaw", "pitch", "roll")
     GCPS_IMAGES_CSV_FIELDNAMES = ("image_name", "gcp_name", "image_x", "image_y")
 
+    # format of floats in gcp files
+    DIGITS = 6
+    NUM_FORMAT = "{{:.{}f}}".format(DIGITS)
+
     ################################################################################################
     # Behavior
     #
@@ -101,9 +105,15 @@ class SFMFLOW_OT_export_gcps(bpy.types.Operator):
             csv_writer.writerow(SFMFLOW_OT_export_gcps.GCPS_CSV_FIELDNAMES)
             for gcp in gcps:
                 gcp_location = gcp.location * unit_scale
-                csv_writer.writerow((gcp.name, gcp_location.x, gcp_location.y, gcp_location.z,
-                                     degrees(gcp.rotation_euler[1]), degrees(gcp.rotation_euler[0]),
-                                     degrees(gcp.rotation_euler[2])))
+                csv_writer.writerow((
+                    gcp.name,
+                    SFMFLOW_OT_export_gcps.NUM_FORMAT.format(gcp_location.x),
+                    SFMFLOW_OT_export_gcps.NUM_FORMAT.format(gcp_location.y),
+                    SFMFLOW_OT_export_gcps.NUM_FORMAT.format(gcp_location.z),
+                    SFMFLOW_OT_export_gcps.NUM_FORMAT.format(degrees(gcp.rotation_euler[1])),
+                    SFMFLOW_OT_export_gcps.NUM_FORMAT.format(degrees(gcp.rotation_euler[0])),
+                    SFMFLOW_OT_export_gcps.NUM_FORMAT.format(degrees(gcp.rotation_euler[2]))
+                ))
         #
         # --- export gcp list in images
         frame_start = scene.frame_start

@@ -69,9 +69,9 @@ class SFMFLOW_OT_init_scene(bpy.types.Operator):
 
     # ==============================================================================================
     is_init_camera: bpy.props.BoolProperty(
-        name="Init render camera",
-        description="Initialize the selected render camera",
-        default=True,
+        name="Initialize default render camera",
+        description="Initialize the scene's default render camera",
+        default=False,
         options={'SKIP_SAVE'}
     )
 
@@ -97,8 +97,13 @@ class SFMFLOW_OT_init_scene(bpy.types.Operator):
         row.prop(self, "lights_type", text="")
         row = layout.row(align=True)
         row.alignment = 'RIGHT'
-        row.label(text="Init render camera")
-        row.prop(self, "is_init_camera", icon_only=True)
+        #
+        camera = context.scene.camera
+        if camera and camera not in context.scene.sfmflow.get_render_cameras():
+            # show camera init if current scene.camera is not an sfmflow's render camera
+            self.is_init_camera = True
+            row.label(text="Initialize default render camera")
+            row.prop(self, "is_init_camera", icon_only=True)
 
     ################################################################################################
     # Behavior
@@ -159,7 +164,7 @@ class SFMFLOW_OT_init_scene(bpy.types.Operator):
         properties = context.scene.sfmflow
         camera = scene.camera
         if self.is_init_camera and (not camera):
-            msg = "No render camera selected!"
+            msg = "This scene has no render camera!"
             logger.error(msg)
             self.report({'ERROR'}, msg)
             return {'CANCELLED'}
@@ -167,6 +172,9 @@ class SFMFLOW_OT_init_scene(bpy.types.Operator):
         SFMFLOW_OT_init_scene.init_scene(scene)
         if self.is_init_camera:
             SFMFLOW_OT_init_scene.init_camera(scene, camera, context.view_layer)
+            # add the default camera to the render camera list
+            render_camera = properties.render_cameras.add()
+            render_camera.camera = camera
         #
         if self.scene_type == "scenetype.floor":
             self.add_floor(scene)

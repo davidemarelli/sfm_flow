@@ -31,8 +31,6 @@ class SFMFLOW_PT_render_tools(bpy.types.Panel):
         row.prop(scene.render, "use_motion_blur")
         row.prop(properties, "motion_blur_probability", text="Prob")
         row.prop(properties, "motion_blur_shutter")
-        if scene.camera is not None:
-            col.prop(scene.camera.data.dof, "use_dof")
         col.prop(properties, "render_with_shadows")
         layout.row().separator()
         layout.operator(SFMFLOW_OT_render_images.bl_idname, icon='RENDER_STILL')   # render dataset button

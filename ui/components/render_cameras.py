@@ -55,21 +55,10 @@ def render_cameras_box(layout: bpy.types.UILayout, sfmflow_properties: SFMFLOW_A
     controls_col.operator(SFMFLOW_OT_RenderCameraSlotRemoveOperator.bl_idname, text="", icon='REMOVE')
     #
     if sfmflow_properties.render_cameras_idx != -1:
-        # FIXME this interface is broken, requires multiple user steps when adding new cameras.
-        # Make it similar to the material interface!
+        render_camera = sfmflow_properties.render_cameras[sfmflow_properties.render_cameras_idx]
         row = box.row(align=True)
-        row.prop(sfmflow_properties.render_cameras[sfmflow_properties.render_cameras_idx], "camera",
-                 icon='CAMERA_DATA', text='')
+        row.prop(render_camera, "camera", icon='CAMERA_DATA', text='')
         row.operator(SFMFLOW_OT_camera_add.bl_idname, text='New', icon='ADD')
-        # row.prop_search(sfmflow_properties.render_cameras[sfmflow_properties.render_cameras_idx],
-        #                 "camera", bpy.data, "cameras", text='')
-        #                 bpy.data.cameras are all the cameras also of different scenes
-        # col = box.column()
-        # col.template_ID(properties.render_cameras[properties.render_cameras_idx],
-        #                 "camera", new="sfmflow.camera_add")   # same as above + camera_add doesn't work!
         #
-        # row = layout.row(align=True)
-        # row.prop(properties, "cameras", icon='CAMERA_DATA', text='', icon_only=True)
-        # row.prop(properties, "cameras_name", text='')
-        # row.operator(SFMFLOW_OT_camera_add.bl_idname, text='New', icon='ADD')
-        # row.operator(SFMFLOW_OT_camera_add.bl_idname, text='', icon='X')
+        # camera properties
+        box.prop(render_camera.camera.data.dof, "use_dof")

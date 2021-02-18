@@ -400,6 +400,8 @@ class SFMFLOW_OT_animate_camera(bpy.types.Operator):
         scene.frame_step = 1
         scene.frame_current = displayed_frame
         #
+        context.view_layer.update()
+        #
         logger.info("Camera '%s' animated using animation type: %s.", camera.name, self.animation_type)
         return {'FINISHED'}
 

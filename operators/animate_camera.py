@@ -196,7 +196,9 @@ class SFMFLOW_OT_animate_camera(bpy.types.Operator):
         if self.animation_type == "animtype.aerial_grid":
             layout.prop(self, "number_pass")
             layout.prop(self, "number_images_per_pass")
-            layout.prop(self, "side_direction", expand=True)
+            row = layout.row(align=True)
+            row.label(text="Side direction")
+            row.prop(self, "side_direction", expand=True)
             row = layout.row(align=True)
             row.prop(self, "overlap_percentage_forward", text="Forward overlap")
             row.prop(self, "overlap_percentage_side", text="Side overlap")

@@ -61,4 +61,5 @@ def render_cameras_box(layout: bpy.types.UILayout, sfmflow_properties: SFMFLOW_A
         row.operator(SFMFLOW_OT_camera_add.bl_idname, text='New', icon='ADD')
         #
         # camera properties
-        box.prop(render_camera.camera.data.dof, "use_dof")
+        if render_camera.camera:
+            box.prop(render_camera.camera.data.dof, "use_dof")

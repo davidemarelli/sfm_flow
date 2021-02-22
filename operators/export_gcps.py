@@ -158,10 +158,10 @@ class SFMFLOW_OT_export_gcps(bpy.types.Operator):
                             v_ndc = world_to_camera_view(scene, camera, gcp_pos)
                             if (0.0 < v_ndc.x < 1.0 and 0.0 < v_ndc.y < 1.0 and clip_start < v_ndc.z < clip_end):
                                 # gcp is in the view frustum
-                                # FIXME use float values for gcp image coordinates? or rounded are enough?
-                                gcp_px = (round(v_ndc.x * render_size[0]),
-                                          render_size[1] - round(v_ndc.y * render_size[1]))
-                                csv_writer.writerow((image_filename, gcp.name, gcp_px[0], gcp_px[1]))
+                                gcp_px = (v_ndc.x * render_size[0], render_size[1] - v_ndc.y * render_size[1])
+                                csv_writer.writerow((image_filename, gcp.name,
+                                                     SFMFLOW_OT_export_gcps.NUM_FORMAT.format(gcp_px[0]),
+                                                     SFMFLOW_OT_export_gcps.NUM_FORMAT.format(gcp_px[1])))
         #
         scene.frame_set(frame_backup)
         scene.camera = camera_backup

@@ -360,7 +360,13 @@ class SFMFLOW_OT_animate_camera(bpy.types.Operator):
         #
         # ------------------------------------------------------------------------------------------
         elif self.animation_type == "animtype.aerial_grid":
-            _, footprint = get_ground_sample_distance(camera, scene, self.ground_level)
+            try:
+                _, footprint = get_ground_sample_distance(camera, scene, self.ground_level)
+            except (RuntimeError, NotImplementedError) as e:
+                msg = str(e)
+                logger.error(msg)
+                self.report({'ERROR'}, msg)
+                return {'CANCELLED'}
             step_forward = footprint[1] - footprint[1] * self.overlap_percentage_forward / 100
             step_side = footprint[0] - footprint[0] * self.overlap_percentage_side / 100
             #

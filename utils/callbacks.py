@@ -38,8 +38,8 @@ class Callbacks:
             Callbacks._is_cam_pose_updating = True
             #
             # remove render cameras deleted from the scene
-            for i, cam_prop in enumerate(scene.sfmflow.render_cameras):
-                cam_obj = cam_prop.camera
+            for i in reversed(range(len(scene.sfmflow.render_cameras))):
+                cam_obj = scene.sfmflow.render_cameras[i].camera
                 if cam_obj and cam_obj.name not in scene.objects:
                     scene.sfmflow.render_cameras.remove(i)   # remove render camera
                     scene.sfmflow.render_cameras_idx = -1    # deselect

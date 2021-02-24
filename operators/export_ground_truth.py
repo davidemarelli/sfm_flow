@@ -151,7 +151,7 @@ class SFMFLOW_OT_export_ground_truth(bpy.types.Operator):
             use_normals=True,
             use_uvs=True,
             use_materials=True,
-            use_triangles=False,
+            use_triangles=True,
             use_nurbs=False,
             use_vertex_groups=False,
             use_blen_objects=True,

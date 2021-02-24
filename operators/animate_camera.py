@@ -104,10 +104,10 @@ class SFMFLOW_OT_animate_camera(bpy.types.Operator):
     )
 
     # ==============================================================================================
-    # number of passes (used only for `aerial_grid`)
-    number_pass: bpy.props.IntProperty(
-        name="Number of parallel pass",
-        description="Number of parallel pass",
+    # number of tracks (used only for `aerial_grid`)
+    number_tracks: bpy.props.IntProperty(
+        name="Number of parallel tracks",
+        description="Number of parallel tracks",
         min=1,
         soft_max=100,
         default=6,
@@ -115,10 +115,10 @@ class SFMFLOW_OT_animate_camera(bpy.types.Operator):
     )
 
     # ==============================================================================================
-    # number of images in each pass (used only for `aerial_grid`)
-    number_images_per_pass: bpy.props.IntProperty(
-        name="Number of images per pass",
-        description="Number of images per pass",
+    # number of images in each track (used only for `aerial_grid`)
+    number_images_per_track: bpy.props.IntProperty(
+        name="Number of images per track",
+        description="Number of images in each parallel track",
         min=1,
         soft_max=100,
         default=10,
@@ -148,10 +148,10 @@ class SFMFLOW_OT_animate_camera(bpy.types.Operator):
     )
 
     # ==============================================================================================
-    # image overlap in forward direction (used only for `aerial_grid`)
-    overlap_percentage_forward: bpy.props.IntProperty(
-        name="Image forward overlap",
-        description="Image overlap in the forward direction",
+    # image overlap along-track (used only for `aerial_grid`)
+    overlap_along_track_percentage: bpy.props.IntProperty(
+        name="Image overlap along-track",
+        description="Percentage of image overlap for adjacent images along the same track",
         min=0,
         max=100,
         soft_max=99,
@@ -161,10 +161,10 @@ class SFMFLOW_OT_animate_camera(bpy.types.Operator):
     )
 
     # ==============================================================================================
-    # image overlap in side direction (used only for `aerial_grid`)
-    overlap_percentage_side: bpy.props.IntProperty(
-        name="Image side overlap",
-        description="Image overlap in the side direction",
+    # image overlap across-tracks (used only for `aerial_grid`)
+    overlap_across_track_percentage: bpy.props.IntProperty(
+        name="Image overlap across-track",
+        description="Percentage of image overlap for the images across adjacent tracks",
         min=0,
         max=100,
         soft_max=99,
@@ -194,14 +194,14 @@ class SFMFLOW_OT_animate_camera(bpy.types.Operator):
             row.prop(self, "animation_turns", text="Turns")
         #
         if self.animation_type == "animtype.aerial_grid":
-            layout.prop(self, "number_pass")
-            layout.prop(self, "number_images_per_pass")
+            layout.prop(self, "number_tracks")
+            layout.prop(self, "number_images_per_track")
             row = layout.row(align=True)
             row.label(text="Side direction")
             row.prop(self, "side_direction", expand=True)
             row = layout.row(align=True)
-            row.prop(self, "overlap_percentage_forward", text="Forward overlap")
-            row.prop(self, "overlap_percentage_side", text="Side overlap")
+            row.prop(self, "overlap_along_track_percentage", text="Along-track overlap")
+            row.prop(self, "overlap_across_track_percentage", text="Across-track overlap")
             layout.prop(self, "ground_level")
             #
             return    # TODO use randomized position on aerial grid?
@@ -215,7 +215,7 @@ class SFMFLOW_OT_animate_camera(bpy.types.Operator):
     # ==============================================================================================
     @classmethod
     def poll(cls, context: bpy.types.Context) -> bool:
-        """Panel's enabling condition.
+        """Operator's enabling condition.
         The operator is enabled only if a render camera is selected and active.
 
         Arguments:
@@ -367,17 +367,17 @@ class SFMFLOW_OT_animate_camera(bpy.types.Operator):
                 logger.error(msg)
                 self.report({'ERROR'}, msg)
                 return {'CANCELLED'}
-            step_forward = footprint[1] - footprint[1] * self.overlap_percentage_forward / 100
-            step_side = footprint[0] - footprint[0] * self.overlap_percentage_side / 100
+            step_forward = footprint[1] - footprint[1] * self.overlap_along_track_percentage / 100
+            step_side = footprint[0] - footprint[0] * self.overlap_across_track_percentage / 100
             #
             sign_side = 1. if self.side_direction == "animdirection.right" else -1.  # right = +, left = -
             p = camera.location
-            for _ in range(self.number_pass):   # for each pass
+            for _ in range(self.number_tracks):   # for each track
                 camera_up = get_camera_up(camera)
                 forward_direction = Vector((camera_up.x, camera_up.y, 0)).normalized()
                 side_direction = sign_side * get_camera_right(camera)
                 #
-                for i in range(self.number_images_per_pass):   # for each image
+                for i in range(self.number_images_per_track):   # for each image of the track
                     camera.location = p
                     camera.keyframe_insert(data_path="location", frame=current_frame)
                     camera.keyframe_insert(data_path="rotation_euler", frame=current_frame)
@@ -385,7 +385,7 @@ class SFMFLOW_OT_animate_camera(bpy.types.Operator):
                                                      current_frame)   # FIXME do we really want this on aerial images?
                     #
                     current_frame += 1
-                    if i < self.number_images_per_pass - 1:
+                    if i < self.number_images_per_track - 1:
                         p += step_forward * forward_direction    # step forward
                 #
                 p += step_side * side_direction                  # step aside

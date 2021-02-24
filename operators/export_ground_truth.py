@@ -39,6 +39,14 @@ class SFMFLOW_OT_export_ground_truth(bpy.types.Operator):
         options={'SKIP_SAVE'}
     )
 
+    # ==============================================================================================
+    export_gcps: bpy.props.BoolProperty(
+        name="Export GCPs",
+        description="Include GCPs in ground truth geometry (if any)",
+        default=True,
+        options={'SKIP_SAVE'}
+    )
+
     ################################################################################################
     # Layout
     #
@@ -48,10 +56,25 @@ class SFMFLOW_OT_export_ground_truth(bpy.types.Operator):
         layout = self.layout
         layout.prop(self, "export_type")
         layout.prop(self, "export_folder")
+        layout.prop(self, "export_gcps")
 
     ################################################################################################
     # Behavior
     #
+
+    # ==============================================================================================
+    @classmethod
+    def poll(cls, context: bpy.types.Context) -> bool:
+        """Operator's enabling condition.
+        The operator is enabled only if there is at least an object in the scene.
+
+        Arguments:
+            context {bpy.types.Context} -- poll context
+
+        Returns:
+            bool -- True to enable, False to disable
+        """
+        return len(get_objs(context.scene, exclude_collections=SFMFLOW_COLLECTIONS, mesh_only=True)) > 0
 
     # ==============================================================================================
     def invoke(self, context: bpy.types.Context, event: bpy.types.Event) -> set:  # pylint: disable=unused-argument
@@ -86,7 +109,11 @@ class SFMFLOW_OT_export_ground_truth(bpy.types.Operator):
             set -- {'FINISHED'}
         """
         if self.export_type == "exporttype.all":
-            objs = get_objs(context.scene, exclude_collections=SFMFLOW_COLLECTIONS, mesh_only=True)
+            if self.export_gcps:
+                exclude = tuple(c for c in SFMFLOW_COLLECTIONS if c != "SFMFLOW_GCPs")   # include SFMFLOW_GCPs
+            else:
+                exclude = SFMFLOW_COLLECTIONS
+            objs = get_objs(context.scene, exclude_collections=exclude, mesh_only=True)
             bpy.ops.object.select_all(action='DESELECT')
             for o in objs:
                 o.select_set(True)

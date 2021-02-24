@@ -35,6 +35,19 @@ class SFMFLOW_OT_camera_add(bpy.types.Operator):
     )
 
     # ==============================================================================================
+    # camera offset for multi-cameras setup, specify the ±X and ±Y offset from the main camera
+    cameras_offset: bpy.props.FloatVectorProperty(
+        name="Camera offset from the main camera",
+        size=2,
+        default=(0.2, 0.2),
+        precision=4,
+        min=0.,
+        soft_max=1.,
+        subtype='TRANSLATION',
+        options={'SKIP_SAVE'}
+    )
+
+    # ==============================================================================================
     camera_preset: bpy.props.EnumProperty(
         name="Camera preset",
         description="Choose a camera type",
@@ -116,10 +129,11 @@ class SFMFLOW_OT_camera_add(bpy.types.Operator):
 
     # ==============================================================================================
     location: bpy.props.FloatVectorProperty(
+        name="Insert location for the new camera/s",
         size=3,
         default=(0., 0., 0.),
         precision=4,
-        subtype="TRANSLATION",
+        subtype='TRANSLATION',
         options={'SKIP_SAVE'}
     )
 
@@ -130,26 +144,30 @@ class SFMFLOW_OT_camera_add(bpy.types.Operator):
     def draw(self, context: bpy.types.Context):   # pylint: disable=unused-argument
         """Operator layout"""
         layout = self.layout
-        row = layout.split(factor=0.33, align=True)
-        row.label(text="Camera type")
+        row = layout.split(factor=0.25, align=True)
+        row.label(text="Type")
         row.prop(self, "camera_type", text="")
-        row = layout.split(factor=0.33, align=True)
-        row.label(text="Camera preset")
+        if self.camera_type == "camtype.uav_5":
+            row = layout.split(factor=0.25, align=True)
+            row.label(text="Offset")
+            row.row().prop(self, "cameras_offset", text="")
+        row = layout.split(factor=0.25, align=True)
+        row.label(text="Preset")
         row.prop(self, "camera_preset", text="")
-        row = layout.split(factor=0.33, align=True)
+        row = layout.split(factor=0.5, align=True)
         row.prop(self, "set_image_resolution")
         if self.set_image_resolution:
             row.prop(self, "image_resolution", text="")
             if self.image_resolution == "imgres.custom":
-                row = layout.split(factor=0.33, align=True)
+                row = layout.split(factor=0.25, align=True)
                 row.separator_spacer()
                 row = row.row(align=True)
                 row.prop(self, "custom_image_resolution_x", text="")
                 row.label(text="", icon='X')
                 row.prop(self, "custom_image_resolution_y", text="")
-        row = layout.split(factor=0.33, align=True)
+        row = layout.split(factor=0.25, align=True)
         row.label(text="Location")
-        row.prop(self, "location", text="")
+        row.row().prop(self, "location", text="")
 
     ################################################################################################
     # Behavior
@@ -215,15 +233,16 @@ class SFMFLOW_OT_camera_add(bpy.types.Operator):
         #
         # ------------------------------------------------------------------------------------------
         elif self.camera_type == "camtype.uav_5":
+            offset = self.cameras_offset
             camera_n = self._create_new_camera(name="UAV nadir", location=self.location,
                                                rotation_euler=Vector((0., 0., 0.)), sensor_size=sensor_size)
-            camera_f = self._create_new_camera(name="UAV forward", location=self.location,
+            camera_f = self._create_new_camera(name="UAV forward", location=self.location + Vector((0, offset[1], 0)),
                                                rotation_euler=Vector((pi/4, 0., 0.)), sensor_size=sensor_size)
-            camera_b = self._create_new_camera(name="UAV backward", location=self.location,
+            camera_b = self._create_new_camera(name="UAV backward", location=self.location - Vector((0, offset[1], 0)),
                                                rotation_euler=Vector((pi/4, 0., pi)), sensor_size=sensor_size)
-            camera_l = self._create_new_camera(name="UAV left", location=self.location,
+            camera_l = self._create_new_camera(name="UAV left", location=self.location - Vector((offset[0], 0, 0)),
                                                rotation_euler=Vector((pi/4, 0., pi/2)), sensor_size=sensor_size)
-            camera_r = self._create_new_camera(name="UAV right", location=self.location,
+            camera_r = self._create_new_camera(name="UAV right", location=self.location + Vector((offset[0], 0, 0)),
                                                rotation_euler=Vector((pi/4, 0., -pi/2)), sensor_size=sensor_size)
             #
             cameras_collection.objects.link(camera_n)

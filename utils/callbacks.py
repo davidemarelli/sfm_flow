@@ -28,6 +28,7 @@ class Callbacks:
     def cam_pose_update(scene: bpy.types.Scene) -> None:
         """Callback for the update of camera motion path on scene changes.
         Motion path is shown if scene's camera is selected and animation length is > 1.
+        Also removes a camera from the render camera list when the associated camera object is removed from the scene.
         This callback is meant to be used on event `bpy.app.handlers.depsgraph_update_post`.
 
         Arguments:
@@ -35,6 +36,14 @@ class Callbacks:
         """
         if not Callbacks._is_cam_pose_updating:
             Callbacks._is_cam_pose_updating = True
+            #
+            # remove render cameras deleted from the scene
+            for i, cam_prop in enumerate(scene.sfmflow.render_cameras):
+                cam_obj = cam_prop.camera
+                if cam_obj and cam_obj.name not in scene.objects:
+                    scene.sfmflow.render_cameras.remove(i)   # remove render camera
+                    scene.sfmflow.render_cameras_idx = -1    # deselect
+            #
             if Callbacks._last_active_camera and Callbacks._last_active_camera.name not in scene.objects:
                 # camera object deleted
                 Callbacks._last_active_camera = None

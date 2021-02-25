@@ -2,10 +2,11 @@
 import logging
 
 import bpy
+import numpy as np
 from bpy_extras.object_utils import AddObjectHelper, object_data_add
-from mathutils import Vector
+from mathutils import Quaternion, Vector
 
-from ..utils import get_gcp_collection, nodes
+from ..utils import BlenderVersion, euclidean_distance, get_gcp_collection, nodes
 
 logger = logging.getLogger(__name__)
 
@@ -51,6 +52,7 @@ class SFMFLOW_OT_add_gcp():
         """
         logger.debug("Add GCP geometry")
 
+        rotation = self._get_fit_scene_geometry_rotation(context)
         scale_x = 0.5
         scale_y = 0.5
 
@@ -66,6 +68,7 @@ class SFMFLOW_OT_add_gcp():
         mesh = bpy.data.meshes.new(name=gcp_name)
         mesh.from_pydata(verts, edges, faces)
         gcp = object_data_add(context, mesh, operator=self)
+        gcp.rotation_euler = rotation.to_euler()
 
         gcp_collection = get_gcp_collection()
         bpy.context.collection.objects.unlink(gcp)
@@ -133,6 +136,72 @@ class SFMFLOW_OT_add_gcp():
         gcp.active_material = material
 
         logger.debug("Created GCP material: %s", material_name)
+
+    # ==============================================================================================
+    def _get_fit_scene_geometry_rotation(self, context: bpy.types.Context) -> bpy.types.Object:
+        """Get the rotation quaternion that rotate the GCP plane to best fit the scene geometry underneath it.
+        Inspired by https://github.com/varkenvarken/blenderaddons/blob/master/planefit.py
+
+        Arguments:
+            context {bpy.types.Context} -- execution context
+
+        Returns:
+            mathutils.Quaternion -- rotation quaternion
+        """
+        rotation = Quaternion()   # identity quaternion, no rotation
+        #
+        scene = context.scene
+        location = scene.cursor.location
+        view_layer = context.view_layer
+        if bpy.app.version >= BlenderVersion.V2_91:
+            view_layer = context.view_layer.depsgraph
+        #
+        # detect object underneath the gcp insert coordinate
+        result, _, _, _, obj, _ = scene.ray_cast(view_layer, location + Vector((0, 0, 0.005)), Vector((0, 0, -1)))
+        #
+        if result:   # there is an object under the GCP
+            mesh = obj.data
+            count = len(mesh.vertices)
+            if count >= 3:   # at least 3 vertices are needed
+                # get mesh vertices (local coords)
+                verts = np.empty(count * 3, dtype=np.float32)
+                mesh.vertices.foreach_get('co', verts)
+                #
+                # move to global coords
+                verts_4 = np.empty((count, 4), dtype=np.float32)
+                verts_4[:, -1] = 1.
+                verts_4[:, :-1] = verts.reshape((count, 3))   # move to homogeneous coords
+                verts_4 = np.einsum('ij,aj->ai', np.array(obj.matrix_world), verts_4)   # matrix_world.dot(verts_4)
+                verts = verts_4[:, :-1] / verts_4[:, [-1]]    # back to cartesian coords
+                #
+                # try to reduce the number of vertices
+                distances = np.array(list(map(lambda x: euclidean_distance(x, location), verts)))
+                near_verts = ()
+                radius = 1.
+                while len(near_verts) < 3 and radius <= 100:
+                    v = verts[np.where(distances < radius)]
+                    if len(v) > 0:
+                        near_verts = np.unique(v, axis=0)   # get unique near vertices
+                    radius += 1
+                if len(near_verts) >= 3:
+                    verts = near_verts
+                #
+                # compute plane's normal for best fit
+                ctr = verts.mean(axis=0)
+                x = verts - ctr
+                M = np.cov(x.T)
+                eigenvalues, eigenvectors = np.linalg.eig(M)
+                normal = eigenvectors[:, eigenvalues.argmin()]
+                #
+                # compute rotation quaternion
+                normal = Vector(normal)
+                zenith = Vector((0, 0, 1))
+                axis = zenith.cross(normal)
+                angle = zenith.angle(normal)
+                rotation = Quaternion(axis, angle)
+        #
+        return rotation
+
 
 #
 #

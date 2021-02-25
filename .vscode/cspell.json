@@ -59,6 +59,7 @@
         "disp",
         "dists",
         "dtype",
+        "einsum",
         "fcurves",
         "functools",
         "fstop",

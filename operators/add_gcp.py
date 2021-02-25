@@ -138,7 +138,7 @@ class SFMFLOW_OT_add_gcp():
         logger.debug("Created GCP material: %s", material_name)
 
     # ==============================================================================================
-    def _get_fit_scene_geometry_rotation(self, context: bpy.types.Context) -> bpy.types.Object:
+    def _get_fit_scene_geometry_rotation(self, context: bpy.types.Context) -> Quaternion:
         """Get the rotation quaternion that rotate the GCP plane to best fit the scene geometry underneath it.
         Inspired by https://github.com/varkenvarken/blenderaddons/blob/master/planefit.py
 

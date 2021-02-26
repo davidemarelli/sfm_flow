@@ -29,6 +29,8 @@ class SFMFLOW_PT_render_tools(bpy.types.Panel):
         # --- rendering effects
         col = layout.column(align=True)
         row = col.row(align=True)
+        if scene.render.engine != 'CYCLES':
+            row.enabled = False   # motion blur settings are specific for cycles
         row.prop(scene.render, "use_motion_blur")
         row.prop(properties, "motion_blur_probability", text="Prob")
         row.prop(properties, "motion_blur_shutter")

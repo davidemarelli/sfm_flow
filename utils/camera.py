@@ -1,6 +1,7 @@
 
 import logging
-from typing import Tuple
+from math import cos, pi
+from typing import Tuple, Union
 
 import bpy
 from mathutils import Vector
@@ -146,31 +147,80 @@ def get_ground_sample_distance(camera: bpy.types.Camera, scene: bpy.types.Scene,
 
     Raises:
         RuntimeError: if the ground is not below the camera
-        NotImplementedError: if the pixels in the render image are not squared
+        NotImplementedError: if the pixels in the render image are not squared or the camera isn't
+                             looking towards the ground (alpha >= 90°)
 
     Returns:
-        Tuple[float, Tuple[float, float]] -- GSD, Tuple(footprintWidth, footprintHeight)
+        Tuple[float, Tuple[float, float]] -- GSD in cm, (footprintWidth, footprintHeight) in meters
     """
-    sensor_width = camera.data.sensor_width       # mm
-    # sensor_height = camera.data.sensor_height   # mm
+    if not scene.render.pixel_aspect_x == scene.render.pixel_aspect_y == 1.:
+        # TODO handle non-square pixels in GSD computation ?
+        raise NotImplementedError("Cannot handle non-square pixels in GSD computation!")
+    #
     focal_length = camera.data.lens               # mm
     altitude = camera.location.z - ground_level   # m
     render_scale = scene.render.resolution_percentage / 100
     img_width = scene.render.resolution_x * render_scale    # px
     img_height = scene.render.resolution_y * render_scale   # px
+    pixel_size = get_pixel_size(camera, scene)    # mm
     #
     if altitude <= 0.:
         raise RuntimeError("Ground isn't below camera! (altitude={}, camera.z={}, ground.z={})".format(
             altitude, camera.location.z, ground_level))
-    if not scene.render.pixel_aspect_x == scene.render.pixel_aspect_y == 1.:
-        # TODO handle non-square pixels in GSD computation
-        raise NotImplementedError("Currently is not possible to handle non-square pixels in GSD computation!")
     #
-    gsd = (altitude * sensor_width * 100) / (focal_length * img_width)  # pixel size at ground level in cm
-    img_footprint_width = (gsd * img_width) / 100
-    img_footprint_height = (gsd * img_height) / 100
+    alpha = Vector((0, 0, -1)).angle(get_camera_lookat(camera))   # angle between nadir direction and camera's look-at
+    if alpha >= pi/2:   # alpha >= 90°
+        raise RuntimeError("The camera isn't looking towards the ground, cannot compute the GSD!")
+    # theta = pi/2 - alpha   # angle between ground and camera's look-at
+    #
+    # gsd and image footprint
+    h = altitude / cos(alpha)   # corrected altitude
+    print("H: %f" % h)
+    # gsd = (altitude * pixel_size * 100) / focal_length  # pixel size at ground level in cm
+    # gsd = (h * pixel_size * 100) / (focal_length * cos(theta))  # pixel size at ground level in cm
+    gsd = (h * pixel_size * 100) / (focal_length * cos(alpha))   # pixel size at ground level in cm
+    img_footprint_width = (gsd * img_width) / 100      # image width footprint in meters
+    img_footprint_height = (gsd * img_height) / 100    # image height footprint in meters
     #
     return gsd, (img_footprint_width, img_footprint_height)
+
+
+# ==================================================================================================
+def get_pixel_size(camera: bpy.types.Camera, scene: bpy.types.Scene) -> float:
+    """Compute the pixel size on the sensor for the given camera.
+
+    Arguments:
+        camera {bpy.types.Camera} -- camera object
+        scene {bpy.types.Scene} -- scene, used to get the render image resolution
+
+    Raises:
+        NotImplementedError: if the pixels in the render image are not squared
+
+    Returns:
+        float -- pixels size on the camera sensor in millimeters
+    """
+    sensor_width = camera.data.sensor_width       # mm
+    sensor_height = camera.data.sensor_height     # mm
+    sensor_fit = camera.data.sensor_fit           # type: Union['HORIZONTAL', 'VERTICAL', 'AUTO']
+    render_scale = scene.render.resolution_percentage / 100
+    img_width = scene.render.resolution_x * render_scale    # px
+    img_height = scene.render.resolution_y * render_scale   # px
+
+    if not scene.render.pixel_aspect_x == scene.render.pixel_aspect_y == 1.:
+        raise NotImplementedError("Currently is not possible to handle non-square pixels!")
+
+    # compute pixel size on the sensor (in millimeters)
+    if sensor_fit == 'HORIZONTAL':
+        pixel_size = sensor_width / img_width
+    elif sensor_fit == 'VERTICAL':
+        pixel_size = sensor_height / img_height
+    else:   # 'AUTO'
+        if sensor_width / img_width <= sensor_height / img_height:
+            pixel_size = sensor_width / img_width
+        else:
+            pixel_size = sensor_height / img_height
+
+    return pixel_size
 
 
 # ==================================================================================================

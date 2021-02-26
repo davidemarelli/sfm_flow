@@ -399,10 +399,25 @@ def animate_motion_blur(scene: bpy.types.Scene, blur_probability: float, shutter
         blur_probability {float} -- probability of a frame to have motion blur, in range [0-1]
         shutter {float} -- shutter value for motion blur generation
     """
-    for frame_number in range(scene.frame_start, scene.frame_end):
+    animate_motion_blur_clear(scene)
+    for frame_number in range(scene.frame_start, scene.frame_end + 1):
         if random() < blur_probability:   # blur
             scene.render.motion_blur_shutter = shutter  # shutter time
             scene.render.keyframe_insert("motion_blur_shutter", frame=frame_number)
         else:                             # no blur
             scene.render.motion_blur_shutter = 0.
             scene.render.keyframe_insert("motion_blur_shutter", frame=frame_number)
+
+
+# ==================================================================================================
+def animate_motion_blur_clear(scene: bpy.types.Scene) -> None:
+    """Clear the motion blur animation in the scene's render range.
+
+    Arguments:
+        scene {bpy.types.Scene} -- render scene
+    """
+    frame_backup = scene.frame_current
+    for frame_number in range(scene.frame_start, scene.frame_end + 1):
+        scene.frame_set(frame_number)
+        scene.render.keyframe_delete("motion_blur_shutter")
+    scene.frame_set(frame_backup)

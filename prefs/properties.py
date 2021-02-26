@@ -3,7 +3,7 @@ from typing import List, Tuple
 
 import bpy
 
-from ..utils import get_objs
+from ..utils import animate_motion_blur, get_objs
 
 
 class SFMFLOW_RenderCameraProperty(bpy.types.PropertyGroup):
@@ -95,6 +95,28 @@ class SFMFLOW_AddonProperties(bpy.types.PropertyGroup):
     )
 
     # ==============================================================================================
+    # use motion blur
+
+    def _animate_motion_blur(self, context: bpy.types.Context) -> None:
+        if self.use_motion_blur:
+            context.scene.render.use_motion_blur = True
+            # TODO make avoid animating again if frame_start, frame_end, motion_blur_probability and
+            #      motion_blur_shutter have not changed!
+            animate_motion_blur(context.scene, self.motion_blur_probability / 100, self.motion_blur_shutter)
+        else:
+            context.scene.render.use_motion_blur = False
+            # animate_motion_blur_clear(context.scene)
+
+    use_motion_blur: bpy.props.BoolProperty(
+        # this property is similar to `scene.render.use_motion_blur` but has callback on update to
+        # animate the motion blur based on motion_blur_shutter and motion_blur_probability.
+        name="Motion blur",
+        description="Use motion blur in rendering",
+        default=False,
+        update=_animate_motion_blur
+    )
+
+    # ==============================================================================================
     # motion blur probability in rendered images
     motion_blur_probability: bpy.props.FloatProperty(
         name="Motion blur probability",
@@ -103,7 +125,8 @@ class SFMFLOW_AddonProperties(bpy.types.PropertyGroup):
         default=33.333,
         precision=0,
         min=0.0,
-        max=100.0
+        max=100.0,
+        update=_animate_motion_blur
     )
 
     # ==============================================================================================
@@ -115,7 +138,8 @@ class SFMFLOW_AddonProperties(bpy.types.PropertyGroup):
         name="Shutter",
         description="Time taken in frames between shutter open and close",
         default=0.15,
-        min=0.0
+        min=0.0,
+        update=_animate_motion_blur
     )
 
     # ==============================================================================================

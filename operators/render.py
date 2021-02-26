@@ -194,7 +194,7 @@ class SFMFLOW_OT_render_images(bpy.types.Operator):
                 return {'CANCELLED'}
             name_suffix = "_cmd_"
             if "--sfmflow_motion_blur" in sys.argv:
-                scene.render.use_motion_blur = True
+                scene.sfmflow.use_motion_blur = True
                 name_suffix += "-blur-"
             if "--sfmflow_dof" in sys.argv:
                 camera.data.dof.use_dof = True
@@ -202,10 +202,6 @@ class SFMFLOW_OT_render_images(bpy.types.Operator):
             name_suffix += ".blend"
         else:
             camera = scene.objects[self.render_camera]   # set render camera
-
-        # animate motion blur
-        if scene.render.use_motion_blur:
-            animate_motion_blur(scene, properties.motion_blur_probability / 100, properties.motion_blur_shutter)
 
         # if executed form command line save new project file
         if "--sfmflow_render" in sys.argv:

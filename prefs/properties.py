@@ -65,6 +65,15 @@ class SFMFLOW_AddonProperties(bpy.types.PropertyGroup):
     )
 
     # ==============================================================================================
+    # average scene Z coordinate
+    scene_ground_average_z: bpy.props.FloatProperty(
+        name="Average ground altitude",
+        description="Average scene ground altitude (Z)",
+        default=0.,
+        unit='LENGTH'
+    )
+
+    # ==============================================================================================
     # render with shadows
 
     def toggle_shadows_callback(self, context: bpy.types.Context) -> None:

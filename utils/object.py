@@ -4,6 +4,7 @@ from typing import List, Tuple
 
 import bpy
 import bpy_extras.mesh_utils
+import numpy as np
 from mathutils import Vector
 
 logger = logging.getLogger(__name__)
@@ -217,3 +218,38 @@ def hide_motion_path(obj: bpy.types.Object) -> None:
         # restore selection
         bpy.ops.object.select_all(action='DESELECT')
         list(map(lambda o: o.select_set(True), selected_objs))
+
+
+# ==================================================================================================
+def get_average_z_coord(scene: bpy.types.Scene, exclude_collections: Tuple[str] = None) -> float:
+    """Compute the average global Z coordinate of the given scene as the average global Z coordinate of the vertices.
+
+    Arguments:
+        scene {bpy.types.Scene} -- scene to compute the average Z
+
+    Keyword Arguments:
+        exclude_collections {Tuple[str]} -- list of collection names to exclude from obj search (default: {None})
+
+    Returns:
+        float -- average Z coordinate in the global coordinate reference system
+    """
+    objs = get_objs(scene, exclude_collections=exclude_collections, mesh_only=True)
+    #
+    v_count = 0
+    z_total = 0
+    for obj in objs:
+        mesh = obj.data
+        count = len(mesh.vertices)
+        v_count += count
+        verts = np.empty(count * 3, dtype=np.float32)
+        mesh.vertices.foreach_get('co', verts)   # vertices in local coordinates
+        # move to global coords
+        verts_4 = np.empty((count, 4), dtype=np.float32)
+        verts_4[:, -1] = 1.
+        verts_4[:, :-1] = verts.reshape((count, 3))   # move to homogeneous coords
+        verts_4 = np.einsum('ij,aj->ai', np.array(obj.matrix_world), verts_4)   # matrix_world.dot(verts_4)
+        verts = verts_4[:, :-1] / verts_4[:, [-1]]    # back to cartesian coords
+        z_total += np.sum(verts[:, 2])
+    #
+    z_average = z_total / v_count
+    return z_average

@@ -22,6 +22,7 @@ from .render_cameras import (SFMFLOW_OT_RenderCameraSlotAddOperator,
                              SFMFLOW_OT_RenderCameraSlotRemoveOperator)
 from .run_pipelines import SFMFLOW_OT_run_pipelines
 from .sample_geometry_gt import SFMFLOW_OT_sample_geometry_gt
+from .set_average_ground_altitude import SFMFLOW_OT_set_average_ground_altitude
 
 ####################################################################################################
 # Register and unregister
@@ -55,6 +56,7 @@ _CLASSES = (
     SFMFLOW_OT_RenderCameraSlotAddOperator,
     SFMFLOW_OT_RenderCameraSlotRemoveOperator,
     SFMFLOW_OT_export_cameras_gt,
+    SFMFLOW_OT_set_average_ground_altitude,
 )
 
 

@@ -139,15 +139,6 @@ class SFMFLOW_OT_animate_camera(bpy.types.Operator):
     )
 
     # ==============================================================================================
-    # ground average level (used only for `aerial_grid`)
-    ground_level: bpy.props.FloatProperty(
-        name="Ground average level",
-        description="Average Z/altitude of the ground",
-        unit='LENGTH',
-        options={'SKIP_SAVE'}
-    )
-
-    # ==============================================================================================
     # image overlap along-track (used only for `aerial_grid`)
     overlap_along_track_percentage: bpy.props.IntProperty(
         name="Image overlap along-track",
@@ -202,7 +193,9 @@ class SFMFLOW_OT_animate_camera(bpy.types.Operator):
             row = layout.row(align=True)
             row.prop(self, "overlap_along_track_percentage", text="Along-track overlap")
             row.prop(self, "overlap_across_track_percentage", text="Across-track overlap")
-            layout.prop(self, "ground_level")
+            row = layout.row()
+            row.enabled = False
+            row.prop(context.scene.sfmflow, "scene_ground_average_z")
             #
             return    # TODO use randomized position on aerial grid?
         layout.prop(self, "images_count")
@@ -361,7 +354,7 @@ class SFMFLOW_OT_animate_camera(bpy.types.Operator):
         # ------------------------------------------------------------------------------------------
         elif self.animation_type == "animtype.aerial_grid":
             try:
-                _, footprint = get_ground_sample_distance(camera, scene, self.ground_level)
+                _, footprint = get_ground_sample_distance(camera, scene, scene.sfmflow.scene_ground_average_z)
             except (RuntimeError, NotImplementedError) as e:
                 msg = str(e)
                 logger.error(msg)

@@ -3,7 +3,7 @@ import bpy
 
 from ...operators import (SFMFLOW_OT_animate_camera, SFMFLOW_OT_animate_camera_clear,
                           SFMFLOW_OT_animate_sun, SFMFLOW_OT_animate_sun_clear,
-                          SFMFLOW_OT_init_scene)
+                          SFMFLOW_OT_init_scene, SFMFLOW_OT_set_average_ground_altitude)
 from ..components.render_cameras import render_cameras_box
 
 
@@ -57,6 +57,12 @@ class SFMFLOW_PT_main(bpy.types.Panel):
         # scene initialization
         layout.row().separator()
         layout.operator(SFMFLOW_OT_init_scene.bl_idname, icon='MOD_BUILD')
+        #
+        # average ground altitude
+        row = layout.row(align=True)
+        row.label(text="Ground altitude")
+        row.prop(properties, "scene_ground_average_z", text="")
+        row.operator(SFMFLOW_OT_set_average_ground_altitude.bl_idname, text="", icon='DRIVER_DISTANCE')
         #
         # camera and sun animation
         r = layout.row(align=True)

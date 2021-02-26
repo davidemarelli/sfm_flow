@@ -34,19 +34,17 @@ class SFMFLOW_PT_render_tools(bpy.types.Panel):
         row.prop(properties, "motion_blur_shutter")
         col.prop(properties, "render_with_shadows")
         #
-        # --- rendering file format
-        layout.separator()
-        col = layout.column(align=True)
-        row = col.split(factor=0.5, align=True)
-        row.alignment = 'RIGHT'
-        row.label(text="File format")
-        row.prop(properties, "render_file_format", text="")
-        #
         # --- operators
         layout.separator()
         col = layout.column()
         col.use_property_split = True
         col.use_property_decorate = False  # no animation
+        # rendering file format
+        row = col.split(factor=0.5, align=True)
+        row.alignment = 'RIGHT'
+        row.label(text="File format")
+        row.prop(properties, "render_file_format", text="")
+        #
         col.prop(context.scene.render, "use_overwrite", text="Overwrite files")
         col.operator(SFMFLOW_OT_render_images.bl_idname, icon='RENDER_STILL')   # render dataset button
         col.operator(SFMFLOW_OT_export_ground_truth.bl_idname, icon='EXPORT')   # export geometry ground truth button

@@ -157,7 +157,8 @@ class SFMFLOW_OT_add_gcp():
             view_layer = context.view_layer.depsgraph
         #
         # detect object underneath the gcp insert coordinate
-        result, _, _, _, obj, _ = scene.ray_cast(view_layer, location + Vector((0, 0, 0.005)), Vector((0, 0, -1)))
+        result, _, _, _, obj, _ = scene.ray_cast(
+            view_layer, location + Vector((0, 0, 0.005)), Vector((0, 0, -1)), distance=1.)
         #
         if result:   # there is an object under the GCP
             mesh = obj.data
@@ -178,7 +179,7 @@ class SFMFLOW_OT_add_gcp():
                 distances = np.array(list(map(lambda x: euclidean_distance(x, location), verts)))
                 near_verts = ()
                 radius = 1.
-                while len(near_verts) < 3 and radius <= 100:
+                while len(near_verts) < 3 and radius <= 10:
                     v = verts[np.where(distances < radius)]
                     if len(v) > 0:
                         near_verts = np.unique(v, axis=0)   # get unique near vertices

@@ -206,6 +206,7 @@ class SFMFLOW_OT_render_images(bpy.types.Operator):
         # if executed form command line save new project file
         if "--sfmflow_render" in sys.argv:
             bpy.ops.wm.save_mainfile(filepath=(bpy.data.filepath + name_suffix))
+            bpy.ops.sfmflow.export_cameras_gt('EXEC_DEFAULT')
 
         # start images rendering
         scene.camera = camera   # set render camera

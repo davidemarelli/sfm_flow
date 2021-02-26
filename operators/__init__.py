@@ -9,6 +9,7 @@ from .align_reconstruction import SFMFLOW_OT_align_reconstruction
 from .animate_camera import SFMFLOW_OT_animate_camera, SFMFLOW_OT_animate_camera_clear
 from .animate_sun import SFMFLOW_OT_animate_sun, SFMFLOW_OT_animate_sun_clear
 from .camera_add import SFMFLOW_OT_camera_add
+from .camera_adjust_fl_for_gsd import SFMFLOW_OT_camera_adjust_fl_for_gsd
 from .evaluate_reconstruction import SFMFLOW_OT_evaluate_reconstruction
 from .export_cameras_gt import SFMFLOW_OT_export_cameras_gt
 from .export_gcps import SFMFLOW_OT_export_gcps
@@ -57,6 +58,7 @@ _CLASSES = (
     SFMFLOW_OT_RenderCameraSlotRemoveOperator,
     SFMFLOW_OT_export_cameras_gt,
     SFMFLOW_OT_set_average_ground_altitude,
+    SFMFLOW_OT_camera_adjust_fl_for_gsd,
 )
 
 

@@ -175,7 +175,7 @@ def get_ground_sample_distance(camera: bpy.types.Camera, scene: bpy.types.Scene,
     #
     # gsd and image footprint
     h = altitude / cos(alpha)   # corrected altitude
-    print("H: %f" % h)
+    # print("H: %f" % h)
     # gsd = (altitude * pixel_size * 100) / focal_length  # pixel size at ground level in cm
     # gsd = (h * pixel_size * 100) / (focal_length * cos(theta))  # pixel size at ground level in cm
     gsd = (h * pixel_size * 100) / (focal_length * cos(alpha))   # pixel size at ground level in cm
@@ -183,6 +183,48 @@ def get_ground_sample_distance(camera: bpy.types.Camera, scene: bpy.types.Scene,
     img_footprint_height = (gsd * img_height) / 100    # image height footprint in meters
     #
     return gsd, (img_footprint_width, img_footprint_height)
+
+
+# ==================================================================================================
+def get_focal_length_for_gsd(camera: bpy.types.Camera, scene: bpy.types.Scene, gsd: float,
+                             ground_level: float = 0.) -> float:
+    """Compute the focal length needed to obtain the desired GSD.
+
+    Arguments:
+        camera {bpy.types.Camera} -- render camera
+        scene {bpy.types.Scene} -- rendered scene
+        gsd {float} -- desired size of the pixel at ground level in centimeters
+
+    Keyword Arguments:
+        ground_level {float} -- average Z/altitude coordinate of the ground in meters (default: {0.})
+
+    Raises:
+        RuntimeError: if the ground is not below the camera
+        NotImplementedError: if the pixels in the render image are not squared or the camera isn't
+                             looking towards the ground (alpha >= 90°)
+
+    Returns:
+        float -- focal length in millimeters
+    """
+    if not scene.render.pixel_aspect_x == scene.render.pixel_aspect_y == 1.:
+        raise NotImplementedError("Cannot handle non-square pixels!")   # TODO handle non-square pixels?
+    #
+    altitude = camera.location.z - ground_level   # m
+    pixel_size = get_pixel_size(camera, scene)    # mm
+    #
+    if altitude <= 0.:
+        raise RuntimeError("Ground isn't below camera! (altitude={}, camera.z={}, ground.z={})".format(
+            altitude, camera.location.z, ground_level))
+    #
+    alpha = Vector((0, 0, -1)).angle(get_camera_lookat(camera))   # angle between nadir direction and camera's look-at
+    if alpha >= pi/2:   # alpha >= 90°
+        raise RuntimeError("The camera isn't looking towards the ground, cannot compute the GSD!")
+    #
+    # get focal length for desired gsd
+    h = altitude / cos(alpha)
+    focal_length = (h * pixel_size * 100) / (gsd * cos(alpha))  # get the focal length that obtains the desired gsd
+    #
+    return focal_length
 
 
 # ==================================================================================================

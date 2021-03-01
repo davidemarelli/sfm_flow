@@ -93,6 +93,8 @@ class Callbacks:
         1. Start rendering if required.
         2. Export ground truth csv file if required.
         """
+        Callbacks._last_active_camera = None     # remove reference to removed object
+        Callbacks._is_cam_pose_updating = False
         ReconstructionsManager.remove_all()
         #
         #

@@ -1,6 +1,6 @@
 
 import logging
-from math import cos, pi
+from math import atan, cos, pi, tan
 from typing import Tuple, Union
 
 import bpy
@@ -87,6 +87,49 @@ def get_camera_left(camera: bpy.types.Camera) -> Vector:
 
 
 # ==================================================================================================
+def get_camera_fov(camera: bpy.types.Object, scene: bpy.types.Scene) -> Tuple[float, float]:
+    """Compute the camera's horizontal and vertical Field of View (FoV).
+    The FoV is computed using the focal length and the used sensor size (depends on the rendering
+    aspect ratio that can differ from the sensor's one).
+
+    Arguments:
+        camera {bpy.types.Object} -- camera object
+        scene {bpy.types.Scene} -- scene, used to compute the sensor size crop
+
+    Raises:
+        NotImplementedError: if the pixels in the render image are not squared (from get_sensor_size_crop())
+
+    Returns:
+        Tuple[float, float] -- horizontal and vertical FoVs in radians
+    """
+    focal_length = camera.data.lens                      # mm
+    sensor_width, sensor_height = get_sensor_size_crop(camera, scene)  # mm
+    fov_h = 2 * atan(sensor_width / (2*focal_length))    # horizontal fov
+    fov_v = 2 * atan(sensor_height / (2*focal_length))   # vertical fov
+    return fov_h, fov_v
+
+
+# ==================================================================================================
+def get_camera_ifov(camera: bpy.types.Object, scene: bpy.types.Scene) -> float:
+    """Compute the Instantaneous Field of View (IFOV) of a given camera.
+
+    Arguments:
+        camera {bpy.types.Object} -- camera object
+        scene {bpy.types.Scene} -- scene, used to get the image resolution to compute the pixel size
+
+    Raises:
+        NotImplementedError: if the pixels in the render image are not squared (from get_pixel_size())
+
+    Returns:
+        float -- IFOV in radians, same for horizontal and vertical directions
+    """
+    focal_length = camera.data.lens                  # mm
+    pixel_size = get_pixel_size(camera, scene)       # mm
+    ifov = 2 * atan(pixel_size / (2*focal_length))   # single pixel fov in radians
+    return ifov
+
+
+# ==================================================================================================
 def camera_detect_nearest_intersection(view_layer: bpy.types.ViewLayer, camera: bpy.types.Camera,
                                        scene: bpy.types.Scene) -> Vector:
     """Detect the nearest intersection point in the camera look-at direction.
@@ -157,13 +200,7 @@ def get_ground_sample_distance(camera: bpy.types.Camera, scene: bpy.types.Scene,
         # TODO handle non-square pixels in GSD computation ?
         raise NotImplementedError("Cannot handle non-square pixels in GSD computation!")
     #
-    focal_length = camera.data.lens               # mm
     altitude = camera.location.z - ground_level   # m
-    render_scale = scene.render.resolution_percentage / 100
-    img_width = scene.render.resolution_x * render_scale    # px
-    img_height = scene.render.resolution_y * render_scale   # px
-    pixel_size = get_pixel_size(camera, scene)    # mm
-    #
     if altitude <= 0.:
         raise RuntimeError("Ground isn't below camera! (altitude={}, camera.z={}, ground.z={})".format(
             altitude, camera.location.z, ground_level))
@@ -171,16 +208,16 @@ def get_ground_sample_distance(camera: bpy.types.Camera, scene: bpy.types.Scene,
     alpha = Vector((0, 0, -1)).angle(get_camera_lookat(camera))   # angle between nadir direction and camera's look-at
     if alpha >= pi/2:   # alpha >= 90°
         raise RuntimeError("The camera isn't looking towards the ground, cannot compute the GSD!")
-    # theta = pi/2 - alpha   # angle between ground and camera's look-at
     #
-    # gsd and image footprint
-    h = altitude / cos(alpha)   # corrected altitude
-    # print("H: %f" % h)
-    # gsd = (altitude * pixel_size * 100) / focal_length  # pixel size at ground level in cm
-    # gsd = (h * pixel_size * 100) / (focal_length * cos(theta))  # pixel size at ground level in cm
-    gsd = (h * pixel_size * 100) / (focal_length * cos(alpha))   # pixel size at ground level in cm
-    img_footprint_width = (gsd * img_width) / 100      # image width footprint in meters
-    img_footprint_height = (gsd * img_height) / 100    # image height footprint in meters
+    # GSD
+    h = altitude * 100  # m to cm
+    ifov = get_camera_ifov(camera, scene)
+    gsd = h * (tan(alpha + ifov/2) - tan(alpha - ifov/2))   # gsd of the pixel along the look-at vector
+    #
+    # image footprint
+    fov_h, fov_v = get_camera_fov(camera, scene)
+    img_footprint_width = altitude * (tan(alpha + fov_h/2) - tan(alpha - fov_h/2))
+    img_footprint_height = altitude * (tan(alpha + fov_v/2) - tan(alpha - fov_v/2))
     #
     return gsd, (img_footprint_width, img_footprint_height)
 
@@ -222,6 +259,7 @@ def get_focal_length_for_gsd(camera: bpy.types.Camera, scene: bpy.types.Scene, g
     #
     # get focal length for desired gsd
     h = altitude / cos(alpha)
+    # FIXME current formula is an approximation, fix?
     focal_length = (h * pixel_size * 100) / (gsd * cos(alpha))  # get the focal length that obtains the desired gsd
     #
     return focal_length
@@ -263,6 +301,56 @@ def get_pixel_size(camera: bpy.types.Camera, scene: bpy.types.Scene) -> float:
             pixel_size = sensor_height / img_height
 
     return pixel_size
+
+
+# ==================================================================================================
+def get_sensor_size_crop(camera: bpy.types.Camera, scene: bpy.types.Scene) -> Tuple[float, float]:
+    """Compute the used sensor size of the given camera for the current image rendering resolution.
+
+    Arguments:
+        camera {bpy.types.Camera} -- camera object
+        scene {bpy.types.Scene} -- scene, used to get the render image resolution
+
+    Raises:
+        NotImplementedError: if the pixels in the render image are not squared
+
+    Returns:
+        Tuple[float, float] -- size of the camera sensor in millimeters (only the used portion for
+                               the current rendering resolution)
+    """
+    sensor_width = camera.data.sensor_width       # mm
+    sensor_height = camera.data.sensor_height     # mm
+    sensor_fit = camera.data.sensor_fit           # type: Union['HORIZONTAL', 'VERTICAL', 'AUTO']
+    render_scale = scene.render.resolution_percentage / 100
+    img_width = scene.render.resolution_x * render_scale    # px
+    img_height = scene.render.resolution_y * render_scale   # px
+
+    if not scene.render.pixel_aspect_x == scene.render.pixel_aspect_y == 1.:
+        raise NotImplementedError("Currently is not possible to handle non-square pixels!")
+
+    # compute used sensor size of the current image size
+    if sensor_fit == 'HORIZONTAL':
+        pixel_size = sensor_width / img_width
+        width_crop_size = sensor_width
+        height_crop_size = pixel_size * img_height
+    elif sensor_fit == 'VERTICAL':
+        pixel_size = sensor_height / img_height
+        height_crop_size = sensor_height
+        width_crop_size = pixel_size * img_width
+    else:   # 'AUTO'
+        if sensor_width / img_width <= sensor_height / img_height:
+            pixel_size = sensor_width / img_width
+            width_crop_size = sensor_width
+            height_crop_size = pixel_size * img_height
+        else:
+            pixel_size = sensor_height / img_height
+            height_crop_size = sensor_height
+            width_crop_size = pixel_size * img_width
+
+    assert width_crop_size <= sensor_width
+    assert height_crop_size <= sensor_height
+
+    return width_crop_size, height_crop_size
 
 
 # ==================================================================================================

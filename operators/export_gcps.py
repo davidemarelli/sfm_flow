@@ -141,15 +141,16 @@ class SFMFLOW_OT_export_gcps(bpy.types.Operator):
                     view_layer = context.view_layer.depsgraph
                 #
                 for camera in cameras:
+                    view_layer.update()
                     scene.camera = camera   # set render camera
                     image_filename, _ = get_render_image_filename(camera, scene, frame)
                     #
                     clip_start = camera.data.clip_start
                     clip_end = camera.data.clip_end
+                    camera_pos = camera.matrix_world.to_translation()
                     #
                     for gcp in gcps:
-                        gcp_pos = gcp.location
-                        camera_pos = camera.location
+                        gcp_pos = gcp.matrix_world.to_translation()
                         ray_direction = (gcp_pos - camera_pos)
                         ray_direction.normalize()
                         #

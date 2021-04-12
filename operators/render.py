@@ -10,7 +10,6 @@ import bpy
 from bpy.app.handlers import persistent
 
 from ..utils import set_blender_output_path
-from ..utils.animation import animate_motion_blur
 
 logger = logging.getLogger(__name__)
 

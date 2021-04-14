@@ -268,8 +268,9 @@ class SFMFLOW_OT_render_images(bpy.types.Operator):
             exiftool_cmd = [
                 exiftool_path,
                 "-config", get_asset("exiftool.config"),
+                "-n",
                 #
-                "-exif:FocalLength={} mm".format(fl),
+                "-exif:FocalLength={}".format(fl),
                 "-exif:FocalLengthIn35mmFormat={}".format(int(fl35)),
                 "-exif:Make={}".format(camera_maker),
                 "-exif:Model={}".format(camera_model),
@@ -293,10 +294,10 @@ class SFMFLOW_OT_render_images(bpy.types.Operator):
                     # "-XMP-Camera:GPSZAccuracy=0.01",
                     "-GPS:GPSAltitudeRef=0",       # Above Sea Level
                     "-GPS:GPSImgDirectionRef=T",   # True North
-                    "-GPS:GPSImgDirection={}".format(degrees(rotation[2])),         # yaw
-                    "-GPS:GPSPitch={}".format(degrees(rotation[0])),                # pitch
-                    "-exif:CameraElevationAngle={}".format(degrees(rotation[0])),   # pitch
-                    "-GPS:GPSRoll={}".format(degrees(rotation[1])),                 # roll
+                    "-GPS:GPSImgDirection={}".format(degrees(rotation[2] % 360)),         # yaw
+                    "-GPS:GPSPitch={}".format(degrees(rotation[0] % 360)),                # pitch
+                    # "-exif:CameraElevationAngle={}".format(degrees(rotation[0] % 360)),   # pitch
+                    "-GPS:GPSRoll={}".format(degrees(rotation[1] % 360)),                 # roll
                 ]
             #
             exiftool_cmd += [

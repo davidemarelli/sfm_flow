@@ -5,6 +5,7 @@ from bpy.utils import register_class as _register_class
 from bpy.utils import unregister_class as _unregister_class
 
 from .animation import *
+from .assets import get_asset
 from .blender_version import BlenderVersion
 from .camera import *
 from .math import *

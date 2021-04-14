@@ -177,6 +177,16 @@ class SFMFLOW_AddonProperties(bpy.types.PropertyGroup):
     render_cameras_idx: bpy.props.IntProperty(default=-1, options={'HIDDEN', 'SKIP_SAVE'})
 
     # ==============================================================================================
+    # write GPS data in Exif flag
+    # is defined here because needs to be accessible by callback after render in operators.render.py
+    write_gps_exif: bpy.props.BoolProperty(
+        name="Include EXIF GPS data",
+        description="Write the GPS data (position and orientation of the camera) in the EXIF data",
+        default=False,
+        options={'SKIP_SAVE'}
+    )
+
+    # ==============================================================================================
     # select 3D reconstruction pipeline to run
     def get_custom_pipelines(self, context: bpy.types.Context) -> List[Tuple[str, str, str]]:
         """Get the list of available reconstruction pipelines.

@@ -2,14 +2,14 @@
 import logging
 import os
 import sys
-from math import floor, sqrt
+from math import degrees, floor, sqrt
 from subprocess import CalledProcessError, TimeoutExpired, check_output, run
 from typing import List, Tuple
 
 import bpy
 from bpy.app.handlers import persistent
 
-from ..utils import set_blender_output_path
+from ..utils import get_asset, set_blender_output_path
 
 logger = logging.getLogger(__name__)
 
@@ -68,6 +68,11 @@ class SFMFLOW_OT_render_images(bpy.types.Operator):
             r = layout.row()
             r.alert = True
             r.label(text="EXIF metadata will not be set for {} files".format(ff))
+        else:
+            r = layout.row(align=True)
+            r.alignment = 'RIGHT'
+            r.label(text="Write GPS Exif")
+            r.prop(context.scene.sfmflow, "write_gps_exif", text="")
 
         r = layout.split(factor=0.3, align=True)
         r.alignment = 'RIGHT'
@@ -198,6 +203,9 @@ class SFMFLOW_OT_render_images(bpy.types.Operator):
             if "--sfmflow_dof" in sys.argv:
                 camera.data.dof.use_dof = True
                 name_suffix += "-dof-"
+            if "--sfmflow_gps_exif" in sys.argv:
+                properties.write_gps_exif = True
+                name_suffix += "-gpsExif-"
             name_suffix += ".blend"
         else:
             camera = scene.objects[self.render_camera]   # set render camera
@@ -246,6 +254,11 @@ class SFMFLOW_OT_render_images(bpy.types.Operator):
             fl35 = 43.27 / sqrt(camera_data.sensor_width**2 + camera_data.sensor_height**2) * fl
             res_percent = scene.render.resolution_percentage / 100.
 
+            camera = scene.camera
+            u_scale = scene.unit_settings.scale_length     # unit scale
+            position = camera.matrix_world.to_translation() * u_scale  # position in blender's reference system
+            rotation = camera.matrix_world.to_euler()      # rotation in blender's reference system
+
             image_width = floor(scene.render.resolution_x * res_percent)
             image_height = floor(scene.render.resolution_y * res_percent)
             camera_maker = camera_data['sfmflow.maker'] if 'sfmflow.maker' in camera_data else ""
@@ -254,6 +267,8 @@ class SFMFLOW_OT_render_images(bpy.types.Operator):
             # build exiftool command
             exiftool_cmd = [
                 exiftool_path,
+                "-config", get_asset("exiftool.config"),
+                #
                 "-exif:FocalLength={} mm".format(fl),
                 "-exif:FocalLengthIn35mmFormat={}".format(int(fl35)),
                 "-exif:Make={}".format(camera_maker),
@@ -262,7 +277,29 @@ class SFMFLOW_OT_render_images(bpy.types.Operator):
                 "-exif:FocalPlaneYResolution={}".format(image_height / camera_data.sensor_height),
                 "-exif:FocalPlaneResolutionUnit#=4",   # millimeters
                 "-exif:ExifImageWidth={}".format(image_width),
-                "-exif:ExifImageHeight={}".format(image_height),
+                "-exif:ExifImageHeight={}".format(image_height)
+            ]
+            #
+            if scene.sfmflow.write_gps_exif:   # include gps data
+                exiftool_cmd += [
+                    # "-GPS:GPSMapDatum=ENU",
+                    "-GPS:GPSLatitude={}".format(position.y),
+                    "-GPS:GPSLatitudeRef=N",       # North
+                    "-GPS:GPSLongitude={}".format(position.x),
+                    "-GPS:GPSLongitudeRef=E",      # East
+                    "-GPS:GPSAltitude={}".format(position.z),
+                    # "-GPS:GPSDOP=0.001",  # GPS accuracy  TODO fix, none of those seems to be loaded by the pipelines
+                    # "-XMP-Camera:GPSXYAccuracy=0.01",
+                    # "-XMP-Camera:GPSZAccuracy=0.01",
+                    "-GPS:GPSAltitudeRef=0",       # Above Sea Level
+                    "-GPS:GPSImgDirectionRef=T",   # True North
+                    "-GPS:GPSImgDirection={}".format(degrees(rotation[2])),         # yaw
+                    "-GPS:GPSPitch={}".format(degrees(rotation[0])),                # pitch
+                    "-exif:CameraElevationAngle={}".format(degrees(rotation[0])),   # pitch
+                    "-GPS:GPSRoll={}".format(degrees(rotation[1])),                 # roll
+                ]
+            #
+            exiftool_cmd += [
                 "-exif:ExifVersion=0230",   # some pipelines do not work with newer versions
                 "-overwrite_original",
                 filepath

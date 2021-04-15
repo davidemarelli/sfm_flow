@@ -294,10 +294,10 @@ class SFMFLOW_OT_render_images(bpy.types.Operator):
                     # "-XMP-Camera:GPSZAccuracy=0.01",
                     "-GPS:GPSAltitudeRef=0",       # Above Sea Level
                     "-GPS:GPSImgDirectionRef=T",   # True North
-                    "-GPS:GPSImgDirection={}".format(degrees(rotation[2] % 360)),         # yaw
-                    "-GPS:GPSPitch={}".format(degrees(rotation[0] % 360)),                # pitch
+                    "-GPS:GPSImgDirection={}".format(degrees(rotation[2]) % 360),         # yaw
+                    "-GPS:GPSPitch={}".format(degrees(rotation[0]) % 360),                # pitch
                     # "-exif:CameraElevationAngle={}".format(degrees(rotation[0] % 360)),   # pitch
-                    "-GPS:GPSRoll={}".format(degrees(rotation[1] % 360)),                 # roll
+                    "-GPS:GPSRoll={}".format(degrees(rotation[1]) % 360),                 # roll
                 ]
             #
             exiftool_cmd += [

@@ -283,21 +283,29 @@ class SFMFLOW_OT_render_images(bpy.types.Operator):
             #
             if scene.sfmflow.write_gps_exif:   # include gps data
                 exiftool_cmd += [
+                    "-XMP:GPSLatitude={}".format(position.y),
+                    "-XMP:GPSLongitude={}".format(position.x),
+                    "-XMP:GPSAltitude={}".format(position.z),
+                    "-XMP:GPSAltitudeRef=0",       # Above Sea Level
+                    #
+                    # "-XMP:GPSDOP=0.001",  # GPS accuracy
+                    # "-XMP:GPSHPositioningError=0.001",  # GPS accuracy
+                    # "-GPS:GPSDOP=0.001",  # GPS accuracy
+                    # "-XMP-Camera:GPSXYAccuracy=0.001",
+                    # "-XMP-Camera:GPSZAccuracy=0.001",
+                    #
                     # "-GPS:GPSMapDatum=ENU",
-                    "-GPS:GPSLatitude={}".format(position.y),
-                    "-GPS:GPSLatitudeRef=N",       # North
-                    "-GPS:GPSLongitude={}".format(position.x),
-                    "-GPS:GPSLongitudeRef=E",      # East
+                    # "-GPS:GPSLatitude={}".format(position.y),    # must be positive
+                    # "-GPS:GPSLatitudeRef=N",       # North
+                    # "-GPS:GPSLongitude={}".format(position.x),   # must be positive
+                    # "-GPS:GPSLongitudeRef=E",      # East
                     "-GPS:GPSAltitude={}".format(position.z),
-                    # "-GPS:GPSDOP=0.001",  # GPS accuracy  TODO fix, none of those seems to be loaded by the pipelines
-                    # "-XMP-Camera:GPSXYAccuracy=0.01",
-                    # "-XMP-Camera:GPSZAccuracy=0.01",
                     "-GPS:GPSAltitudeRef=0",       # Above Sea Level
                     "-GPS:GPSImgDirectionRef=T",   # True North
-                    "-GPS:GPSImgDirection={}".format(degrees(rotation[2]) % 360),         # yaw
-                    "-GPS:GPSPitch={}".format(degrees(rotation[0]) % 360),                # pitch
+                    "-GPS:GPSImgDirection={}".format((360 - degrees(rotation[2])) % 360),  # yaw
+                    "-GPS:GPSPitch={}".format(degrees(rotation[0]) % 360),                 # pitch
                     # "-exif:CameraElevationAngle={}".format(degrees(rotation[0] % 360)),   # pitch
-                    "-GPS:GPSRoll={}".format(degrees(rotation[1]) % 360),                 # roll
+                    "-GPS:GPSRoll={}".format(degrees(rotation[1]) % 360),                  # roll
                 ]
             #
             exiftool_cmd += [

@@ -114,9 +114,9 @@ class SFMFLOW_OT_export_gcps(bpy.types.Operator):
                     SFMFLOW_OT_export_gcps.NUM_FORMAT.format(gcp_location.x),
                     SFMFLOW_OT_export_gcps.NUM_FORMAT.format(gcp_location.y),
                     SFMFLOW_OT_export_gcps.NUM_FORMAT.format(gcp_location.z),
-                    SFMFLOW_OT_export_gcps.NUM_FORMAT.format(degrees(gcp.rotation_euler[1])),
-                    SFMFLOW_OT_export_gcps.NUM_FORMAT.format(degrees(gcp.rotation_euler[0])),
-                    SFMFLOW_OT_export_gcps.NUM_FORMAT.format(degrees(gcp.rotation_euler[2]))
+                    SFMFLOW_OT_export_gcps.NUM_FORMAT.format((360 - degrees(gcp.rotation_euler[2])) % 360),   # yaw
+                    SFMFLOW_OT_export_gcps.NUM_FORMAT.format(degrees(gcp.rotation_euler[0]) % 360),           # pitch
+                    SFMFLOW_OT_export_gcps.NUM_FORMAT.format(degrees(gcp.rotation_euler[1]) % 360)            # roll
                 ))
         #
         # --- export gcp list in images

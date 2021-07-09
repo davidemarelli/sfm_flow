@@ -27,6 +27,8 @@
     //"python.pythonPath": "${workspaceFolder}\\.venv\\Scripts\\python.exe",  // on Windows
     "python.pythonPath": "${workspaceFolder}/.venv/bin/python",               // on Linux
     "python.terminal.activateEnvironment": true,
+    "python.linting.pylintEnabled": true,
+    "python.linting.enabled": true,
     "python.linting.pylintArgs": [
         "--ignored-modules=mathutils,bpy.app,bpy.props,gpu,numpy,bgl", // fix import errors
         "--variable-rgx=[a-zA-Z0-9_]{1,30}$",  // fix variable don't conform camel_case on single char
@@ -37,6 +39,11 @@
         "--max-line-length=120",
         "--disable=C0114"
     ],
+    "python.languageServer": "Pylance",
+    "python.analysis.diagnosticSeverityOverrides": {
+        "reportUnusedImport": "warning",
+        "reportMissingImports": "none"
+    },
     //
     //----------------------------------------------------------------------------------------------
     // Code formatting rules

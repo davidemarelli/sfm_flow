@@ -30,10 +30,8 @@ NOTES:
 """
 
 import logging
-import sys
 
 import bpy
-from bpy.app.handlers import persistent
 
 import sfm_flow.utils.logutils as logutils
 from sfm_flow.utils.callbacks import Callbacks
@@ -41,7 +39,6 @@ from sfm_flow.utils.callbacks import Callbacks
 from .operators import SFMFLOW_OT_render_images, operators_register, operators_unregister
 from .prefs import properties_register, properties_unregister
 from .prefs.preferences import preferences_register, preferences_unregister
-from .reconstruction import ReconstructionsManager, SFMFLOW_ReconstructionModelProperties
 from .ui import ui_register, ui_unregister
 
 ####################################################################################################

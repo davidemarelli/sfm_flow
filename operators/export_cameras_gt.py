@@ -2,7 +2,7 @@
 import csv
 import logging
 import os
-from math import acos, atan2, sqrt
+from math import acos, atan2, degrees, sqrt
 from statistics import mean
 
 import bpy
@@ -10,6 +10,7 @@ from mathutils import Vector
 from sfm_flow.utils import (camera_detect_dof_distance, euclidean_distance, get_camera_lookat,
                             get_render_image_filename)
 
+from ..utils.math import matrix_world_to_opk, matrix_world_to_ypr
 from ..utils.scene_bounding_box import SceneBoundingBox
 
 logger = logging.getLogger(__name__)
@@ -21,8 +22,10 @@ class SFMFLOW_OT_export_cameras_gt(bpy.types.Operator):
     bl_label = "Export cameras"
 
     # CSV field names in header for cameras ground truth
-    CAMERA_CSV_FIELDNAMES = ("image_name",
+    CAMERA_CSV_FIELDNAMES = ("label",
                              "position_x", "position_y", "position_z",
+                             "omega", "phi", "kappa",
+                             "yaw", "pitch", "roll",
                              "rotation_w", "rotation_x", "rotation_y", "rotation_z",
                              "lookat_x", "lookat_y", "lookat_z",
                              "depth_of_field", "motion_blur",
@@ -219,6 +222,14 @@ class SFMFLOW_OT_export_cameras_gt(bpy.types.Operator):
                     position = camera.matrix_world.to_translation() * u_scale  # position in blender's reference system
                     rotation = camera.matrix_world.to_quaternion()      # rotation in blender's reference system
                     lookat = get_camera_lookat(camera)                  # lookat direction in blender's reference system
+                    opk = matrix_world_to_opk(camera.matrix_world)   # get Omega, Phi, Kappa angles
+                    ypr = matrix_world_to_ypr(camera.matrix_world)   # get Yaw, Pitch, Roll angles
+                    omega, phi, kappa = tuple(map(degrees, opk))
+                    yaw, pitch, roll = tuple(map(degrees, ypr))
+                    yaw, pitch, roll = (yaw % 360), (pitch % 360), (roll % 360)
+                    yaw = 0. if yaw == 360. else yaw                # move in range [0, 359.999]
+                    pitch = pitch - (360. if pitch > 180. else 0)   # move in range [-180, +180]
+                    roll = roll - (360. if roll > 180. else 0)      # move in range [-180, +180]
                     #
                     # get sun position
                     sun_rotation = None
@@ -243,7 +254,15 @@ class SFMFLOW_OT_export_cameras_gt(bpy.types.Operator):
                         SFMFLOW_OT_export_cameras_gt.NUM_FORMAT.format(position.x),
                         SFMFLOW_OT_export_cameras_gt.NUM_FORMAT.format(position.y),
                         SFMFLOW_OT_export_cameras_gt.NUM_FORMAT.format(position.z),
-                        # rotation
+                        # rotation OPK
+                        SFMFLOW_OT_export_cameras_gt.NUM_FORMAT.format(omega),
+                        SFMFLOW_OT_export_cameras_gt.NUM_FORMAT.format(phi),
+                        SFMFLOW_OT_export_cameras_gt.NUM_FORMAT.format(kappa),
+                        # rotation YPR
+                        SFMFLOW_OT_export_cameras_gt.NUM_FORMAT.format(yaw),
+                        SFMFLOW_OT_export_cameras_gt.NUM_FORMAT.format(pitch),
+                        SFMFLOW_OT_export_cameras_gt.NUM_FORMAT.format(roll),
+                        # rotation quaternion
                         SFMFLOW_OT_export_cameras_gt.NUM_FORMAT.format(rotation.w),
                         SFMFLOW_OT_export_cameras_gt.NUM_FORMAT.format(rotation.x),
                         SFMFLOW_OT_export_cameras_gt.NUM_FORMAT.format(rotation.y),

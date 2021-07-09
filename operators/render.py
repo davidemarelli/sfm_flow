@@ -10,6 +10,7 @@ import bpy
 from bpy.app.handlers import persistent
 
 from ..utils import get_asset, set_blender_output_path
+from ..utils.math import matrix_world_to_ypr
 
 logger = logging.getLogger(__name__)
 
@@ -254,11 +255,6 @@ class SFMFLOW_OT_render_images(bpy.types.Operator):
             fl35 = 43.27 / sqrt(camera_data.sensor_width**2 + camera_data.sensor_height**2) * fl
             res_percent = scene.render.resolution_percentage / 100.
 
-            camera = scene.camera
-            u_scale = scene.unit_settings.scale_length     # unit scale
-            position = camera.matrix_world.to_translation() * u_scale  # position in blender's reference system
-            rotation = camera.matrix_world.to_euler()      # rotation in blender's reference system
-
             image_width = floor(scene.render.resolution_x * res_percent)
             image_height = floor(scene.render.resolution_y * res_percent)
             camera_maker = camera_data['sfmflow.maker'] if 'sfmflow.maker' in camera_data else ""
@@ -282,6 +278,17 @@ class SFMFLOW_OT_render_images(bpy.types.Operator):
             ]
             #
             if scene.sfmflow.write_gps_exif:   # include gps data
+                camera = scene.camera
+                u_scale = scene.unit_settings.scale_length     # unit scale
+                position = camera.matrix_world.to_translation() * u_scale  # position in blender's reference system
+                ypr = matrix_world_to_ypr(camera.matrix_world)   # get Yaw, Pitch, Roll angles
+                yaw, pitch, roll = tuple(map(degrees, ypr))
+                #
+                yaw, pitch, roll = (yaw % 360), (pitch % 360), (roll % 360)
+                yaw = 0. if yaw == 360. else yaw                # move in range [0, 359.999]
+                pitch = pitch - (360. if pitch > 180. else 0)   # move in range [-180, +180]
+                roll = roll - (360. if roll > 180. else 0)      # move in range [-180, +180]
+                #
                 exiftool_cmd += [
                     "-XMP:GPSLatitude={}".format(position.y),
                     "-XMP:GPSLongitude={}".format(position.x),
@@ -302,10 +309,10 @@ class SFMFLOW_OT_render_images(bpy.types.Operator):
                     "-GPS:GPSAltitude={}".format(position.z),
                     "-GPS:GPSAltitudeRef=0",       # Above Sea Level
                     "-GPS:GPSImgDirectionRef=T",   # True North
-                    "-GPS:GPSImgDirection={}".format((360 - degrees(rotation[2])) % 360),  # yaw
-                    "-GPS:GPSPitch={}".format(degrees(rotation[0]) % 360),                 # pitch
-                    # "-exif:CameraElevationAngle={}".format(degrees(rotation[0] % 360)),   # pitch
-                    "-GPS:GPSRoll={}".format(degrees(rotation[1]) % 360),                  # roll
+                    "-GPS:GPSImgDirection={}".format(yaw),  # yaw [0, 359.99]
+                    "-GPS:GPSPitch={}".format(pitch),       # pitch [-180, +180]
+                    # "-exif:CameraElevationAngle={}".format(pitch),   # pitch
+                    "-GPS:GPSRoll={}".format(roll),         # roll -180 - +180
                 ]
             #
             exiftool_cmd += [

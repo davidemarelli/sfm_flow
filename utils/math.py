@@ -91,7 +91,7 @@ def matrix_world_to_ypr(matrix_world: Matrix) -> Tuple[float, float, float]:
         matrix_world {Matrix} -- worldspace transformation matrix.
 
     Returns:
-        Tuple[float, float, float] -- Omega, Phi, Kappa angles in radians.
+        Tuple[float, float, float] -- Yaw, Pitch, Roll angles in radians.
     """
     r = matrix_world
     if r[2][1] < 1:

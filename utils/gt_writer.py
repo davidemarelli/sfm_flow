@@ -246,8 +246,8 @@ class GroundTruthWriter():
             motion_blur,
             #
             # sun orientation
-            GroundTruthWriter.NUM_FORMAT.format(sun_azimuth),
-            GroundTruthWriter.NUM_FORMAT.format(sun_inclination),
+            GroundTruthWriter.NUM_FORMAT.format(sun_azimuth) if sun_azimuth else None,
+            GroundTruthWriter.NUM_FORMAT.format(sun_inclination) if sun_inclination else None
         )
         try:
             self.writer.writerow(row)

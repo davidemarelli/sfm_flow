@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [1.0.3] - 2021-07-19
+
+### Added
+
+- Support for Blender 2.92 and 2.93 LTS (v1.0.2 works with those too).
+
+### Fixed
+
+- Fix FocalPlaneXResolution and FocalPlaneYResolution EXIF tags.
+- Fix crash during export of sun orientation when a sun lamp is not in use.
+
 ## [1.0.2] - 2020-11-27
 
 ### Added
@@ -31,7 +42,8 @@ All notable changes to this project will be documented in this file.
 
 - Initial SfM Flow release.
 
-[unreleased]: https://github.com/davidemarelli/sfm_flow/compare/v1.0.2...HEAD
+[unreleased]: https://github.com/davidemarelli/sfm_flow/compare/v1.0.3...HEAD
+[1.0.3]: https://github.com/davidemarelli/sfm_flow/compare/v1.0.2...v1.0.3
 [1.0.2]: https://github.com/davidemarelli/sfm_flow/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/davidemarelli/sfm_flow/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/davidemarelli/sfm_flow/releases/tag/v1.0.0

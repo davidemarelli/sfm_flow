@@ -57,5 +57,17 @@ class BlenderVersion(tuple, Enum):
     V2_90_1 = (2, 90, 1)     # 2.90.1 - September 23, 2020
     #
     # --- v2.91
+    # API changes -> https://wiki.blender.org/wiki/Reference/Release_Notes/2.91/Python_API
     V2_91 = (2, 91, 0)       # 2.91.0 - November 25, 2020
     V2_91_0 = (2, 91, 0)
+    #
+    # --- v2.92
+    # API changes -> https://wiki.blender.org/wiki/Reference/Release_Notes/2.92/Python_API
+    V2_92 = (2, 92, 0)       # 2.92.0 - February 25, 2021
+    V2_92_0 = (2, 92, 0)
+    #
+    # --- v2.93 LTS
+    # API changes -> https://wiki.blender.org/wiki/Reference/Release_Notes/2.93/Python_API
+    V2_93 = (2, 93, 0)       # 2.93.0 - June 2, 2021
+    V2_93_0 = (2, 93, 0)
+    V2_93_1 = (2, 93, 1)     # 2.93.1 - June 23, 2021

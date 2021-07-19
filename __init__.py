@@ -52,7 +52,7 @@ bl_info = {   # pylint: disable=invalid-name
     "name": "SfM Flow",
     "description": "Structure-from-Motion tools for synthetic dataset generation and 3D reconstruction evaluation.",
     "author": "Davide Marelli, Simone Bianco, Gianluigi Ciocca",
-    "version": (1, 0, 2),
+    "version": (1, 0, 3),
     "blender": (2, 80, 75),
     "location": "Properties > Scene > SfM Flow",
     "wiki_url": "https://github.com/davidemarelli/sfm_flow/wiki",

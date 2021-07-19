@@ -248,17 +248,20 @@ class SFMFLOW_OT_render_images(bpy.types.Operator):
             fl35 = 43.27 / sqrt(camera_data.sensor_width**2 + camera_data.sensor_height**2) * fl
             res_percent = scene.render.resolution_percentage / 100.
 
+            image_width = floor(scene.render.resolution_x * res_percent)
+            image_height = floor(scene.render.resolution_y * res_percent)
+
             # build exiftool command
             exiftool_cmd = [
                 exiftool_path,
                 "-exif:FocalLength={} mm".format(fl),
                 "-exif:FocalLengthIn35mmFormat={}".format(int(fl35)),
                 "-exif:Model=blender{}".format(int(camera_data.sensor_width)),
-                "-exif:FocalPlaneXResolution={}".format(camera_data.sensor_width),
-                "-exif:FocalPlaneYResolution={}".format(camera_data.sensor_height),
+                "-exif:FocalPlaneXResolution={}".format(image_width / camera_data.sensor_width),
+                "-exif:FocalPlaneYResolution={}".format(image_height / camera_data.sensor_height),
                 "-exif:FocalPlaneResolutionUnit#=4",   # millimeters
-                "-exif:ExifImageWidth={}".format(floor(scene.render.resolution_x * res_percent)),
-                "-exif:ExifImageHeight={}".format(floor(scene.render.resolution_y * res_percent)),
+                "-exif:ExifImageWidth={}".format(image_width),
+                "-exif:ExifImageHeight={}".format(image_height),
                 "-exif:ExifVersion=0230",   # some pipelines do not work with newer versions
                 "-overwrite_original",
                 filepath

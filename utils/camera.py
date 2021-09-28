@@ -363,4 +363,5 @@ def is_active_object_camera(context: bpy.types.Context) -> bool:
     Returns:
         bool -- True iff the active object is a camera object
     """
-    return context.active_object and isinstance(context.active_object.data, bpy.types.Camera)
+    return hasattr(context, "active_object") and context.active_object \
+        and isinstance(context.active_object.data, bpy.types.Camera)

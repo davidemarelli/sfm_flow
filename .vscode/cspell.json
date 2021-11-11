@@ -4,7 +4,7 @@
     // GENERAL SETTINGS
     //
     // Version of the setting file.  Always 0.1
-    "version": "0.1",
+    "version": "0.2",
     // language - current active spelling language
     "language": "en",
     // Enable the spell checker.
@@ -86,6 +86,7 @@
         "persp",
         "pmvs",
         "pydata",
+        "pyright",
         "sfmflow",
         "stdev",
         "theia",
@@ -116,7 +117,7 @@
         // all
         {
             "languageId": "*",
-            "local": "en",
+            "locale": "en",
             "dictionaries": [
                 "wordsEn"
             ],
@@ -126,14 +127,14 @@
         },
         {
             "languageId": "*",
-            "local": "en-US",
+            "locale": "en-US",
             "dictionaries": [
                 "wordsEn"
             ]
         },
         {
             "languageId": "*",
-            "local": "en-GB",
+            "locale": "en-GB",
             "dictionaries": [
                 "wordsEnGb"
             ]

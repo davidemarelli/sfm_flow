@@ -1,3 +1,4 @@
+# pyright: reportUnusedImport=false
 
 from .camera import ReconCamera
 from .model import ReconModel

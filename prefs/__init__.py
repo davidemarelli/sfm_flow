@@ -1,3 +1,4 @@
+# pyright: reportUnusedImport=false
 
 from ..reconstruction.properties import SFMFLOW_ReconstructionModelProperties
 from ..utils import register_classes as _register_classes

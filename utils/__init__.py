@@ -1,3 +1,4 @@
+# pyright: reportUnusedImport=false
 
 from typing import Iterable as _Iterable
 

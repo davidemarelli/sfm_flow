@@ -3,6 +3,8 @@
 Automatically discovers and import extensions of the ReconstructionBase class.
 """
 
+# pyright: reportUnusedImport=false
+
 import os
 import sys
 from importlib import util

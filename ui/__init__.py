@@ -1,3 +1,4 @@
+# pyright: reportUnusedImport=false
 
 from .components import components_register, components_unregister
 from .menus import menu_register, menu_unregister

@@ -2,7 +2,7 @@
 import logging
 import threading
 from abc import abstractmethod
-from typing import List, Tuple, Union
+from typing import Dict, List, Tuple, Union
 
 import bpy
 

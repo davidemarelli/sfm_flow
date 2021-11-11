@@ -1,6 +1,4 @@
 
-import bpy
-
 from ...utils import register_classes as _register_classes
 from ...utils import unregister_classes as _unregister_classes
 from .render_cameras import RENDERCAMERA_UL_property_list_item

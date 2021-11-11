@@ -59,7 +59,7 @@ class ReconModel():
         self.has_ply_file = False    # type: bool
 
         # UI element to manually control the model
-        self._ui_control_empty = None   # type: Object
+        self._ui_control_empty = None   # type: bpy.types.Object
 
         # transformation matrix of the initial reconstructed model centroid
         self._initial_centroid_matrix = None   # type: Matrix

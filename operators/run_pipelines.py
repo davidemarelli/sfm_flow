@@ -9,6 +9,7 @@ from typing import Dict, List
 
 import bpy
 
+from ..prefs import AddonPreferences
 from .threaded_operator import ThreadedOperator
 
 logger = logging.getLogger(__name__)

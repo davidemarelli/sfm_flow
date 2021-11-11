@@ -9,6 +9,7 @@ from typing import List, Tuple
 import bpy
 from bpy.app.handlers import persistent
 
+from ..prefs import AddonPreferences
 from ..utils import get_asset, set_blender_output_path
 from ..utils.math import matrix_world_to_ypr
 

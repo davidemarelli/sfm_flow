@@ -38,7 +38,7 @@ from sfm_flow.utils.callbacks import Callbacks
 
 from .operators import SFMFLOW_OT_render_images, operators_register, operators_unregister
 from .prefs import properties_register, properties_unregister
-from .prefs.preferences import preferences_register, preferences_unregister
+from .prefs.preferences import AddonPreferences, preferences_register, preferences_unregister
 from .ui import ui_register, ui_unregister
 
 ####################################################################################################

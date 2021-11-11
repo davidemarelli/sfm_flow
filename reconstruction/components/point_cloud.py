@@ -3,16 +3,18 @@ import logging
 from functools import reduce
 from random import shuffle
 from statistics import mean, stdev
-from typing import Dict, List, Tuple, Union
-
-import numpy as np
+from typing import TYPE_CHECKING, Dict, List, Tuple, Union
 
 import bpy
-from gpu.types import GPUShader
+import numpy as np
+from gpu.types import GPUBatch, GPUShader
 from gpu_extras.batch import batch_for_shader
 from mathutils import Color, Matrix, Vector
 from mathutils.kdtree import KDTree
 from sfm_flow.utils import euclidean_distance
+
+if TYPE_CHECKING:   # avoid cyclic dependency
+    from sfm_flow.prefs import AddonPreferences
 
 logger = logging.getLogger(__name__)
 

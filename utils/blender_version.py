@@ -29,13 +29,13 @@ class BlenderVersion(tuple, Enum):
     V2_81 = (2, 81, 0)       # 2.81  - November 21, 2019
     V2_81_0 = (2, 81, 0)
     V2_81_16 = (2, 81, 16)   # 2.81a - December 5, 2019
-    V2_81a = (2, 81, 16)
+    V2_81a = (2, 81, 16)     # pylint: disable=invalid-name
     #
     # --- v2.82
     V2_82 = (2, 82, 0)       # 2.82  - February 14, 2020
     V2_82_0 = (2, 82, 0)
     V2_82_7 = (2, 82, 7)     # 2.82a - March 12, 2020
-    V2_82a = (2, 82, 7)
+    V2_82a = (2, 82, 7)      # pylint: disable=invalid-name
     #
     # --- v2.83 LTS
     V2_83 = (2, 83, 0)       # 2.83   - June 3, 2020

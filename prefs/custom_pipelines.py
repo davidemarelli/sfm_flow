@@ -1,9 +1,13 @@
 """Custom 3D reconstruction pipelines preferences."""
 
+from typing import TYPE_CHECKING
 from uuid import uuid1
 
 import bpy
 from bpy.props import StringProperty
+
+if TYPE_CHECKING:   # avoid cyclic dependency
+    from .preferences import AddonPreferences
 
 
 class CustomPipelineProperty(bpy.types.PropertyGroup):

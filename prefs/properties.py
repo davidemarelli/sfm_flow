@@ -4,6 +4,7 @@ from typing import List, Tuple
 import bpy
 
 from ..utils import animate_motion_blur, get_objs
+from .preferences import AddonPreferences
 
 
 class SFMFLOW_RenderCameraProperty(bpy.types.PropertyGroup):

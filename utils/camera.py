@@ -1,7 +1,7 @@
 
 import logging
 from math import atan, cos, pi, tan
-from typing import Tuple, Union
+from typing import Literal, Tuple
 
 import bpy
 from mathutils import Vector
@@ -281,7 +281,7 @@ def get_pixel_size(camera: bpy.types.Camera, scene: bpy.types.Scene) -> float:
     """
     sensor_width = camera.data.sensor_width       # mm
     sensor_height = camera.data.sensor_height     # mm
-    sensor_fit = camera.data.sensor_fit           # type: Union['HORIZONTAL', 'VERTICAL', 'AUTO']
+    sensor_fit = camera.data.sensor_fit           # type: Literal['HORIZONTAL', 'VERTICAL', 'AUTO']
     render_scale = scene.render.resolution_percentage / 100
     img_width = scene.render.resolution_x * render_scale    # px
     img_height = scene.render.resolution_y * render_scale   # px
@@ -320,7 +320,7 @@ def get_sensor_size_crop(camera: bpy.types.Camera, scene: bpy.types.Scene) -> Tu
     """
     sensor_width = camera.data.sensor_width       # mm
     sensor_height = camera.data.sensor_height     # mm
-    sensor_fit = camera.data.sensor_fit           # type: Union['HORIZONTAL', 'VERTICAL', 'AUTO']
+    sensor_fit = camera.data.sensor_fit           # type: Literal['HORIZONTAL', 'VERTICAL', 'AUTO']
     render_scale = scene.render.resolution_percentage / 100
     img_width = scene.render.resolution_x * render_scale    # px
     img_height = scene.render.resolution_y * render_scale   # px

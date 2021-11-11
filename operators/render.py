@@ -156,7 +156,7 @@ class SFMFLOW_OT_render_images(bpy.types.Operator):
                 logger.error(msg)
                 self.report({'ERROR'}, msg)
                 return {'CANCELLED'}
-            except FileNotFoundError as e:
+            except FileNotFoundError:
                 msg = "Cannot find `Exiftool`, check the path in user preferences"
                 logger.error(msg)
                 self.report({'ERROR'}, msg)

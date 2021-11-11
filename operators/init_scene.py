@@ -7,11 +7,10 @@ from random import random
 import addon_utils
 import bpy
 from mathutils import Euler, Vector
-
-from ..prefs import SFMFLOW_AddonProperties
-from ..utils import (BlenderVersion, SceneBoundingBox, camera_detect_dof_distance,
-                     euclidean_distance, get_environment_collection)
-from ..utils.nodes import add_floor_material_nodes
+from sfm_flow.prefs import SFMFLOW_AddonProperties
+from sfm_flow.utils import (BlenderVersion, SceneBoundingBox, camera_detect_dof_distance,
+                            euclidean_distance, get_environment_collection)
+from sfm_flow.utils.nodes import add_floor_material_nodes
 
 logger = logging.getLogger(__name__)
 

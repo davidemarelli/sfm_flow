@@ -5,8 +5,7 @@ from typing import List, Tuple
 
 import bpy
 from mathutils import Vector
-
-from ..utils import get_cameras_collection
+from sfm_flow.utils import get_cameras_collection
 
 logger = logging.getLogger(__name__)
 

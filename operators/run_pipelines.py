@@ -8,8 +8,8 @@ from multiprocessing import cpu_count
 from typing import Dict, List
 
 import bpy
+from sfm_flow.prefs import AddonPreferences
 
-from ..prefs import AddonPreferences
 from .threaded_operator import ThreadedOperator
 
 logger = logging.getLogger(__name__)

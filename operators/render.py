@@ -8,10 +8,9 @@ from typing import List, Tuple
 
 import bpy
 from bpy.app.handlers import persistent
-
-from ..prefs import AddonPreferences
-from ..utils import get_asset, set_blender_output_path
-from ..utils.math import matrix_world_to_ypr
+from sfm_flow.prefs import AddonPreferences
+from sfm_flow.utils import get_asset, set_blender_output_path
+from sfm_flow.utils.math import matrix_world_to_ypr
 
 logger = logging.getLogger(__name__)
 

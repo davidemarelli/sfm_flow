@@ -1,6 +1,7 @@
 
-from ...utils import register_classes as _register_classes
-from ...utils import unregister_classes as _unregister_classes
+from sfm_flow.utils import register_classes as _register_classes
+from sfm_flow.utils import unregister_classes as _unregister_classes
+
 from .pipelines_panel import SFMFLOW_PT_pipelines_tools
 from .render_panel import SFMFLOW_PT_render_tools
 from .root_panel import SFMFLOW_PT_main

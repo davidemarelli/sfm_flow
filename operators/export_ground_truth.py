@@ -3,8 +3,7 @@ import logging
 import os
 
 import bpy
-
-from ..utils import SFMFLOW_COLLECTIONS, get_objs
+from sfm_flow.utils import SFMFLOW_COLLECTIONS, get_objs
 
 logger = logging.getLogger(__name__)
 

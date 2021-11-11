@@ -5,8 +5,7 @@ import bpy
 import numpy as np
 from bpy_extras.object_utils import AddObjectHelper, object_data_add
 from mathutils import Quaternion, Vector
-
-from ..utils import BlenderVersion, euclidean_distance, get_gcp_collection, nodes
+from sfm_flow.utils import BlenderVersion, euclidean_distance, get_gcp_collection, nodes
 
 logger = logging.getLogger(__name__)
 

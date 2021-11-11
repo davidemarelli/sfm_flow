@@ -1,11 +1,10 @@
 """Render cameras ui components."""
 
 import bpy
-
-from ...operators.camera_add import SFMFLOW_OT_camera_add
-from ...operators.render_cameras import (SFMFLOW_OT_RenderCameraSlotAddOperator,
-                                         SFMFLOW_OT_RenderCameraSlotRemoveOperator)
-from ...prefs.properties import SFMFLOW_AddonProperties, SFMFLOW_RenderCameraProperty
+from sfm_flow.operators.camera_add import SFMFLOW_OT_camera_add
+from sfm_flow.operators.render_cameras import (SFMFLOW_OT_RenderCameraSlotAddOperator,
+                                               SFMFLOW_OT_RenderCameraSlotRemoveOperator)
+from sfm_flow.prefs.properties import SFMFLOW_AddonProperties, SFMFLOW_RenderCameraProperty
 
 
 class RENDERCAMERA_UL_property_list_item(bpy.types.UIList):

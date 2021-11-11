@@ -1,8 +1,7 @@
 
 import bpy
-
-from ...operators import (SFMFLOW_OT_export_cameras_gt, SFMFLOW_OT_export_gcps,
-                          SFMFLOW_OT_export_ground_truth, SFMFLOW_OT_render_images)
+from sfm_flow.operators import (SFMFLOW_OT_export_cameras_gt, SFMFLOW_OT_export_gcps,
+                                SFMFLOW_OT_export_ground_truth, SFMFLOW_OT_render_images)
 
 
 class SFMFLOW_PT_render_tools(bpy.types.Panel):

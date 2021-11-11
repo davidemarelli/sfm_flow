@@ -4,9 +4,8 @@ from math import pi
 
 import bpy
 from mathutils import Vector
-
-from ..utils.camera import (get_camera_lookat, get_focal_length_for_gsd, get_ground_sample_distance,
-                            is_active_object_camera)
+from sfm_flow.utils.camera import (get_camera_lookat, get_focal_length_for_gsd,
+                                   get_ground_sample_distance, is_active_object_camera)
 
 logger = logging.getLogger(__name__)
 

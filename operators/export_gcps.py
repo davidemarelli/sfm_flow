@@ -6,10 +6,9 @@ from math import degrees
 
 import bpy
 from bpy_extras.object_utils import world_to_camera_view
-
-from ..utils.blender_version import BlenderVersion
-from ..utils.object import get_gcp_collection
-from ..utils.path import get_render_image_filename
+from sfm_flow.utils.blender_version import BlenderVersion
+from sfm_flow.utils.object import get_gcp_collection
+from sfm_flow.utils.path import get_render_image_filename
 
 logger = logging.getLogger(__name__)
 

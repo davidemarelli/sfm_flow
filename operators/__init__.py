@@ -1,6 +1,7 @@
 
-from ..utils import register_classes as _register_classes
-from ..utils import unregister_classes as _unregister_classes
+from sfm_flow.utils import register_classes as _register_classes
+from sfm_flow.utils import unregister_classes as _unregister_classes
+
 from .add_gcp import SFMFLOW_OT_add_gcp_square  # SFMFLOW_OT_add_gcp_l,
 from .add_gcp import (SFMFLOW_OT_add_gcp_cross1, SFMFLOW_OT_add_gcp_cross2,
                       SFMFLOW_OT_add_gcp_hourglass, SFMFLOW_OT_add_gcp_round1,

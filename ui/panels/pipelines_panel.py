@@ -1,12 +1,11 @@
 
 import bpy
-
-from ...operators import (SFMFLOW_OT_align_reconstruction, SFMFLOW_OT_evaluate_reconstruction,
-                          SFMFLOW_OT_import_reconstruction, SFMFLOW_OT_reconstruction_filter,
-                          SFMFLOW_OT_reconstruction_filter_clear, SFMFLOW_OT_run_pipelines,
-                          SFMFLOW_OT_sample_geometry_gt)
-from ...reconstruction import ReconstructionsManager
-from ...utils import is_active_object_reconstruction
+from sfm_flow.operators import (SFMFLOW_OT_align_reconstruction, SFMFLOW_OT_evaluate_reconstruction,
+                                SFMFLOW_OT_import_reconstruction, SFMFLOW_OT_reconstruction_filter,
+                                SFMFLOW_OT_reconstruction_filter_clear, SFMFLOW_OT_run_pipelines,
+                                SFMFLOW_OT_sample_geometry_gt)
+from sfm_flow.reconstruction import ReconstructionsManager
+from sfm_flow.utils import is_active_object_reconstruction
 
 
 class SFMFLOW_PT_pipelines_tools(bpy.types.Panel):

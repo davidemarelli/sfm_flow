@@ -1,10 +1,9 @@
 
 import bpy
-
-from ...operators import SFMFLOW_OT_add_gcp_hourglass  # SFMFLOW_OT_add_gcp_l,
-from ...operators import (SFMFLOW_OT_add_gcp_cross1, SFMFLOW_OT_add_gcp_cross2,
-                          SFMFLOW_OT_add_gcp_round1, SFMFLOW_OT_add_gcp_round2,
-                          SFMFLOW_OT_add_gcp_round3, SFMFLOW_OT_add_gcp_square)
+from sfm_flow.operators import SFMFLOW_OT_add_gcp_hourglass  # SFMFLOW_OT_add_gcp_l,
+from sfm_flow.operators import (SFMFLOW_OT_add_gcp_cross1, SFMFLOW_OT_add_gcp_cross2,
+                                SFMFLOW_OT_add_gcp_round1, SFMFLOW_OT_add_gcp_round2,
+                                SFMFLOW_OT_add_gcp_round3, SFMFLOW_OT_add_gcp_square)
 
 ####################################################################################################
 # Menu draw function

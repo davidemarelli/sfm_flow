@@ -1,8 +1,9 @@
 # pyright: reportUnusedImport=false
 
-from ..reconstruction.properties import SFMFLOW_ReconstructionModelProperties
-from ..utils import register_classes as _register_classes
-from ..utils import unregister_classes as _unregister_classes
+from sfm_flow.reconstruction.properties import SFMFLOW_ReconstructionModelProperties
+from sfm_flow.utils import register_classes as _register_classes
+from sfm_flow.utils import unregister_classes as _unregister_classes
+
 from .preferences import AddonPreferences
 from .properties import SFMFLOW_AddonProperties, SFMFLOW_RenderCameraProperty
 

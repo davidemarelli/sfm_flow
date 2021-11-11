@@ -10,10 +10,10 @@ import bpy
 import sfm_flow.utils.logutils as logutils
 from bpy.props import (CollectionProperty, EnumProperty, FloatVectorProperty, IntProperty,
                        StringProperty)
+from sfm_flow.reconstruction import ReconstructionsManager
+from sfm_flow.utils import register_classes as _register_classes
+from sfm_flow.utils import unregister_classes as _unregister_classes
 
-from ..reconstruction import ReconstructionsManager
-from ..utils import register_classes as _register_classes
-from ..utils import unregister_classes as _unregister_classes
 from .custom_pipelines import (CUSTOMPIPELINE_UL_property_list_item, CustomPipelineAddOperator,
                                CustomPipelineProperty, CustomPipelineRemoveOperator)
 

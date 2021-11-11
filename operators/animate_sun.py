@@ -4,9 +4,9 @@ from random import shuffle
 
 import bpy
 from mathutils import Vector
+from sfm_flow.utils import SceneBoundingBox
+from sfm_flow.utils.animation import is_keyframe, sun_animation_points
 
-from ..utils import SceneBoundingBox
-from ..utils.animation import is_keyframe, sun_animation_points
 from .init_scene import SFMFLOW_OT_init_scene
 
 logger = logging.getLogger(__name__)

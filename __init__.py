@@ -34,12 +34,12 @@ import logging
 import bpy
 
 import sfm_flow.utils.logutils as logutils
+from sfm_flow.operators import SFMFLOW_OT_render_images, operators_register, operators_unregister
+from sfm_flow.prefs import properties_register, properties_unregister
+from sfm_flow.prefs.preferences import (AddonPreferences, preferences_register,
+                                        preferences_unregister)
+from sfm_flow.ui import ui_register, ui_unregister
 from sfm_flow.utils.callbacks import Callbacks
-
-from .operators import SFMFLOW_OT_render_images, operators_register, operators_unregister
-from .prefs import properties_register, properties_unregister
-from .prefs.preferences import AddonPreferences, preferences_register, preferences_unregister
-from .ui import ui_register, ui_unregister
 
 ####################################################################################################
 # Addon globals

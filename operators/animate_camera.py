@@ -4,14 +4,13 @@ from math import radians
 
 import bpy
 from mathutils import Vector
-
-from ..utils import SceneBoundingBox, euclidean_distance
-from ..utils.animation import (get_last_keyframe, get_track_to_constraint_target,
-                               sample_points_on_circle, sample_points_on_helix,
-                               sample_points_on_hemisphere, set_camera_focus_to_intersection,
-                               set_camera_target)
-from ..utils.camera import (get_camera_right, get_camera_up, get_ground_sample_distance,
-                            is_active_object_camera)
+from sfm_flow.utils import SceneBoundingBox, euclidean_distance
+from sfm_flow.utils.animation import (get_last_keyframe, get_track_to_constraint_target,
+                                      sample_points_on_circle, sample_points_on_helix,
+                                      sample_points_on_hemisphere, set_camera_focus_to_intersection,
+                                      set_camera_target)
+from sfm_flow.utils.camera import (get_camera_right, get_camera_up, get_ground_sample_distance,
+                                   is_active_object_camera)
 
 logger = logging.getLogger(__name__)
 

@@ -2,8 +2,7 @@
 import logging
 
 import bpy
-
-from ..utils.object import get_average_z_coord
+from sfm_flow.utils.object import get_average_z_coord
 
 logger = logging.getLogger(__name__)
 

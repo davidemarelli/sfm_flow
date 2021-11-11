@@ -9,9 +9,8 @@ import bpy
 from mathutils import Vector
 from sfm_flow.utils import (camera_detect_dof_distance, euclidean_distance, get_camera_lookat,
                             get_render_image_filename)
-
-from ..utils.math import matrix_world_to_opk, matrix_world_to_ypr
-from ..utils.scene_bounding_box import SceneBoundingBox
+from sfm_flow.utils.math import matrix_world_to_opk, matrix_world_to_ypr
+from sfm_flow.utils.scene_bounding_box import SceneBoundingBox
 
 logger = logging.getLogger(__name__)
 

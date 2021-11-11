@@ -1,8 +1,8 @@
 
 import bpy
+from sfm_flow.utils import register_classes as _register_classes
+from sfm_flow.utils import unregister_classes as _unregister_classes
 
-from ...utils import register_classes as _register_classes
-from ...utils import unregister_classes as _unregister_classes
 from .gcp_add import SFMFLOW_MT_add_gcp, view3d_mt_add_gcp
 
 ####################################################################################################

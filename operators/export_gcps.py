@@ -104,7 +104,7 @@ class SFMFLOW_OT_export_gcps(bpy.types.Operator):
         export_folder = bpy.path.abspath(context.scene.sfmflow.output_path)
         os.makedirs(export_folder, exist_ok=True)
         csv_file_path = os.path.join(export_folder, "gcp_list.txt")
-        with open(csv_file_path, 'w', newline='') as csvfile:
+        with open(csv_file_path, 'w', encoding='utf-8', newline='') as csvfile:
             csv_writer = csv.writer(csvfile, delimiter='\t')
             csv_writer.writerow(SFMFLOW_OT_export_gcps.GCPS_CSV_FIELDNAMES)
             for gcp in gcps:
@@ -129,7 +129,7 @@ class SFMFLOW_OT_export_gcps(bpy.types.Operator):
         camera_backup = scene.camera
         #
         csv_file_path = os.path.join(export_folder, "gcp_images_list.txt")
-        with open(csv_file_path, 'w', newline='') as csvfile:
+        with open(csv_file_path, 'w', encoding='utf-8', newline='') as csvfile:
             csv_writer = csv.writer(csvfile, delimiter='\t')
             csv_writer.writerow(SFMFLOW_OT_export_gcps.GCPS_IMAGES_CSV_FIELDNAMES)
             #

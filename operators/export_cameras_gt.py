@@ -177,7 +177,7 @@ class SFMFLOW_OT_export_cameras_gt(bpy.types.Operator):
         )
         #
         file_path = os.path.join(output_path, "scene.csv")
-        with open(file_path, 'w', newline='') as f:
+        with open(file_path, 'w', encoding='utf-8', newline='') as f:
             w = csv.writer(f, delimiter=',')
             w.writerow(SFMFLOW_OT_export_cameras_gt.SCENE_CSV_FIELDNAMES)
             w.writerow(row)
@@ -208,7 +208,7 @@ class SFMFLOW_OT_export_cameras_gt(bpy.types.Operator):
         camera_backup = scene.camera
         #
         csv_file_path = os.path.join(output_path, "cameras.csv")
-        with open(csv_file_path, 'w', newline='') as csvfile:
+        with open(csv_file_path, 'w', encoding='utf-8', newline='') as csvfile:
             w = csv.writer(csvfile, delimiter=',')
             w.writerow(SFMFLOW_OT_export_cameras_gt.CAMERA_CSV_FIELDNAMES)
             #

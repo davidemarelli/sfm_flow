@@ -235,7 +235,7 @@ class SFMFLOW_OT_run_pipelines(ThreadedOperator):
         """
         logfile = None
         if logfile_path:
-            logfile = open(logfile_path, "w")
+            logfile = open(logfile_path, 'w', encoding='utf-8')
         #
         try:
             phase_number = 0
@@ -300,7 +300,7 @@ def write_theia_flags_file(images_folder: str, reconstruction_folder: str) -> st
     #
     # write flags file replacing tokens
     flags_filepath = os.path.join(reconstruction_folder, "flags.txt")
-    with open(flags_template_filepath, 'r') as t, open(flags_filepath, 'w') as f:
+    with open(flags_template_filepath, 'r', encoding='utf-8') as t, open(flags_filepath, 'w', encoding='utf-8') as f:
         for line in t:
             f.write(replace_tokens(line, images_folder, reconstruction_folder))
     return flags_filepath

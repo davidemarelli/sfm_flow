@@ -135,8 +135,8 @@ class SFMFLOW_OT_evaluate_reconstruction(bpy.types.Operator):
             "name_internal": model.name,
             "project_name": bpy.path.basename(bpy.data.filepath),
         }
-        out_data.update({f'pc_{k}': ("{:.6f}".format(v) if isinstance(v, float) else v) for k, v in result[0].items()})
-        out_data.update({f'cam_{k}': ("{:.6f}".format(v) if isinstance(v, float) else v) for k, v in result[1].items()})
+        out_data.update({f'pc_{k}': (f"{v:.6f}" if isinstance(v, float) else v) for k, v in result[0].items()})
+        out_data.update({f'cam_{k}': (f"{v:.6f}" if isinstance(v, float) else v) for k, v in result[1].items()})
         #
         len_scale = context.scene.unit_settings.scale_length
         len_unit = SFMFLOW_OT_evaluate_reconstruction.LENGTH_UNIT[context.scene.unit_settings.length_unit]
@@ -146,42 +146,42 @@ class SFMFLOW_OT_evaluate_reconstruction(bpy.types.Operator):
             filepath = bpy.path.abspath(self.evaluation_filepath)
             os.makedirs(os.path.dirname(filepath), exist_ok=True)
             with open(filepath, mode=flags) as f:
-                f.write("Project: {}\n".format(out_data["project_name"]))
-                f.write("Evaluation of Reconstruction model '{}' (internal name '{}')\n".format(
-                    out_data["name"], out_data["name_internal"]))
-                f.write("Scene measurement system: {}\n".format(out_data["unit_system"]))
-                f.write("Scene length unit: {}\n".format(out_data["length_unit"]))
+                f.write(f"Project: {out_data['project_name']}\n")
+                f.write(f"Evaluation of Reconstruction model '{out_data['name']}'"
+                        f" (internal name '{out_data['name_internal']}')\n")
+                f.write(f"Scene measurement system: {out_data['unit_system']}\n")
+                f.write(f"Scene length unit: {out_data['length_unit']}\n")
                 #
                 f.write("Point cloud evaluation:\n")
                 out_pc = result[0]
-                f.write("   used filtered point cloud: {}\n".format(out_pc['used_filtered_cloud']))
-                f.write("   filter threshold: {:.3f}\n".format(out_pc['filter_threshold']))
-                f.write("   full cloud size: {}\n".format(out_pc['full_cloud_size']))
-                f.write("   evaluated cloud size: {} ({:.1f}%)\n".format(
-                    out_pc['used_cloud_size'], out_pc['used_cloud_size_percent']*100))
-                f.write("   discarded points count: {}\n".format(out_pc['discarded_points']))
-                f.write("   distance mean: {:.3f}{}\n".format(out_pc['dist_mean']*len_scale, len_unit))
-                f.write("   distance standard deviation: {:.3f}{}\n".format(out_pc['dist_std']*len_scale, len_unit))
-                f.write("   distance min: {:.3f}{}\n".format(out_pc['dist_min']*len_scale, len_unit))
-                f.write("   distance max: {:.3f}{}\n".format(out_pc['dist_max']*len_scale, len_unit))
+                f.write(f"   used filtered point cloud: {out_pc['used_filtered_cloud']}\n")
+                f.write(f"   filter threshold: {out_pc['filter_threshold']:.3f}\n")
+                f.write(f"   full cloud size: {out_pc['full_cloud_size']}\n")
+                f.write(f"   evaluated cloud size: {out_pc['used_cloud_size']}"
+                        f" ({(out_pc['used_cloud_size_percent']*100):.1f}%)\n")
+                f.write(f"   discarded points count: {out_pc['discarded_points']}\n")
+                f.write(f"   distance mean: {(out_pc['dist_mean']*len_scale):.3f}{len_unit}\n")
+                f.write(f"   distance standard deviation: {(out_pc['dist_std']*len_scale):.3f}{len_unit}\n")
+                f.write(f"   distance min: {(out_pc['dist_min']*len_scale):.3f}{len_unit}\n")
+                f.write(f"   distance max: {(out_pc['dist_max']*len_scale):.3f}{len_unit}\n")
                 #
                 f.write("Camera poses evaluation:\n")
                 out_cam = result[1]
-                f.write("   cameras count: {}\n".format(out_cam['camera_count']))
-                f.write("   reconstructed camera count: {} ({:.1f}%)\n".format(
-                    out_cam['reconstructed_camera_count'], out_cam['reconstructed_camera_percent']*100))
-                f.write("   distance mean: {:.3f}{}\n".format(out_cam['pos_mean']*len_scale, len_unit))
-                f.write("   distance standard deviation: {:.3f}{}\n".format(out_cam['pos_std']*len_scale, len_unit))
-                f.write("   distance min: {:.3f}{}\n".format(out_cam['pos_min']*len_scale, len_unit))
-                f.write("   distance max: {:.3f}{}\n".format(out_cam['pos_max']*len_scale, len_unit))
-                f.write("   rotation difference mean: {:.3f}°\n".format(out_cam['rot_mean']))
-                f.write("   rotation difference standard deviation: {:.3f}°\n".format(out_cam['rot_std']))
-                f.write("   rotation difference min: {:.3f}°\n".format(out_cam['rot_min']))
-                f.write("   rotation difference max: {:.3f}°\n".format(out_cam['rot_max']))
-                f.write("   look-at direction difference mean: {:.3f}°\n".format(out_cam['lookat_mean']))
-                f.write("   look-at direction difference standard deviation: {:.3f}°\n".format(out_cam['lookat_std']))
-                f.write("   look-at direction difference min: {:.3f}°\n".format(out_cam['lookat_min']))
-                f.write("   look-at direction difference max: {:.3f}°\n".format(out_cam['lookat_max']))
+                f.write(f"   cameras count: {out_cam['camera_count']}\n")
+                f.write(f"   reconstructed camera count: {out_cam['reconstructed_camera_count']}"
+                        f" ({(out_cam['reconstructed_camera_percent']*100):.1f}%)\n")
+                f.write(f"   distance mean: {(out_cam['pos_mean']*len_scale):.3f}{len_unit}\n")
+                f.write(f"   distance standard deviation: {(out_cam['pos_std']*len_scale):.3f}{len_unit}\n")
+                f.write(f"   distance min: {(out_cam['pos_min']*len_scale):.3f}{len_unit}\n")
+                f.write(f"   distance max: {(out_cam['pos_max']*len_scale):.3f}{len_unit}\n")
+                f.write(f"   rotation difference mean: {out_cam['rot_mean']:.3f}°\n")
+                f.write(f"   rotation difference standard deviation: {out_cam['rot_std']:.3f}°\n")
+                f.write(f"   rotation difference min: {out_cam['rot_min']:.3f}°\n".format())
+                f.write(f"   rotation difference max: {out_cam['rot_max']:.3f}°\n")
+                f.write(f"   look-at direction difference mean: {out_cam['lookat_mean']:.3f}°\n")
+                f.write(f"   look-at direction difference standard deviation: {out_cam['lookat_std']:.3f}°\n")
+                f.write(f"   look-at direction difference min: {out_cam['lookat_min']:.3f}°\n")
+                f.write(f"   look-at direction difference max: {out_cam['lookat_max']:.3f}°\n")
                 #
                 f.write("\n\n")
             #
@@ -193,7 +193,7 @@ class SFMFLOW_OT_evaluate_reconstruction(bpy.types.Operator):
                     writer.writeheader()
                 writer.writerow(out_data)
             #
-            msg = "Evaluation written to file: {}|.csv".format(self.evaluation_filepath)
+            msg = f"Evaluation written to file: {self.evaluation_filepath}|.csv"
             logger.info(msg)
             self.report({'INFO'}, msg)
             return {'FINISHED'}

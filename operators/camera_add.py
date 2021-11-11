@@ -95,7 +95,7 @@ class SFMFLOW_OT_camera_add(bpy.types.Operator):
         items = []
         if self.camera_preset in SFMFLOW_OT_camera_add.CAMERA_PRESETS:
             for i, res in enumerate(SFMFLOW_OT_camera_add.CAMERA_PRESETS[self.camera_preset]['resolutions']):
-                res_name = "{}x{}".format(res[0], res[1])
+                res_name = f"{res[0]}x{res[1]}"
                 items.append(("imgres." + res_name, res_name, "", i))
         items.append(("imgres.custom", "Custom resolution", "", len(items)))
         return items
@@ -294,7 +294,7 @@ class SFMFLOW_OT_camera_add(bpy.types.Operator):
         #
         # ------------------------------------------------------------------------------------------
         else:
-            msg = "Unknown camera type ({})!".format(self.camera_type)
+            msg = f"Unknown camera type ({self.camera_type})!"
             logger.error(msg)
             self.report({'ERROR'}, msg)
             return {'CANCELLED'}

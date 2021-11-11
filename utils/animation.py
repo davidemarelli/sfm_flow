@@ -227,7 +227,7 @@ def sample_points_on_conical_helix(start_center: Vector, start_point: Vector, tu
     elif height_type == "TURN":  # if provided height is single turn height
         total_height = turns * height
     else:
-        msg = "Unknown height type: {}".format(height_type)
+        msg = f"Unknown height type: {height_type}"
         logger.fatal(msg)
         raise ValueError(msg)
     #
@@ -357,7 +357,7 @@ def sun_animation_points(gravity_direction: Vector, north_direction: Vector, sce
     # sanity check: axes must be orthogonal
     angle = round(gravity_direction.angle(north_direction), 2)
     if angle != round((pi/2), 2):
-        msg = "`gravity_direction` and `north_direction` aren't orthogonal (angle={})!".format(degrees(angle))
+        msg = f"`gravity_direction` and `north_direction` aren't orthogonal (angle={degrees(angle)})!"
         logger.error(msg)
         raise ValueError(msg)
 

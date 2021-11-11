@@ -144,7 +144,7 @@ class ReconstructionBase(metaclass=ABCMeta):
         f = None
         for k in ReconstructionBase.get_supported_files():
             if f is None:
-                f = "*{}".format(k)
+                f = f"*{k}"
             else:
-                f += ";*{}".format(k)
+                f += f";*{k}"
         return f

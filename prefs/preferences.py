@@ -228,14 +228,14 @@ class AddonPreferences(bpy.types.AddonPreferences):
             row = box.row()
             row.label(text="On Windows download the executable from:")
             url = et_project_page + "exiftool-" + et_version + ".zip"
-            row.operator("wm.url_open", icon='URL', text="ExifTool Windows Executable v{}".format(et_version)).url = url
+            row.operator("wm.url_open", icon='URL', text=f"ExifTool Windows Executable v{et_version}").url = url
         elif os_type == "Linux":     # linux
             box.row().label(text="On LINUX install package:   libimage-exiftool-perl")
         elif os_type == "Darwin":    # macOS
             row = box.row()
             row.label(text="On macOS download package from:")
             url = et_project_page + "ExifTool-" + et_version + ".dmg"
-            row.operator("wm.url_open", icon='URL', text="ExifTool MacOS Package v{}".format(et_version)).url = url
+            row.operator("wm.url_open", icon='URL', text=f"ExifTool MacOS Package v{et_version}").url = url
         #
         row = box.split(factor=0.33)
         row.alignment = 'RIGHT'

@@ -44,7 +44,7 @@ class SFMFLOW_OT_sample_geometry_gt(bpy.types.Operator):
         gt_points = SFMFLOW_OT_sample_geometry_gt.sample_geometry_gt_points(context.scene)
         ReconstructionsManager.set_gt_points(gt_points)
         #
-        msg = "Sampled {} points".format(len(gt_points))
+        msg = f"Sampled {len(gt_points)} points"
         logger.info(msg)
         self.report({'INFO'}, msg)
         return {'FINISHED'}

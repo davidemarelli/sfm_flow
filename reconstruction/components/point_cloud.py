@@ -382,7 +382,7 @@ class PointCloud():
         if isinstance(m, Matrix):   # convert to numpy if needed
             m = np.array(m)
         if m.shape != (4, 4):
-            raise ValueError("Transformation matrix must be of shape 4x4! (given {})".format(m.shape))
+            raise ValueError(f"Transformation matrix must be of shape 4x4! (given {m.shape})")
         if vertices.shape[1] == 3:
             src = np.ones((vertices.shape[0], 4))
             src[:, :3] = np.copy(vertices)

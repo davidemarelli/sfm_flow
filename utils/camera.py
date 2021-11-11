@@ -202,8 +202,8 @@ def get_ground_sample_distance(camera: bpy.types.Camera, scene: bpy.types.Scene,
     #
     altitude = camera.location.z - ground_level   # m
     if altitude <= 0.:
-        raise RuntimeError("Ground isn't below camera! (altitude={}, camera.z={}, ground.z={})".format(
-            altitude, camera.location.z, ground_level))
+        raise RuntimeError(f"Ground isn't below camera! (altitude={altitude}, camera.z={camera.location.z},"
+                           " ground.z={ground_level})")
     #
     alpha = Vector((0, 0, -1)).angle(get_camera_lookat(camera))   # angle between nadir direction and camera's look-at
     if alpha >= pi/2:   # alpha >= 90°
@@ -250,8 +250,8 @@ def get_focal_length_for_gsd(camera: bpy.types.Camera, scene: bpy.types.Scene, g
     pixel_size = get_pixel_size(camera, scene)    # mm
     #
     if altitude <= 0.:
-        raise RuntimeError("Ground isn't below camera! (altitude={}, camera.z={}, ground.z={})".format(
-            altitude, camera.location.z, ground_level))
+        raise RuntimeError(f"Ground isn't below camera! (altitude={altitude}, camera.z={camera.location.z},"
+                           " ground.z={ground_level})")
     #
     alpha = Vector((0, 0, -1)).angle(get_camera_lookat(camera))   # angle between nadir direction and camera's look-at
     if alpha >= pi/2:   # alpha >= 90°

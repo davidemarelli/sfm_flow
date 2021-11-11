@@ -279,7 +279,7 @@ class SFMFLOW_OT_animate_camera(bpy.types.Operator):
                                             height=self.animation_height, randomize=self.randomize_camera_pose)
             if self.images_count != len(points):
                 # FIXME is not guaranteed that the total images is exactly the requested
-                msg = "Requested {} frames but sampled only {}!".format(self.images_count, len(points))
+                msg = f"Requested {self.images_count} frames but sampled only {len(points)}!"
                 logger.warning(msg)
                 self.report({'WARNING'}, msg)
             # set keyframes
@@ -334,8 +334,7 @@ class SFMFLOW_OT_animate_camera(bpy.types.Operator):
                                              randomize=self.randomize_camera_pose)
             if self.images_count != (len(points)*self.animation_turns):
                 # FIXME is not guaranteed that the total images is exactly the requested
-                msg = "Requested {} frames but sampled only {}!".format(
-                    self.images_count, (len(points)*self.animation_turns))
+                msg = f"Requested {self.images_count} frames but sampled only {(len(points)*self.animation_turns)}!"
                 logger.warning(msg)
                 self.report({'WARNING'}, msg)
             # set keyframes

@@ -25,7 +25,7 @@ class SFMFLOW_OT_set_average_ground_altitude(bpy.types.Operator):
         layout = self.layout
         row = layout.row(align=True)
         row.label(text="Average scene altitude (Z): ")
-        row.label(text="{:.3f}".format(SFMFLOW_OT_set_average_ground_altitude.z_average))
+        row.label(text=f"{SFMFLOW_OT_set_average_ground_altitude.z_average:.3f}")
 
     ################################################################################################
     # Behavior

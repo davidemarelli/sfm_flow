@@ -199,7 +199,7 @@ class SFMFLOW_OT_align_reconstruction(ThreadedOperator):
             align_matrix = Matrix((self.alignment_matrix_row1, self.alignment_matrix_row2,
                                    self.alignment_matrix_row3, self.alignment_matrix_row4))
             model.apply_registration_matrix(align_matrix)
-            msg = "Applied registration matrix to model `{}`.".format(model.name)
+            msg = f"Applied registration matrix to model `{model.name}`."
         elif self.alignment_mode == "cloud_align.auto":   # use ICP alignment
             self.progress_string = "Aligning model using ICP"
             if not self.use_custom_params:
@@ -208,9 +208,9 @@ class SFMFLOW_OT_align_reconstruction(ThreadedOperator):
                 error = model.register_model(ReconstructionsManager.gt_points, ReconstructionsManager.gt_kdtree,
                                              max_iterations=self.max_iterations, samples=self.samples_percentage,
                                              use_filtered_cloud=self.use_filtered_cloud)
-            msg = "Reconstructed model `{}` registered to ground truth (mean error: {:.3f}).".format(model.name, error)
+            msg = f"Reconstructed model `{model.name}` registered to ground truth (mean error: {error:.3f})."
         else:
-            msg = "Unknown alignment mode: {}".format(self.alignment_mode)
+            msg = f"Unknown alignment mode: {self.alignment_mode}"
             self.progress_string = msg
             self.exit_code = -1
             logger.error(msg)

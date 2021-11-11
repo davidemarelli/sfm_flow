@@ -124,7 +124,7 @@ class SFMFLOW_OT_add_gcp():
                                                               nodes_location=Vector((0, 0)), use_generated_uv=True)
             bsdf_node, disp_node = nodes.add_principled_bsdf_material_nodes(
                 node_tree, tex_mapping_node,
-                nodes.get_asset("GCP_{}.png".format(gcp_type)),
+                nodes.get_asset(f"GCP_{gcp_type}.png"),
                 nodes.get_asset("GCP_Roughness.jpg"),
                 nodes.get_asset("GCP_Normal.jpg"),
                 nodes.get_asset("GCP_Displacement.jpg"),

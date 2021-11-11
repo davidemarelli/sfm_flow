@@ -75,7 +75,7 @@ class ReconstructionNvm(ReconstructionBase):
         # read file header
         header = self._read_line()[0]
         if header != "NVM_V3":
-            msg = "Unexpected header '{}' (expected 'NVM_V3')".format(header)
+            msg = f"Unexpected header '{header}' (expected 'NVM_V3')"
             logger.error(msg)
             raise ValueError(msg)
         calibration = None

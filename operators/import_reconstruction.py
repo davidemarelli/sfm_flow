@@ -83,7 +83,7 @@ class SFMFLOW_OT_import_reconstruction(bpy.types.Operator, ImportHelper):
         if len(recon.models) == 1:   # if only one model loaded set it as active object in the viewport
             recon.models[0].set_active(context)
         #
-        msg = "Reconstruction `{}` imported".format(recon.name)
+        msg = f"Reconstruction `{recon.name}` imported"
         logger.info(msg)
         self.report({'INFO'}, msg)
         return {'FINISHED'}

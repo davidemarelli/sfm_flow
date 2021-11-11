@@ -101,5 +101,5 @@ class SceneBoundingBox():
 
     # ==============================================================================================
     def __str__(self):
-        return "Scene bbox values: X=({:.3f}, {:.3f}), Y=({:.3f}, {:.3f}), Z=({:.3f}, {:.3f}), Center={}".format(
-            self.x_min, self.x_max, self.y_min, self.y_max, self.z_min, self.z_max, self.center)
+        return f"Scene bbox values: X=({self.x_min:.3f}, {self.x_max:.3f}), Y=({self.y_min:.3f}, {self.y_max:.3f})," \
+            f" Z=({self.z_min:.3f}, {self.z_max:.3f}), Center={self.center}"

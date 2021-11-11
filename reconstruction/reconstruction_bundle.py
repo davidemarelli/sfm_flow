@@ -81,7 +81,7 @@ class ReconstructionBundle(ReconstructionBase):
         # read file header
         header = self.file.readline().strip()
         if header != "# Bundle file v0.3":
-            msg = "Unexpected header '{}' (expected '# Bundle file v0.3')".format(header)
+            msg = f"Unexpected header '{header}' (expected '# Bundle file v0.3')"
             logger.error(msg)
             raise ValueError(msg)
         #

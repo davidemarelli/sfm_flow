@@ -51,7 +51,7 @@ class CustomPipelineAddOperator(bpy.types.Operator):
             if cp.name.startswith(new_cp_name):
                 new_cp_num += 1
         if new_cp_num > 0:
-            new_cp_name = "{} ({})".format(new_cp_name, new_cp_num)
+            new_cp_name = f"{new_cp_name} ({new_cp_num})"
 
         custom_pipe = prefs.custom_pipelines.add()
         custom_pipe.uuid = str(uuid1())

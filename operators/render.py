@@ -69,7 +69,7 @@ class SFMFLOW_OT_render_images(bpy.types.Operator):
         if ff not in SFMFLOW_OT_render_images._files_with_exif:
             r = layout.row()
             r.alert = True
-            r.label(text="EXIF metadata will not be set for {} files".format(ff))
+            r.label(text=f"EXIF metadata will not be set for {ff} files")
         else:
             r = layout.row(align=True)
             r.alignment = 'RIGHT'
@@ -146,13 +146,13 @@ class SFMFLOW_OT_render_images(bpy.types.Operator):
                 result = check_output([exiftool_path, "-ver"]).decode().rstrip()
                 et_version = list(map(int, result.split('.')))
                 if len(et_version) != 2 or et_version[0] < 10:
-                    msg = "Error running `Exiftool`, version {} is not compatible".format(result)
+                    msg = f"Error running `Exiftool`, version {result} is not compatible"
                     logger.error(msg)
                     self.report({'ERROR'}, msg)
                     return {'CANCELLED'}
             except CalledProcessError as e:
-                msg = "Error running `Exiftool` (exit code: {}, output: {}), check the path in user preferences".format(
-                    e.returncode, e.output)
+                msg = f"Error running `Exiftool` (exit code: {e.returncode}, output: {e.output})," \
+                    " check the path in user preferences"
                 logger.error(msg)
                 self.report({'ERROR'}, msg)
                 return {'CANCELLED'}
@@ -267,15 +267,15 @@ class SFMFLOW_OT_render_images(bpy.types.Operator):
                 "-config", get_asset("exiftool.config"),
                 "-n",
                 #
-                "-exif:FocalLength={}".format(fl),
-                "-exif:FocalLengthIn35mmFormat={}".format(int(fl35)),
-                "-exif:Make={}".format(camera_maker),
-                "-exif:Model={}".format(camera_model),
-                "-exif:FocalPlaneXResolution={}".format(image_width / camera_data.sensor_width),
-                "-exif:FocalPlaneYResolution={}".format(image_height / camera_data.sensor_height),
+                f"-exif:FocalLength={fl}",
+                f"-exif:FocalLengthIn35mmFormat={int(fl35)}",
+                f"-exif:Make={camera_maker}",
+                f"-exif:Model={camera_model}",
+                f"-exif:FocalPlaneXResolution={(image_width / camera_data.sensor_width)}",
+                f"-exif:FocalPlaneYResolution={(image_height / camera_data.sensor_height)}",
                 "-exif:FocalPlaneResolutionUnit#=4",   # millimeters
-                "-exif:ExifImageWidth={}".format(image_width),
-                "-exif:ExifImageHeight={}".format(image_height)
+                f"-exif:ExifImageWidth={image_width}",
+                f"-exif:ExifImageHeight={image_height}"
             ]
             #
             if scene.sfmflow.write_gps_exif:   # include gps data
@@ -291,9 +291,9 @@ class SFMFLOW_OT_render_images(bpy.types.Operator):
                 roll = roll - (360. if roll > 180. else 0)      # move in range [-180, +180]
                 #
                 exiftool_cmd += [
-                    "-XMP:GPSLatitude={}".format(position.y),
-                    "-XMP:GPSLongitude={}".format(position.x),
-                    "-XMP:GPSAltitude={}".format(position.z),
+                    f"-XMP:GPSLatitude={position.y}",
+                    f"-XMP:GPSLongitude={position.x}",
+                    f"-XMP:GPSAltitude={position.z}",
                     "-XMP:GPSAltitudeRef=0",       # Above Sea Level
                     #
                     # "-XMP:GPSDOP=0.001",  # GPS accuracy
@@ -307,13 +307,13 @@ class SFMFLOW_OT_render_images(bpy.types.Operator):
                     # "-GPS:GPSLatitudeRef=N",       # North
                     # "-GPS:GPSLongitude={}".format(position.x),   # must be positive
                     # "-GPS:GPSLongitudeRef=E",      # East
-                    "-GPS:GPSAltitude={}".format(position.z),
+                    f"-GPS:GPSAltitude={position.z}",
                     "-GPS:GPSAltitudeRef=0",       # Above Sea Level
                     "-GPS:GPSImgDirectionRef=T",   # True North
-                    "-GPS:GPSImgDirection={}".format(yaw),  # yaw [0, 359.99]
-                    "-GPS:GPSPitch={}".format(pitch),       # pitch [-180, +180]
+                    f"-GPS:GPSImgDirection={yaw}",  # yaw [0, 359.99]
+                    f"-GPS:GPSPitch={pitch}",       # pitch [-180, +180]
                     # "-exif:CameraElevationAngle={}".format(pitch),   # pitch
-                    "-GPS:GPSRoll={}".format(roll),         # roll -180 - +180
+                    f"-GPS:GPSRoll={roll}",         # roll -180 - +180
                 ]
             #
             exiftool_cmd += [
@@ -334,7 +334,7 @@ class SFMFLOW_OT_render_images(bpy.types.Operator):
                 logger.error("Exiftool execution exception: %s)", e)
             finally:
                 if exit_code != 0:
-                    msg = "Failed to set EXIF metadata for rendered frame '{}'".format(filepath)
+                    msg = f"Failed to set EXIF metadata for rendered frame '{filepath}'"
                     logger.error(msg)
                     raise RuntimeError(msg)
                 else:

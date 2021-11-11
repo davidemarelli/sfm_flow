@@ -45,7 +45,7 @@ def setup_logger(log_level: int = logging.ERROR) -> None:
         urllib_logger = logging.getLogger('urllib3.connectionpool')
         urllib_logger.setLevel(logging.FATAL)
     else:
-        log_init_msg = "Logger started with level {}".format(logging.getLevelName(log_level))
+        log_init_msg = f"Logger started with level {logging.getLevelName(log_level)}"
     #
     # logging setup
     root = logging.getLogger()

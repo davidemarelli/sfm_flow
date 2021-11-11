@@ -26,7 +26,7 @@ class SFMFLOW_OT_export_gcps(bpy.types.Operator):
 
     # format of floats in gcp files
     DIGITS = 6
-    NUM_FORMAT = "{{:.{}f}}".format(DIGITS)
+    NUM_FORMAT = f"{{:.{DIGITS}f}}"
 
     ################################################################################################
     # Behavior

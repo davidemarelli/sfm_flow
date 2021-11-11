@@ -88,7 +88,7 @@ class SFMFLOW_OT_run_pipelines(ThreadedOperator):
                 logfile_path = os.path.join(cp_ws, bpy.path.clean_name(cp.name) + "_execution.log")
                 self.run_commands(cp.name, [command, ], logfile_path)
             else:
-                msg = "Unknown SfM pipeline '{}'!".format(pipeline_name)
+                msg = f"Unknown SfM pipeline '{pipeline_name}'!"
                 logger.error(msg)
                 self.report({'ERROR'}, msg)
         #
@@ -241,20 +241,19 @@ class SFMFLOW_OT_run_pipelines(ThreadedOperator):
             phase_number = 0
             for command in commands:
                 if logfile:
-                    logfile.write("\n\n@@@ Log for command: %s\n\n" % command)
+                    logfile.write(f"\n\n@@@ Log for command: {command}\n\n")
                 phase_number += 1
-                self.progress_string = "Running {}... (step {} of {})".format(
-                    pipeline_name, phase_number, len(commands))
+                self.progress_string = f"Running {pipeline_name}... (step {phase_number} of {len(commands)})"
                 process = subprocess.run(command, stdout=logfile, stderr=logfile, universal_newlines=True, check=True)
             #
             # execution of all commands completed correctly
-            msg = "{} completed correctly".format(pipeline_name)
+            msg = f"{pipeline_name} completed correctly"
             self.progress_string = msg
             self.exit_code = process.returncode
             logger.info(msg)
         #
         except Exception as e:   # pylint: disable=broad-except
-            msg = "{} exited with errors! (error: {})".format(pipeline_name, e)
+            msg = f"{pipeline_name} exited with errors! (error: {e})"
             self.progress_string = None
             self.exit_code = -1
             logger.error(msg)

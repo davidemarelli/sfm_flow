@@ -41,7 +41,7 @@ class SFMFLOW_OT_export_cameras_gt(bpy.types.Operator):
 
     # format of floats in CSV file
     DIGITS = 6
-    NUM_FORMAT = "{{:.{}f}}".format(DIGITS)
+    NUM_FORMAT = f"{{:.{DIGITS}f}}"
 
     ################################################################################################
     # Behavior

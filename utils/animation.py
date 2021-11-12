@@ -1,8 +1,9 @@
 
 import logging
+from collections import namedtuple
 from math import cos, degrees, pi, sin, sqrt
 from random import random, uniform
-from typing import List, Optional, Tuple
+from typing import Annotated, List, Literal, Optional, Tuple
 
 import bpy
 from mathutils import Quaternion, Vector
@@ -58,6 +59,26 @@ def get_last_keyframe(obj: bpy.types.Object) -> Optional[int]:
                 if not last_keyframe or x > last_keyframe:
                     last_keyframe = x
     return last_keyframe
+
+
+# ==================================================================================================
+def has_keyframes(obj: bpy.types.Object, keyframe_type: Literal['location', 'rotation_euler']) -> Optional[int]:
+    """Check if the given object has keyframes of the given type.
+
+    Arguments:
+        obj {bpy.types.Object} -- object to be checked for presence of keyframes.
+        keyframe_type {Literal['location', 'rotation_euler']} -- type of the keyframes.
+
+    Returns:
+        Optional[int] -- True iff the object has at least one keyframe of the given type.
+    """
+    if obj is not None:
+        anim = obj.animation_data
+        if anim is not None and anim.action is not None:
+            for fc in anim.action.fcurves:
+                if fc.data_path == keyframe_type:
+                    return len(fc.keyframe_points) > 0
+    return False
 
 
 # ==================================================================================================
@@ -421,3 +442,31 @@ def animate_motion_blur_clear(scene: bpy.types.Scene) -> None:
         scene.frame_set(frame_number)
         scene.render.keyframe_delete("motion_blur_shutter")
     scene.frame_set(frame_backup)
+
+
+# ==================================================================================================
+def randomize_transform_keyframes(obj: bpy.types.Object, random_limits: Annotated[List[Vector], 2]) -> None:
+    """Randomize the location of the given object for each keyframe.
+
+    Arguments:
+        obj {bpy.types.Object} -- object animated with location keyframes
+        random_limits {Annotated[List[Vector], 2]} -- min and max limits for each axis.
+                                                      Format is List[min=Vector(x,y,z), max=Vector(x,y,z)].
+    """
+    Limits = namedtuple("Limits", "min max")
+    Axis = namedtuple("Axis", "x y z")
+    limits = Axis(Limits(random_limits[0][0], random_limits[1][0]),
+                  Limits(random_limits[0][1], random_limits[1][1]),
+                  Limits(random_limits[0][2], random_limits[1][2]))
+    #
+    anim = obj.animation_data
+    if anim is not None and anim.action is not None:
+        for fc in anim.action.fcurves:
+            if fc.data_path == 'location':
+                for keyframe in fc.keyframe_points:
+                    axis = fc.array_index
+                    offset = uniform(limits[axis].min, limits[axis].max)
+                    logger.debug("Obj location.%s moved from %.3f to %.3f for keyframe %i.",
+                                 'XYZ'[axis], keyframe.co[1], keyframe.co[1] + offset, keyframe.co[0])
+                    keyframe.co[1] += offset   # co[1] is the location value for the axis
+                    # obj.keyframe_insert(data_path='location', index=axis, frame=keyframe.co[0])

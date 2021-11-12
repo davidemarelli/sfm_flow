@@ -3,6 +3,7 @@ import bpy
 from sfm_flow.operators import (SFMFLOW_OT_animate_camera, SFMFLOW_OT_animate_camera_clear,
                                 SFMFLOW_OT_animate_sun, SFMFLOW_OT_animate_sun_clear,
                                 SFMFLOW_OT_camera_adjust_fl_for_gsd, SFMFLOW_OT_init_scene,
+                                SFMFLOW_OT_randomize_animation,
                                 SFMFLOW_OT_set_average_ground_altitude)
 
 from ..components.render_cameras import render_cameras_box
@@ -76,3 +77,6 @@ class SFMFLOW_PT_main(bpy.types.Panel):
         r.separator_spacer()
         r.operator(SFMFLOW_OT_animate_sun.bl_idname, icon='ANIM')
         r.operator(SFMFLOW_OT_animate_sun_clear.bl_idname, text="", icon='X')
+        #
+        r = layout.row()
+        r.operator(SFMFLOW_OT_randomize_animation.bl_idname, icon='ANIM')

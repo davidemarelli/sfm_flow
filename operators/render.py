@@ -10,6 +10,7 @@ import bpy
 from bpy.app.handlers import persistent
 from sfm_flow.prefs import AddonPreferences
 from sfm_flow.utils import get_asset, set_blender_output_path
+from sfm_flow.utils.compositor import remove_depth_export, setup_depth_export
 from sfm_flow.utils.math import matrix_world_to_ypr
 
 logger = logging.getLogger(__name__)
@@ -207,6 +208,11 @@ class SFMFLOW_OT_render_images(bpy.types.Operator):
             if "--sfmflow_gps_exif" in sys.argv:
                 properties.write_gps_exif = True
                 name_suffix += "-gpsExif-"
+            if "--sfmflow_depth" in sys.argv:
+                setup_depth_export(scene, properties.output_path, camera.name)
+                name_suffix += "-depth-"
+            else:
+                remove_depth_export(scene)
             name_suffix += ".blend"
         else:
             camera = scene.objects[self.render_camera]   # set render camera

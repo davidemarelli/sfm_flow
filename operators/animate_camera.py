@@ -380,7 +380,7 @@ class SFMFLOW_OT_animate_camera(bpy.types.Operator):
                         p += step_forward * forward_direction    # step forward
                 #
                 p += step_side * side_direction                  # step aside
-                camera.rotation_euler.z += sign_side * radians(180)
+                camera.rotation_euler.z += sign_side * radians(-180)
                 context.view_layer.update()   # update matrix_world after rotation
                 sign_side *= -1.
         #

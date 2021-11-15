@@ -75,7 +75,7 @@ class SFMFLOW_OT_camera_add(bpy.types.Operator):
         },
         "campreset.sony_a7III": {
             "maker": "SONY",
-            "model": "ILCE-7M3",
+            "model": "ILCE-7M3",   # cspell:ignore ILCE
             "resolutions": [(6000, 4000), (6000, 3376), (3936, 2624), (3936, 2216), (3008, 1688), (3008, 2000)],
             "sensor_size": (35.8, 23.8),
         }

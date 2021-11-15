@@ -153,7 +153,7 @@ class SFMFLOW_OT_export_ground_truth(bpy.types.Operator):
             use_triangles=True,
             use_nurbs=False,
             use_vertex_groups=False,
-            use_blen_objects=True,
+            use_blen_objects=True,   # cspell:ignore blen
             group_by_object=False,
             group_by_material=False,
             keep_vertex_order=False,

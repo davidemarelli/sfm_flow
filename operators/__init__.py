@@ -21,8 +21,7 @@ from .import_reconstruction import SFMFLOW_OT_import_reconstruction
 from .init_scene import SFMFLOW_OT_init_scene
 from .randomize_animation import SFMFLOW_OT_randomize_animation
 from .render import SFMFLOW_OT_render_images
-from .render_cameras import (SFMFLOW_OT_RenderCameraSlotAddOperator,
-                             SFMFLOW_OT_RenderCameraSlotRemoveOperator)
+from .render_cameras import SFMFLOW_OT_render_camera_slot_add, SFMFLOW_OT_render_camera_slot_remove
 from .run_pipelines import SFMFLOW_OT_run_pipelines
 from .sample_geometry_gt import SFMFLOW_OT_sample_geometry_gt
 from .set_average_ground_altitude import SFMFLOW_OT_set_average_ground_altitude
@@ -56,8 +55,8 @@ _CLASSES = (
     SFMFLOW_OT_add_gcp_square,
     SFMFLOW_OT_export_gcps,
     SFMFLOW_OT_camera_add,
-    SFMFLOW_OT_RenderCameraSlotAddOperator,
-    SFMFLOW_OT_RenderCameraSlotRemoveOperator,
+    SFMFLOW_OT_render_camera_slot_add,
+    SFMFLOW_OT_render_camera_slot_remove,
     SFMFLOW_OT_export_cameras_gt,
     SFMFLOW_OT_set_average_ground_altitude,
     SFMFLOW_OT_camera_adjust_fl_for_gsd,

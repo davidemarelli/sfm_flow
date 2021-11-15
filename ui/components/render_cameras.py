@@ -2,8 +2,8 @@
 
 import bpy
 from sfm_flow.operators.camera_add import SFMFLOW_OT_camera_add
-from sfm_flow.operators.render_cameras import (SFMFLOW_OT_RenderCameraSlotAddOperator,
-                                               SFMFLOW_OT_RenderCameraSlotRemoveOperator)
+from sfm_flow.operators.render_cameras import (SFMFLOW_OT_render_camera_slot_add,
+                                               SFMFLOW_OT_render_camera_slot_remove)
 from sfm_flow.prefs.properties import SFMFLOW_AddonProperties, SFMFLOW_RenderCameraProperty
 
 
@@ -50,8 +50,8 @@ def render_cameras_box(layout: bpy.types.UILayout, sfmflow_properties: SFMFLOW_A
     row.template_list("RENDERCAMERA_UL_property_list_item", "", sfmflow_properties,
                       "render_cameras", sfmflow_properties, "render_cameras_idx", rows=2)
     controls_col = row.column(align=True)
-    controls_col.operator(SFMFLOW_OT_RenderCameraSlotAddOperator.bl_idname, text="", icon='ADD')
-    controls_col.operator(SFMFLOW_OT_RenderCameraSlotRemoveOperator.bl_idname, text="", icon='REMOVE')
+    controls_col.operator(SFMFLOW_OT_render_camera_slot_add.bl_idname, text="", icon='ADD')
+    controls_col.operator(SFMFLOW_OT_render_camera_slot_remove.bl_idname, text="", icon='REMOVE')
     #
     if sfmflow_properties.render_cameras_idx != -1:
         render_camera = sfmflow_properties.render_cameras[sfmflow_properties.render_cameras_idx]

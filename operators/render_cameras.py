@@ -3,7 +3,7 @@
 import bpy
 
 
-class SFMFLOW_OT_RenderCameraSlotAddOperator(bpy.types.Operator):
+class SFMFLOW_OT_render_camera_slot_add(bpy.types.Operator):
     """Add a slot for a render camera."""
     bl_idname = "sfmflow.render_camera_slot_add"
     bl_label = "Add a new render camera slot"
@@ -34,7 +34,7 @@ class SFMFLOW_OT_RenderCameraSlotAddOperator(bpy.types.Operator):
 #
 
 
-class SFMFLOW_OT_RenderCameraSlotRemoveOperator(bpy.types.Operator):
+class SFMFLOW_OT_render_camera_slot_remove(bpy.types.Operator):
     """Remove the selected render camera slot."""
     bl_idname = "sfmflow.render_camera_slot_remove"
     bl_label = "Remove the selected render camera slot"

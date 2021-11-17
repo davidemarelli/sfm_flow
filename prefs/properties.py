@@ -45,7 +45,6 @@ class SFMFLOW_AddonProperties(bpy.types.PropertyGroup):
         default="",
         description="Path to the project output folder",
         subtype='DIR_PATH',
-        # TODO on change set context.scene.render.filepath ?
     )
 
     # ==============================================================================================
@@ -101,7 +100,7 @@ class SFMFLOW_AddonProperties(bpy.types.PropertyGroup):
     def _animate_motion_blur(self, context: bpy.types.Context) -> None:
         if self.use_motion_blur:
             context.scene.render.use_motion_blur = True
-            # TODO make avoid animating again if frame_start, frame_end, motion_blur_probability and
+            # TODO avoid animating again if frame_start, frame_end, motion_blur_probability and
             #      motion_blur_shutter have not changed!
             animate_motion_blur(context.scene, self.motion_blur_probability / 100, self.motion_blur_shutter)
         else:

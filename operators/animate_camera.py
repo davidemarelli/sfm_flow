@@ -196,7 +196,7 @@ class SFMFLOW_OT_animate_camera(bpy.types.Operator):
             row.enabled = False
             row.prop(context.scene.sfmflow, "scene_ground_average_z")
             #
-            return    # TODO use randomized position on aerial grid?
+            return
         layout.prop(self, "images_count")
         layout.prop(self, "randomize_camera_pose")
 

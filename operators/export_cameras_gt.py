@@ -4,6 +4,7 @@ import logging
 import os
 from math import acos, atan2, degrees, sqrt
 from statistics import mean
+from typing import Literal
 
 import bpy
 from mathutils import Vector
@@ -18,7 +19,7 @@ logger = logging.getLogger(__name__)
 class SFMFLOW_OT_export_cameras_gt(bpy.types.Operator):
     """Export render cameras ground truth"""
     bl_idname = "sfmflow.export_cameras_gt"
-    bl_label = "Export cameras"
+    bl_label = "Export cameras ground truth"
 
     # CSV field names in header for cameras ground truth
     CAMERA_CSV_FIELDNAMES = ("label",
@@ -41,6 +42,32 @@ class SFMFLOW_OT_export_cameras_gt(bpy.types.Operator):
     # format of floats in CSV file
     DIGITS = 6
     NUM_FORMAT = f"{{:.{DIGITS}f}}"
+
+    ################################################################################################
+    # Properties
+    #
+
+    # ==============================================================================================
+    file_format: bpy.props.EnumProperty(
+        name="File format",
+        description="Cameras ground truth export file format",
+        items=(
+            ("file_format.csv", "CSV", ".csv file format"),
+            ("file_format.tsv", "TSV", ".tsv file format"),
+        ),
+        default="file_format.csv"
+    )
+
+    ################################################################################################
+    # Layout
+    #
+
+    def draw(self, context: bpy.types.Context):   # pylint: disable=unused-argument
+        """Operator panel layout"""
+        layout = self.layout
+        row = layout.split(factor=0.33, align=True)
+        row.label(text="File format")
+        row.row().prop(self, "file_format", expand=True)
 
     ################################################################################################
     # Behavior
@@ -81,7 +108,7 @@ class SFMFLOW_OT_export_cameras_gt(bpy.types.Operator):
                 self.report({'WARNING'}, "Unsaved changes found, check and UNDO or SAVE changes before export")
                 return {'CANCELLED'}
 
-            return self.execute(context)
+            return context.window_manager.invoke_props_dialog(self)
         else:
             self.report({'WARNING'}, "Save project before export")
             return {'CANCELLED'}
@@ -101,8 +128,9 @@ class SFMFLOW_OT_export_cameras_gt(bpy.types.Operator):
         export_folder = bpy.path.abspath(properties.output_path)
         os.makedirs(export_folder, exist_ok=True)
         #
-        SFMFLOW_OT_export_cameras_gt.save_scene_infos(scene, export_folder)
-        SFMFLOW_OT_export_cameras_gt.save_cameras_infos(scene, export_folder)
+        file_format = 'CSV' if self.file_format == "file_format.csv" else 'TSV'
+        SFMFLOW_OT_export_cameras_gt.save_scene_infos(scene, export_folder, file_format)
+        SFMFLOW_OT_export_cameras_gt.save_cameras_infos(scene, export_folder, file_format)
         #
         logger.info("Cameras ground truth exported.")
         return {'FINISHED'}
@@ -113,8 +141,8 @@ class SFMFLOW_OT_export_cameras_gt(bpy.types.Operator):
 
     # ==============================================================================================
     @staticmethod
-    def save_scene_infos(scene: bpy.types.Scene, output_path: str) -> None:
-        """Write the CSV file containing infos about the scene:
+    def save_scene_infos(scene: bpy.types.Scene, output_path: str, file_format: Literal['CSV', 'TSV']) -> None:
+        """Write the CSV/TSV file containing infos about the scene:
             - scene's name
             - images count
             - measurement system unit
@@ -128,9 +156,10 @@ class SFMFLOW_OT_export_cameras_gt(bpy.types.Operator):
 
         Arguments:
             scene {bpy.types.Scene} -- scene to export infos from
-            output_path {str} -- output folder where to write the 'scene.csv' file
+            output_path {str} -- output folder where to write the 'scene.*sv' file
+            file_format {Literal['CSV', 'TSV']} -- export file format
         """
-        logger.info("Saving scene infos CSV")
+        logger.info("Saving scene info CSV/TSV")
         u_scale = scene.unit_settings.scale_length     # unit scale
         cameras = scene.sfmflow.get_render_cameras()
         #
@@ -175,17 +204,23 @@ class SFMFLOW_OT_export_cameras_gt(bpy.types.Operator):
             SFMFLOW_OT_export_cameras_gt.NUM_FORMAT.format(mean(cam_heights))
         )
         #
-        file_path = os.path.join(output_path, "scene.csv")
+        if file_format == 'CSV':
+            filename = "scene.csv"
+            delimiter = ','
+        else:   # TSV
+            filename = "scene.tsv"
+            delimiter = '\t'
+        file_path = os.path.join(output_path, filename)
         with open(file_path, 'w', encoding='utf-8', newline='') as f:
-            w = csv.writer(f, delimiter=',', lineterminator='\r\n')
+            w = csv.writer(f, delimiter=delimiter, lineterminator='\r\n')
             w.writerow(SFMFLOW_OT_export_cameras_gt.SCENE_CSV_FIELDNAMES)
             w.writerow(row)
-        logger.info("Saved scene infos file %s.", file_path)
+        logger.info("Saved scene info file %s.", file_path)
 
     # ==============================================================================================
     @staticmethod
-    def save_cameras_infos(scene: bpy.types.Scene, output_path: str) -> None:
-        """Write the CSV file containing infos about the cameras poses.
+    def save_cameras_infos(scene: bpy.types.Scene, output_path: str, file_format: Literal['CSV', 'TSV']) -> None:
+        """Write the CSV/TSV file containing infos about the cameras poses.
         For each frame and each render camera:
             - image_name
             - position_(x,y,z)
@@ -198,17 +233,25 @@ class SFMFLOW_OT_export_cameras_gt(bpy.types.Operator):
 
         Arguments:
             scene {bpy.types.Scene} -- scene to export cameras ground truth from
-            output_path {str} -- output folder where to write the 'cameras.csv' file
+            output_path {str} -- output folder where to write the 'cameras.*sv' file
+            file_format {Literal['CSV', 'TSV']} -- export file format
         """
+        logger.info("Saving cameras info CSV/TSV")
         u_scale = scene.unit_settings.scale_length     # unit scale
         cameras = scene.sfmflow.get_render_cameras()
         #
         frame_backup = scene.frame_current
         camera_backup = scene.camera
         #
-        csv_file_path = os.path.join(output_path, "cameras.csv")
-        with open(csv_file_path, 'w', encoding='utf-8', newline='') as csvfile:
-            w = csv.writer(csvfile, delimiter=',', lineterminator='\r\n')
+        if file_format == 'CSV':
+            filename = "cameras.csv"
+            delimiter = ','
+        else:   # TSV
+            filename = "cameras.tsv"
+            delimiter = '\t'
+        file_path = os.path.join(output_path, filename)
+        with open(file_path, 'w', encoding='utf-8', newline='') as f:
+            w = csv.writer(f, delimiter=delimiter, lineterminator='\r\n')
             w.writerow(SFMFLOW_OT_export_cameras_gt.CAMERA_CSV_FIELDNAMES)
             #
             for frame in range(scene.frame_start, scene.frame_end+1):
@@ -282,5 +325,5 @@ class SFMFLOW_OT_export_cameras_gt(bpy.types.Operator):
         scene.frame_set(frame_backup)
         scene.camera = camera_backup
         #
-        logger.info("GCPs exported.")
+        logger.info("Saved cameras info file %s.", file_path)
         return {'FINISHED'}

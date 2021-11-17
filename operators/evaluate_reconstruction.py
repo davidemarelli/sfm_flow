@@ -145,7 +145,7 @@ class SFMFLOW_OT_evaluate_reconstruction(bpy.types.Operator):
             # write .txt file
             filepath = bpy.path.abspath(self.evaluation_filepath)
             os.makedirs(os.path.dirname(filepath), exist_ok=True)
-            with open(filepath, mode=flags, encoding='utf-8') as f:
+            with open(filepath, mode=flags, encoding='utf-8', newline='\n') as f:
                 f.write(f"Project: {out_data['project_name']}\n")
                 f.write(f"Evaluation of Reconstruction model '{out_data['name']}'"
                         f" (internal name '{out_data['name_internal']}')\n")
@@ -188,7 +188,7 @@ class SFMFLOW_OT_evaluate_reconstruction(bpy.types.Operator):
             # write .csv file
             csv_filepath = bpy.path.abspath(self.evaluation_filepath)[:-3] + "csv"
             with open(csv_filepath, mode=flags, encoding='utf-8', newline='') as csv_f:
-                writer = DictWriter(csv_f, fieldnames=out_data.keys())
+                writer = DictWriter(csv_f, fieldnames=out_data.keys(), lineterminator='\r\n')
                 if csv_f.tell() == 0:
                     writer.writeheader()
                 writer.writerow(out_data)

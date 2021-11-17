@@ -104,7 +104,7 @@ class SFMFLOW_OT_export_gcps(bpy.types.Operator):
         os.makedirs(export_folder, exist_ok=True)
         csv_file_path = os.path.join(export_folder, "gcp_list.txt")
         with open(csv_file_path, 'w', encoding='utf-8', newline='') as csvfile:
-            csv_writer = csv.writer(csvfile, delimiter='\t')
+            csv_writer = csv.writer(csvfile, delimiter='\t', lineterminator='\r\n')
             csv_writer.writerow(SFMFLOW_OT_export_gcps.GCPS_CSV_FIELDNAMES)
             for gcp in gcps:
                 gcp_location = gcp.location * unit_scale
@@ -129,7 +129,7 @@ class SFMFLOW_OT_export_gcps(bpy.types.Operator):
         #
         csv_file_path = os.path.join(export_folder, "gcp_images_list.txt")
         with open(csv_file_path, 'w', encoding='utf-8', newline='') as csvfile:
-            csv_writer = csv.writer(csvfile, delimiter='\t')
+            csv_writer = csv.writer(csvfile, delimiter='\t', lineterminator='\r\n')
             csv_writer.writerow(SFMFLOW_OT_export_gcps.GCPS_IMAGES_CSV_FIELDNAMES)
             #
             for frame in range(frame_start, frame_end+1):

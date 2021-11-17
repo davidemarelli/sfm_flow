@@ -235,7 +235,7 @@ class SFMFLOW_OT_run_pipelines(ThreadedOperator):
         """
         logfile = None
         if logfile_path:
-            logfile = open(logfile_path, 'w', encoding='utf-8')
+            logfile = open(logfile_path, 'w', encoding='utf-8', newline='\n')
         #
         try:
             phase_number = 0

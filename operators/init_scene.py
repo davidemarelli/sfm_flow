@@ -100,7 +100,6 @@ class SFMFLOW_OT_init_scene(bpy.types.Operator):
         camera = context.scene.camera
         if camera and camera not in context.scene.sfmflow.get_render_cameras():
             # show camera init if current scene.camera is not an sfmflow's render camera
-            self.is_init_camera = True
             row.label(text="Initialize default render camera")
             row.prop(self, "is_init_camera", icon_only=True)
 
@@ -139,6 +138,11 @@ class SFMFLOW_OT_init_scene(bpy.types.Operator):
             self.report({'ERROR'}, msg)
             logger.error(msg)
             return {'CANCELLED'}
+        #
+        camera = context.scene.camera
+        if camera and camera not in context.scene.sfmflow.get_render_cameras():
+            # propose ti init camera if current scene.camera is not an sfmflow's render camera
+            self.is_init_camera = True
         #
         # compute a default sphere-wall radius
         self.scene_bbox = SceneBoundingBox(context.scene)  # type: SceneBoundingBox

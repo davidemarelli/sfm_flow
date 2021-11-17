@@ -14,18 +14,53 @@ logger = logging.getLogger(__name__)
 
 
 class SFMFLOW_OT_export_gcps(bpy.types.Operator):
-    """Export the Ground Control Points data file"""
+    """Export the Ground Control Points data files."""
     bl_idname = "sfmflow.export_gcps"
     bl_label = "Export GCPs"
     bl_options = {'REGISTER'}
 
     # CSV field names in header for gcps
-    GCPS_CSV_FIELDNAMES = ("gcp_name", "x/east", "y/north", "z/altitude", "yaw", "pitch", "roll")
+    GCPS_CSV_FIELDNAMES = ("gcp_name", "x_east", "y_north", "z_altitude", "yaw", "pitch", "roll")
     GCPS_IMAGES_CSV_FIELDNAMES = ("image_name", "gcp_name", "image_x", "image_y")
 
     # format of floats in gcp files
     DIGITS = 6
     NUM_FORMAT = f"{{:.{DIGITS}f}}"
+
+    ################################################################################################
+    # Properties
+    #
+
+    # ==============================================================================================
+    file_format: bpy.props.EnumProperty(
+        name="File format",
+        description="GCPs export file format",
+        items=(
+            ("file_format.csv", "CSV", ".csv file format"),
+            ("file_format.tsv", "TSV", ".tsv file format"),
+        ),
+        default="file_format.csv"
+    )
+
+    # ==============================================================================================
+    export_rotation: bpy.props.BoolProperty(
+        name="Export GCPs rotation",
+        description="Include GCPs rotation (Yaw, Pitch, Roll) in the file",
+        default=True,
+        options={'SKIP_SAVE'}
+    )
+
+    ################################################################################################
+    # Layout
+    #
+
+    def draw(self, context: bpy.types.Context):   # pylint: disable=unused-argument
+        """Operator panel layout"""
+        layout = self.layout
+        row = layout.split(factor=0.33, align=True)
+        row.label(text="File format")
+        row.row().prop(self, "file_format", expand=True)
+        layout.prop(self, "export_rotation")
 
     ################################################################################################
     # Behavior
@@ -67,7 +102,7 @@ class SFMFLOW_OT_export_gcps(bpy.types.Operator):
                 self.report({'WARNING'}, "Unsaved changes found, check and UNDO or SAVE changes before export")
                 return {'CANCELLED'}
 
-            return self.execute(context)
+            return context.window_manager.invoke_props_dialog(self)
         else:
             self.report({'WARNING'}, "Save project before export")
             return {'CANCELLED'}
@@ -102,21 +137,33 @@ class SFMFLOW_OT_export_gcps(bpy.types.Operator):
         # --- export gcp list
         export_folder = bpy.path.abspath(context.scene.sfmflow.output_path)
         os.makedirs(export_folder, exist_ok=True)
-        csv_file_path = os.path.join(export_folder, "gcp_list.txt")
+        #
+        if self.file_format == "file_format.csv":
+            filename = "gcp_list.csv"
+            delimiter = ','
+        else:   #
+            filename = "gcp_list.tsv"
+            delimiter = '\t'
+        #
+        csv_file_path = os.path.join(export_folder, filename)
         with open(csv_file_path, 'w', encoding='utf-8', newline='') as csvfile:
-            csv_writer = csv.writer(csvfile, delimiter='\t', lineterminator='\r\n')
-            csv_writer.writerow(SFMFLOW_OT_export_gcps.GCPS_CSV_FIELDNAMES)
+            csv_writer = csv.writer(csvfile, delimiter=delimiter, lineterminator='\r\n')
+            fieldnames = SFMFLOW_OT_export_gcps.GCPS_CSV_FIELDNAMES
+            if not self.export_rotation:   # remove rotation fields from header
+                fieldnames = fieldnames[:-3]
+            csv_writer.writerow(fieldnames)
             for gcp in gcps:
                 gcp_location = gcp.location * unit_scale
-                csv_writer.writerow((
-                    gcp.name,
-                    SFMFLOW_OT_export_gcps.NUM_FORMAT.format(gcp_location.x),
-                    SFMFLOW_OT_export_gcps.NUM_FORMAT.format(gcp_location.y),
-                    SFMFLOW_OT_export_gcps.NUM_FORMAT.format(gcp_location.z),
-                    SFMFLOW_OT_export_gcps.NUM_FORMAT.format((360 - degrees(gcp.rotation_euler[2])) % 360),   # yaw
-                    SFMFLOW_OT_export_gcps.NUM_FORMAT.format(degrees(gcp.rotation_euler[0]) % 360),           # pitch
-                    SFMFLOW_OT_export_gcps.NUM_FORMAT.format(degrees(gcp.rotation_euler[1]) % 360)            # roll
-                ))
+                row = [gcp.name,
+                       SFMFLOW_OT_export_gcps.NUM_FORMAT.format(gcp_location.x),
+                       SFMFLOW_OT_export_gcps.NUM_FORMAT.format(gcp_location.y),
+                       SFMFLOW_OT_export_gcps.NUM_FORMAT.format(gcp_location.z)]
+                if self.export_rotation:   # add gcp rotation info
+                    row += [
+                        SFMFLOW_OT_export_gcps.NUM_FORMAT.format((360 - degrees(gcp.rotation_euler[2])) % 360),   # yaw
+                        SFMFLOW_OT_export_gcps.NUM_FORMAT.format(degrees(gcp.rotation_euler[0]) % 360),   # pitch
+                        SFMFLOW_OT_export_gcps.NUM_FORMAT.format(degrees(gcp.rotation_euler[1]) % 360)]   # roll
+                csv_writer.writerow(row)
         #
         # --- export gcp list in images
         frame_start = scene.frame_start

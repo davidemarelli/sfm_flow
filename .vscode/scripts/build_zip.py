@@ -21,6 +21,7 @@ EXCLUDE_FILES = (
     # files excluded form zip as regex
     r"\.",         # all .xxx files
     r".*\.pyc$",   # cache files
+    r".*\.todo$",
     r"requirements.txt"
 )
 
@@ -39,7 +40,7 @@ def load_addon_infos() -> Dict:
     """
     addon_init = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../../__init__.py")
     addon_infos = {}   # pylint: disable=redefined-outer-name
-    with open(addon_init, 'r') as f:
+    with open(addon_init, 'r', encoding='utf-8') as f:
         s = f.read()
         d = re.search(r'bl_info = \{[^\}]*\}', s)
         if d is None:
@@ -91,4 +92,4 @@ if __name__ == '__main__':
                 print("\t" + arcname)
                 filecount += 1
     #
-    print("\n{} files were added to zip '{}'".format(filecount, zip_filepath))
+    print(f"\n{filecount} files were added to zip '{zip_filepath}'")

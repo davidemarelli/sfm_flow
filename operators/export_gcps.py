@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 class SFMFLOW_OT_export_gcps(bpy.types.Operator):
     """Export the Ground Control Points data files."""
     bl_idname = "sfmflow.export_gcps"
-    bl_label = "Export GCPs"
+    bl_label = "Export GCPs ground truth"
     bl_options = {'REGISTER'}
 
     # CSV field names in header for gcps
@@ -138,7 +138,7 @@ class SFMFLOW_OT_export_gcps(bpy.types.Operator):
             gcp_list_filename = "gcp_list.csv"
             gcp_images_list_filename = "gcp_images_list.csv"
             delimiter = ','
-        else:   #
+        else:   # TSV
             gcp_list_filename = "gcp_list.tsv"
             gcp_images_list_filename = "gcp_images_list.tsv"
             delimiter = '\t'

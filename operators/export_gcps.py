@@ -134,18 +134,19 @@ class SFMFLOW_OT_export_gcps(bpy.types.Operator):
         gcps = gcp_collection.objects
         unit_scale = scene.unit_settings.scale_length
         #
+        if self.file_format == "file_format.csv":
+            gcp_list_filename = "gcp_list.csv"
+            gcp_images_list_filename = "gcp_images_list.csv"
+            delimiter = ','
+        else:   #
+            gcp_list_filename = "gcp_list.tsv"
+            gcp_images_list_filename = "gcp_images_list.tsv"
+            delimiter = '\t'
+        #
         # --- export gcp list
         export_folder = bpy.path.abspath(context.scene.sfmflow.output_path)
         os.makedirs(export_folder, exist_ok=True)
-        #
-        if self.file_format == "file_format.csv":
-            filename = "gcp_list.csv"
-            delimiter = ','
-        else:   #
-            filename = "gcp_list.tsv"
-            delimiter = '\t'
-        #
-        csv_file_path = os.path.join(export_folder, filename)
+        csv_file_path = os.path.join(export_folder, gcp_list_filename)
         with open(csv_file_path, 'w', encoding='utf-8', newline='') as csvfile:
             csv_writer = csv.writer(csvfile, delimiter=delimiter, lineterminator='\r\n')
             fieldnames = SFMFLOW_OT_export_gcps.GCPS_CSV_FIELDNAMES
@@ -174,9 +175,9 @@ class SFMFLOW_OT_export_gcps(bpy.types.Operator):
         frame_backup = scene.frame_current
         camera_backup = scene.camera
         #
-        csv_file_path = os.path.join(export_folder, "gcp_images_list.txt")
+        csv_file_path = os.path.join(export_folder, gcp_images_list_filename)
         with open(csv_file_path, 'w', encoding='utf-8', newline='') as csvfile:
-            csv_writer = csv.writer(csvfile, delimiter='\t', lineterminator='\r\n')
+            csv_writer = csv.writer(csvfile, delimiter=delimiter, lineterminator='\r\n')
             csv_writer.writerow(SFMFLOW_OT_export_gcps.GCPS_IMAGES_CSV_FIELDNAMES)
             #
             for frame in range(frame_start, frame_end+1):

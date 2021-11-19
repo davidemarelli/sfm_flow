@@ -131,7 +131,7 @@ class SFMFLOW_OT_export_gcps(bpy.types.Operator):
             self.report({'ERROR'}, msg)
             return {'CANCELLED'}
         #
-        gcps = gcp_collection.objects
+        gcps = sorted(gcp_collection.objects, key=lambda obj: obj.name)
         unit_scale = scene.unit_settings.scale_length
         #
         if self.file_format == "file_format.csv":

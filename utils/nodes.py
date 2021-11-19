@@ -73,6 +73,7 @@ def add_img_texture_node(node_tree: bpy.types.NodeTree, tex_image: str,
     tex_image_node.location = nodes_location
     img = bpy.data.images.load(tex_image)
     img.pack()
+    img.filepath = ''   # remove absolute path to avoid warnings on save
     tex_image_node.image = img
     if label:
         tex_image_node.label = label

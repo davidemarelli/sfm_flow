@@ -182,7 +182,7 @@ class SFMFLOW_OT_export_cameras_gt(bpy.types.Operator):
         scene.frame_set(frame_backup)
         #
         row = (
-            scene.name, (scene.frame_end - scene.frame_start + 1),
+            scene.name, (scene.frame_end - scene.frame_start + 1) * len(cameras),
             #
             scene.unit_settings.system,
             scene.unit_settings.length_unit,

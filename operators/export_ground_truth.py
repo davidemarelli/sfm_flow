@@ -73,7 +73,7 @@ class SFMFLOW_OT_export_ground_truth(bpy.types.Operator):
         Returns:
             bool -- True to enable, False to disable
         """
-        return len(get_objs(context.scene, exclude_collections=SFMFLOW_COLLECTIONS, mesh_only=True)) > 0
+        return len(context.scene.objects) > 0
 
     # ==============================================================================================
     def invoke(self, context: bpy.types.Context, event: bpy.types.Event) -> set:  # pylint: disable=unused-argument

@@ -13,8 +13,7 @@ def setup_depth_export(scene: bpy.types.Scene, out_basepath: str = "//render_dep
                        render_camera_name: str = None) -> None:
     """Setup compositor nodes for depth images export.
     For each rendered image 2 additional float32 OpenEXR files will be exported in the given output basepath:
-       - <camera name>_depth_normalized_<frame number>.exr containing the normalized [0-1] depth for each pixel.
-       - <camera name>_depth_<frame number>.exr containing the raw [0-<clip distance>] depth for each pixel.
+       - <camera name>_depth_<frame number>.exr containing the raw depth for each pixel.
          The unit of the depth value is the same as the one configured for the scene (eg. meters, inches, ...).
 
     This function can be called multiple times to change the camera name and/or the out basepath.
@@ -51,38 +50,9 @@ def setup_depth_export(scene: bpy.types.Scene, out_basepath: str = "//render_dep
         logger.debug("Re-using 'SFMFLOW_depth_render_layers'")
         depth_in_layers = nodes['SFMFLOW_depth_render_layers']
     #
-    if not 'SFMFLOW_depth_normalize' in nodes:
-        depth_normalize = nodes.new('CompositorNodeNormalize')
-        depth_normalize.location = nodes_location + Vector((300, 0))
-        depth_normalize.name = 'SFMFLOW_depth_normalize'
-        depth_normalize.label = "SFMFLOW depth normalize"
-    else:
-        logger.debug("Re-using 'SFMFLOW_depth_normalize'")
-        depth_normalize = nodes['SFMFLOW_depth_normalize']
-    node_tree.links.new(depth_in_layers.outputs['Depth'], depth_normalize.inputs['Value'])
-    #
-    if not 'SFMFLOW_depth_normalized_out' in nodes:
-        depth_normalized_out = nodes.new('CompositorNodeOutputFile')
-        depth_normalized_out.location = nodes_location + Vector((500, 0))
-        depth_normalized_out.width = 400
-        depth_normalized_out.name = 'SFMFLOW_depth_normalized_out'
-        depth_normalized_out.label = "SFMFLOW depth normalized out"
-        depth_normalized_out.format.file_format = 'OPEN_EXR'
-        depth_normalized_out.format.color_mode = 'RGB'
-        depth_normalized_out.format.color_depth = '32'
-        depth_normalized_out.format.exr_codec = 'ZIP'
-        depth_normalized_out.format.use_zbuffer = False
-    else:
-        logger.debug("Re-using 'SFMFLOW_depth_normalized_out'")
-        depth_normalized_out = nodes['SFMFLOW_depth_normalized_out']
-    depth_normalized_out.base_path = out_basepath
-    # depth_normalized_out.inputs[0].name = "Depth_Normalized_"
-    depth_normalized_out.file_slots[0].path = filename_digits + '_' + render_camera_name + "depth_normalized"
-    node_tree.links.new(depth_normalize.outputs['Value'], depth_normalized_out.inputs['Image'])
-    #
     if not 'SFMFLOW_depth_out' in nodes:
         depth_out = nodes.new('CompositorNodeOutputFile')
-        depth_out.location = nodes_location + Vector((500, -150))
+        depth_out.location = nodes_location + Vector((500, 0))
         depth_out.width = 400
         depth_out.name = 'SFMFLOW_depth_out'
         depth_out.label = "SFMFLOW depth out"
@@ -112,9 +82,5 @@ def remove_depth_export(scene: bpy.types.Scene) -> None:
         nodes = scene.node_tree.nodes
         if 'SFMFLOW_depth_render_layers' in nodes:
             nodes.remove(nodes['SFMFLOW_depth_render_layers'])
-        if 'SFMFLOW_depth_normalize' in nodes:
-            nodes.remove(nodes['SFMFLOW_depth_normalize'])
-        if 'SFMFLOW_depth_normalized_out' in nodes:
-            nodes.remove(nodes['SFMFLOW_depth_normalized_out'])
         if 'SFMFLOW_depth_out' in nodes:
             nodes.remove(nodes['SFMFLOW_depth_out'])

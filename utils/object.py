@@ -89,8 +89,8 @@ def get_cameras_collection(create: bool = True) -> bpy.types.Collection:
 
 
 # ==================================================================================================
-def get_objs(scene: bpy.types.Scene, exclude_collections: Tuple[str] = None, mesh_only: bool = True
-             ) -> List[bpy.types.Object]:
+def get_objs(scene: bpy.types.Scene, exclude_collections: Tuple[str] = None, mesh_only: bool = True,
+             include_library: bool = True) -> List[bpy.types.Object]:
     """Get all objects in the given scene. Eventually filter by type and collections.
 
     Arguments:
@@ -99,18 +99,34 @@ def get_objs(scene: bpy.types.Scene, exclude_collections: Tuple[str] = None, mes
     Keyword Arguments:
         exclude_collections {List[str]} -- list of group names to exclude from search (default: {None})
         mesh_only {bool} -- if {True} count only `MESH`, `CURVE`, `SURFACE` objects (default: {True})
+        include_library {bool} -- if {True} include also linked/appended objects (default: {True})
 
     Returns:
         List[bpy.types.Object] -- list of scene objects
     """
+    all_objs = list(scene.objects)
+    #
+    # library objects
+    if include_library:
+        for obj in scene.objects:
+            if obj.library is not None:   # object is an instance of an object from another project
+                all_objs.append(obj)
+            elif obj.instance_collection is not None:   # object is an instance of a collection of another project
+                for o in obj.instance_collection.all_objects:
+                    if o.library is not None:
+                        all_objs.append(o)
+    #
+    # filter objs
     objs = []
-    for obj in scene.objects:
+    for obj in all_objs:
         exclude = False
-        for uc in obj.users_collection:
-            if ((exclude_collections is not None) and (uc.name in exclude_collections)) or \
-                    (mesh_only and (obj.type not in ['MESH', 'CURVE', 'SURFACE'])):
-                exclude = True
-                break
+        if mesh_only and (obj.type not in ['MESH', 'CURVE', 'SURFACE']):
+            exclude = True
+        else:
+            for uc in obj.users_collection:
+                if (exclude_collections is not None) and (uc.name in exclude_collections):
+                    exclude = True
+                    break
         if not exclude:
             objs.append(obj)
     return objs

@@ -1,7 +1,7 @@
 
 # SfM Flow
 
-SfM Flow is a comprehensive toolset for the evaluation of 3D reconstruction pipelines. It provides tools for the creation of datasets composed by synthetic images, the execution of 3D reconstruction Structure from Motion (SfM) pipelines, and the evaluation of the obtained results. SfM Flow integrates all these features in [Blender](https://www.blender.org).
+SfM Flow is a comprehensive toolset for the evaluation of 3D reconstruction pipelines. It provides tools for the creation of datasets composed of synthetic images, the execution of 3D reconstruction Structure from Motion (SfM) pipelines, and the evaluation of the obtained results. SfM Flow integrates all these features in [Blender](https://www.blender.org).
 
 Read more in the paper [*SfM Flow*: A comprehensive toolset for the evaluation of 3D reconstruction pipelines](http://doi.org/10.1016/j.softx.2021.100931) by [Davide Marelli](http://www.ivl.disco.unimib.it/people/davide-marelli/), [Simone Bianco](http://www.ivl.disco.unimib.it/people/simone-bianco/) and [Gianluigi Ciocca](http://www.ivl.disco.unimib.it/people/gianluigi-ciocca/).
 

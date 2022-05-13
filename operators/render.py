@@ -265,6 +265,17 @@ class SFMFLOW_OT_render_images(bpy.types.Operator):
             image_height = floor(scene.render.resolution_y * res_percent)
             camera_maker = camera_data['sfmflow.maker'] if 'sfmflow.maker' in camera_data else ""
             camera_model = camera_data['sfmflow.model'] if 'sfmflow.model' in camera_data else ""
+            px_size = camera_data['sfmflow.px_size'] if 'sfmflow.px_size' in camera_data else None   # px size in mm
+            max_resolution = camera_data['sfmflow.resolutions'][0] if 'sfmflow.resolutions' in camera_data else None
+            if px_size is not None:
+                scale_factor_x = image_width / max_resolution[0] if max_resolution is not None else 1.
+                scale_factor_y = image_width / max_resolution[1] if max_resolution is not None else 1.
+                fp_resolution_x = (1. / (px_size * 0.1)) * scale_factor_x   # focal plane resolution in centimeters
+                fp_resolution_y = (1. / (px_size * 0.1)) * scale_factor_y
+                logger.debug("Focal plane resolution: %f, %f (px/cm)", fp_resolution_x, fp_resolution_y)
+            else:
+                fp_resolution_x = image_width / (camera_data.sensor_width * 0.1)
+                fp_resolution_y = image_height / (camera_data.sensor_height * 0.1)
 
             # build exiftool command
             exiftool_cmd = [
@@ -276,9 +287,9 @@ class SFMFLOW_OT_render_images(bpy.types.Operator):
                 f"-exif:FocalLengthIn35mmFormat={int(fl35)}",
                 f"-exif:Make={camera_maker}",
                 f"-exif:Model={camera_model}",
-                f"-exif:FocalPlaneXResolution={(image_width / camera_data.sensor_width)}",
-                f"-exif:FocalPlaneYResolution={(image_height / camera_data.sensor_height)}",
-                "-exif:FocalPlaneResolutionUnit#=4",   # millimeters
+                f"-exif:FocalPlaneXResolution={fp_resolution_x}",
+                f"-exif:FocalPlaneYResolution={fp_resolution_y}",
+                "-exif:FocalPlaneResolutionUnit#=3",   # centimeters
                 f"-exif:ExifImageWidth={image_width}",
                 f"-exif:ExifImageHeight={image_height}"
             ]

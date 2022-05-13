@@ -72,12 +72,14 @@ class SFMFLOW_OT_camera_add(bpy.types.Operator):
             "resolutions": [(6016, 4016), (4512, 3008), (3008, 2008), (5008, 3336), (3752, 2504),
                             (3936, 2624), (2944, 1968), (1968, 1312)],
             "sensor_size": (35.9, 24),
+            "px_size": 0.00595,   # px size on the sensor in mm
         },
         "campreset.sony_a7III": {
             "maker": "SONY",
             "model": "ILCE-7M3",   # cspell:ignore ILCE
             "resolutions": [(6000, 4000), (6000, 3376), (3936, 2624), (3936, 2216), (3008, 1688), (3008, 2000)],
             "sensor_size": (35.8, 23.8),
+            "px_size": 0.00591,   # px size on the sensor in mm
         }
     }
 
@@ -222,6 +224,7 @@ class SFMFLOW_OT_camera_add(bpy.types.Operator):
         new_cameras = []
         #
         sensor_size = SFMFLOW_OT_camera_add.CAMERA_PRESETS[self.camera_preset]['sensor_size']
+        px_size = SFMFLOW_OT_camera_add.CAMERA_PRESETS[self.camera_preset]['px_size']
         maker = SFMFLOW_OT_camera_add.CAMERA_PRESETS[self.camera_preset]['maker']
         model = SFMFLOW_OT_camera_add.CAMERA_PRESETS[self.camera_preset]['model']
         #
@@ -230,6 +233,7 @@ class SFMFLOW_OT_camera_add(bpy.types.Operator):
             camera = self._create_new_camera(location=self.location, sensor_size=sensor_size)
             camera.data['sfmflow.maker'] = maker
             camera.data['sfmflow.model'] = model
+            camera.data['sfmflow.px_size'] = px_size
             cameras_collection.objects.link(camera)
             new_cameras.append(camera)
         #
@@ -239,6 +243,7 @@ class SFMFLOW_OT_camera_add(bpy.types.Operator):
                                              rotation_euler=Vector((0., 0., 0.)), sensor_size=sensor_size)
             camera.data['sfmflow.maker'] = maker
             camera.data['sfmflow.model'] = model
+            camera.data['sfmflow.px_size'] = px_size
             cameras_collection.objects.link(camera)
             new_cameras.append(camera)
         #
@@ -258,14 +263,19 @@ class SFMFLOW_OT_camera_add(bpy.types.Operator):
             #
             camera_n.data['sfmflow.maker'] = maker
             camera_n.data['sfmflow.model'] = model
+            camera_n.data['sfmflow.px_size'] = px_size
             camera_f.data['sfmflow.maker'] = maker
             camera_f.data['sfmflow.model'] = model
+            camera_f.data['sfmflow.px_size'] = px_size
             camera_b.data['sfmflow.maker'] = maker
             camera_b.data['sfmflow.model'] = model
+            camera_b.data['sfmflow.px_size'] = px_size
             camera_l.data['sfmflow.maker'] = maker
             camera_l.data['sfmflow.model'] = model
+            camera_l.data['sfmflow.px_size'] = px_size
             camera_r.data['sfmflow.maker'] = maker
             camera_r.data['sfmflow.model'] = model
+            camera_r.data['sfmflow.px_size'] = px_size
             #
             cameras_collection.objects.link(camera_n)
             cameras_collection.objects.link(camera_f)

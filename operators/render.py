@@ -217,20 +217,20 @@ class SFMFLOW_OT_render_images(bpy.types.Operator):
         else:
             camera = scene.objects[self.render_camera]   # set render camera
 
+        # if executed form command line save new project file
+        if "--sfmflow_render" in sys.argv:
+            bpy.ops.wm.save_mainfile(filepath=(bpy.data.filepath + name_suffix))
+            bpy.ops.sfmflow.export_cameras_gt('EXEC_DEFAULT')
+
         # set render length based on keyframes
         user_preferences = bpy.context.preferences
         addon_user_preferences_name = (__name__)[:__name__.index('.')]
         addon_prefs = user_preferences.addons[addon_user_preferences_name].preferences  # type: AddonPreferences
         if addon_prefs.limit_to_last_camera_keyframe:
-            last_keyframe = get_last_keyframe(camera)
+            last_keyframe = get_last_keyframe(camera, True)
             if scene.frame_end > last_keyframe:
                 SFMFLOW_OT_render_images._original_frame_end = scene.frame_end
                 scene.frame_end = last_keyframe
-
-        # if executed form command line save new project file
-        if "--sfmflow_render" in sys.argv:
-            bpy.ops.wm.save_mainfile(filepath=(bpy.data.filepath + name_suffix))
-            bpy.ops.sfmflow.export_cameras_gt('EXEC_DEFAULT')
 
         # start images rendering
         scene.camera = camera   # set render camera

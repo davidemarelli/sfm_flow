@@ -41,17 +41,23 @@ def build_camera_point(x: float, y: float, z: float, randomize: bool) -> Vector:
 
 
 # ==================================================================================================
-def get_last_keyframe(obj: bpy.types.Object) -> Optional[int]:
+def get_last_keyframe(obj: bpy.types.Object, parent_ok: bool = False) -> Optional[int]:
     """Get last keyframe set (biggest frame number on the timeline) for a given object.
 
     Arguments:
         obj {Object} -- scene object
+
+    Keyword Arguments:
+        parent_ok {bool} -- use parent object animation if any and obj doesn't have anim data (default: {False})
 
     Returns:
         Optional[int] -- last keyframe if any, {None} otherwise
     """
     last_keyframe = None
     anim = obj.animation_data
+    if parent_ok and anim is None:   # try to get animation from parent
+        if obj.parent:
+            anim = obj.parent.animation_data
     if anim is not None and anim.action is not None:
         for fc in anim.action.fcurves:
             for keyframe in fc.keyframe_points:

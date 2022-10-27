@@ -171,7 +171,7 @@ class SFMFLOW_OT_export_cameras_gt(bpy.types.Operator):
         # get cameras animation end
         cameras_end_keyframes = []
         for camera in cameras:
-            cameras_end_keyframes.append(get_last_keyframe(camera))
+            cameras_end_keyframes.append(get_last_keyframe(camera, True))
         #
         bbox = SceneBoundingBox(scene)
         bbox_center = bbox.center * u_scale
@@ -262,7 +262,7 @@ class SFMFLOW_OT_export_cameras_gt(bpy.types.Operator):
         # get cameras animation end
         cameras_end_keyframes = []
         for camera in cameras:
-            cameras_end_keyframes.append(get_last_keyframe(camera))
+            cameras_end_keyframes.append(get_last_keyframe(camera, True))
         #
         frame_backup = scene.frame_current
         camera_backup = scene.camera

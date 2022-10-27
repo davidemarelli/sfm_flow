@@ -9,7 +9,7 @@ from typing import List, Tuple
 import bpy
 from bpy.app.handlers import persistent
 from sfm_flow.prefs import AddonPreferences
-from sfm_flow.utils import get_asset, set_blender_output_path
+from sfm_flow.utils import get_asset, get_last_keyframe, set_blender_output_path
 from sfm_flow.utils.compositor import remove_depth_export, setup_depth_export
 from sfm_flow.utils.math import matrix_world_to_ypr
 
@@ -217,6 +217,16 @@ class SFMFLOW_OT_render_images(bpy.types.Operator):
         else:
             camera = scene.objects[self.render_camera]   # set render camera
 
+        # set render length based on keyframes
+        user_preferences = bpy.context.preferences
+        addon_user_preferences_name = (__name__)[:__name__.index('.')]
+        addon_prefs = user_preferences.addons[addon_user_preferences_name].preferences  # type: AddonPreferences
+        if addon_prefs.limit_to_last_camera_keyframe:
+            last_keyframe = get_last_keyframe(camera)
+            if scene.frame_end > last_keyframe:
+                SFMFLOW_OT_render_images._original_frame_end = scene.frame_end
+                scene.frame_end = last_keyframe
+
         # if executed form command line save new project file
         if "--sfmflow_render" in sys.argv:
             bpy.ops.wm.save_mainfile(filepath=(bpy.data.filepath + name_suffix))
@@ -232,7 +242,7 @@ class SFMFLOW_OT_render_images(bpy.types.Operator):
     # ==============================================================================================
     @staticmethod
     @persistent
-    def render_complete_callback(scene: bpy.types.Scene) -> None:
+    def render_frame_complete_callback(scene: bpy.types.Scene) -> None:
         """Callback on frame rendered and saved to file.
 
         Arguments:
@@ -357,3 +367,17 @@ class SFMFLOW_OT_render_images(bpy.types.Operator):
                     logger.info("Metadata correctly set for frame '%s'", filepath)
         else:
             logger.debug("Skipping EXIF metadata update, not supported by %s format", ff)
+
+    # ==============================================================================================
+    @staticmethod
+    @persistent
+    def render_sequence_complete_callback(scene: bpy.types.Scene) -> None:
+        """Callback on render sequence complete.
+
+        Arguments:
+            scene {bpy.types.Scene} -- scene rendered
+        """
+        # restore frame_end if it has been modified by the render operator
+        if hasattr(SFMFLOW_OT_render_images, "_original_frame_end"):
+            scene.frame_end = SFMFLOW_OT_render_images._original_frame_end
+            del SFMFLOW_OT_render_images._original_frame_end

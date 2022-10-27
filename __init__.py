@@ -79,7 +79,8 @@ def register() -> None:
     ui_register()
 
     # handlers
-    bpy.app.handlers.render_write.append(SFMFLOW_OT_render_images.render_complete_callback)
+    bpy.app.handlers.render_write.append(SFMFLOW_OT_render_images.render_frame_complete_callback)
+    bpy.app.handlers.render_complete.append(SFMFLOW_OT_render_images.render_sequence_complete_callback)
     bpy.app.handlers.depsgraph_update_post.append(Callbacks.cam_pose_update)
     bpy.app.handlers.save_post.append(Callbacks.post_save)
     bpy.app.handlers.load_post.append(Callbacks.post_load)
@@ -93,7 +94,8 @@ def unregister() -> None:
     logger = logging.getLogger(__name__)
 
     # handlers
-    bpy.app.handlers.render_write.remove(SFMFLOW_OT_render_images.render_complete_callback)
+    bpy.app.handlers.render_write.remove(SFMFLOW_OT_render_images.render_frame_complete_callback)
+    bpy.app.handlers.render_complete.remove(SFMFLOW_OT_render_images.render_sequence_complete_callback)
     bpy.app.handlers.depsgraph_update_post.remove(Callbacks.cam_pose_update)
     bpy.app.handlers.save_post.remove(Callbacks.post_save)
     bpy.app.handlers.load_post.remove(Callbacks.post_load)

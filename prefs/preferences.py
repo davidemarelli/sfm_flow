@@ -8,8 +8,8 @@ from os import path
 import addon_utils
 import bpy
 import sfm_flow.utils.logutils as logutils
-from bpy.props import (CollectionProperty, EnumProperty, FloatVectorProperty, IntProperty,
-                       StringProperty)
+from bpy.props import (BoolProperty, CollectionProperty, EnumProperty, FloatVectorProperty,
+                       IntProperty, StringProperty)
 from sfm_flow.reconstruction import ReconstructionsManager
 from sfm_flow.utils import register_classes as _register_classes
 from sfm_flow.utils import unregister_classes as _unregister_classes
@@ -117,6 +117,15 @@ class AddonPreferences(bpy.types.AddonPreferences):
     )
 
     # ==============================================================================================
+    # limit camera rendering and gt export to the last keyframe if it's before the end of the scene's end_frame
+    limit_to_last_camera_keyframe: BoolProperty(
+        name="Limit rendering and gt export to last camera keyframe",
+        description="Limit rendering and gt export of each camera to its last animation "
+        "keyframe if it occurs earlyier than the scene end frame",
+        default=True
+    )
+
+    # ==============================================================================================
     # Reconstructed cameras display color
     recon_camera_color: FloatVectorProperty(
         name="Reconstructed camera color",
@@ -203,6 +212,12 @@ class AddonPreferences(bpy.types.AddonPreferences):
         row.alignment = 'RIGHT'
         row.label(text="Log level")
         row.prop(self, "log_level", text="")
+        #
+        # --- log level
+        row = layout.split(factor=0.66)
+        row.alignment = 'RIGHT'
+        row.label(text=self.rna_type.properties["limit_to_last_camera_keyframe"].name)
+        row.prop(self, "limit_to_last_camera_keyframe", text="")
         #
         # --- display colors
         row = layout.split(factor=0.66)

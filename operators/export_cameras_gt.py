@@ -8,8 +8,9 @@ from typing import Literal
 
 import bpy
 from mathutils import Vector
+from sfm_flow.prefs import AddonPreferences
 from sfm_flow.utils import (camera_detect_dof_distance, euclidean_distance, get_camera_lookat,
-                            get_render_image_filename)
+                            get_last_keyframe, get_render_image_filename)
 from sfm_flow.utils.math import matrix_world_to_opk, matrix_world_to_ypr
 from sfm_flow.utils.scene_bounding_box import SceneBoundingBox
 
@@ -163,10 +164,20 @@ class SFMFLOW_OT_export_cameras_gt(bpy.types.Operator):
         u_scale = scene.unit_settings.scale_length     # unit scale
         cameras = scene.sfmflow.get_render_cameras()
         #
+        user_preferences = bpy.context.preferences
+        addon_user_preferences_name = (__name__)[:__name__.index('.')]
+        addon_prefs = user_preferences.addons[addon_user_preferences_name].preferences  # type: AddonPreferences
+        #
+        # get cameras animation end
+        cameras_end_keyframes = []
+        for camera in cameras:
+            cameras_end_keyframes.append(get_last_keyframe(camera))
+        #
         bbox = SceneBoundingBox(scene)
         bbox_center = bbox.center * u_scale
         bbox_floor_center = bbox.floor_center * u_scale
         #
+        imgs_count = 0
         cam_dists_bbc = []
         cam_dists_objs = []
         cam_heights = []
@@ -174,7 +185,11 @@ class SFMFLOW_OT_export_cameras_gt(bpy.types.Operator):
         for i in range(scene.frame_start, scene.frame_end+1):
             scene.frame_set(i)
             bpy.context.view_layer.update()  # make the frame change effective
-            for camera in cameras:
+            for camera, last_keyframe in zip(cameras, cameras_end_keyframes):
+                if addon_prefs.limit_to_last_camera_keyframe and i > last_keyframe:
+                    break   # skip since camera animation ends before scene's end_frame
+                #
+                imgs_count += 1
                 cam_pos = camera.matrix_world.to_translation() * u_scale  # camera position
                 cam_dists_bbc.append(euclidean_distance(bbox_center, cam_pos))
                 cam_dists_objs.append(camera_detect_dof_distance(bpy.context.view_layer, camera, scene))
@@ -182,7 +197,7 @@ class SFMFLOW_OT_export_cameras_gt(bpy.types.Operator):
         scene.frame_set(frame_backup)
         #
         row = (
-            scene.name, (scene.frame_end - scene.frame_start + 1) * len(cameras),
+            scene.name, imgs_count,
             #
             scene.unit_settings.system,
             scene.unit_settings.length_unit,
@@ -240,6 +255,15 @@ class SFMFLOW_OT_export_cameras_gt(bpy.types.Operator):
         u_scale = scene.unit_settings.scale_length     # unit scale
         cameras = scene.sfmflow.get_render_cameras()
         #
+        user_preferences = bpy.context.preferences
+        addon_user_preferences_name = (__name__)[:__name__.index('.')]
+        addon_prefs = user_preferences.addons[addon_user_preferences_name].preferences  # type: AddonPreferences
+        #
+        # get cameras animation end
+        cameras_end_keyframes = []
+        for camera in cameras:
+            cameras_end_keyframes.append(get_last_keyframe(camera))
+        #
         frame_backup = scene.frame_current
         camera_backup = scene.camera
         #
@@ -257,7 +281,10 @@ class SFMFLOW_OT_export_cameras_gt(bpy.types.Operator):
             for frame in range(scene.frame_start, scene.frame_end+1):
                 scene.frame_set(frame)
                 #
-                for camera in cameras:
+                for camera, last_keyframe in zip(cameras, cameras_end_keyframes):
+                    if addon_prefs.limit_to_last_camera_keyframe and frame > last_keyframe:
+                        break   # skip since camera animation ends before scene's end_frame
+                    #
                     scene.camera = camera   # set render camera
                     image_filename, _ = get_render_image_filename(camera, scene, frame)
                     #

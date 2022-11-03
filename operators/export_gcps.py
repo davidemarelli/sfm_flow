@@ -6,6 +6,8 @@ from math import degrees
 
 import bpy
 from bpy_extras.object_utils import world_to_camera_view
+from sfm_flow.prefs import AddonPreferences
+from sfm_flow.utils.animation import get_last_keyframe
 from sfm_flow.utils.blender_version import BlenderVersion
 from sfm_flow.utils.object import get_gcp_collection
 from sfm_flow.utils.path import get_render_image_filename
@@ -124,6 +126,15 @@ class SFMFLOW_OT_export_gcps(bpy.types.Operator):
             self.report({'ERROR'}, msg)
             return {'CANCELLED'}
         #
+        user_preferences = bpy.context.preferences
+        addon_user_preferences_name = (__name__)[:__name__.index('.')]
+        addon_prefs = user_preferences.addons[addon_user_preferences_name].preferences  # type: AddonPreferences
+        #
+        # get cameras animation end
+        cameras_end_keyframes = []
+        for camera in cameras:
+            cameras_end_keyframes.append(get_last_keyframe(camera, True))
+        #
         gcp_collection = get_gcp_collection(create=False)
         if not gcp_collection or not gcp_collection.objects:
             msg = "No GCPs found in the current scene!"
@@ -187,7 +198,10 @@ class SFMFLOW_OT_export_gcps(bpy.types.Operator):
                 if bpy.app.version >= BlenderVersion.V2_91:
                     view_layer = context.view_layer.depsgraph
                 #
-                for camera in cameras:
+                for camera, last_keyframe in zip(cameras, cameras_end_keyframes):
+                    if addon_prefs.limit_to_last_camera_keyframe and frame > last_keyframe:
+                        break   # skip since camera animation ends before scene's end_frame
+                    #
                     view_layer.update()
                     scene.camera = camera   # set render camera
                     image_filename, _ = get_render_image_filename(camera, scene, frame)

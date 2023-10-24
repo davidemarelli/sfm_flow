@@ -49,6 +49,16 @@ class BlenderVersion(tuple, Enum):
     V2_83_7 = (2, 83, 7)     # 2.83.7 - September 30, 2020
     V2_83_8 = (2, 83, 8)     # 2.83.8 - October 21, 2020
     V2_83_9 = (2, 83, 9)     # 2.83.9 - November 11, 2020
+    V2_83_10 = (2, 83, 10)   # 2.83.10 - December 9, 2020
+    V2_83_12 = (2, 83, 12)   # 2.83.12 - January 27, 2021
+    V2_83_13 = (2, 83, 13)   # 2.83.13 - March 10, 2021
+    V2_83_14 = (2, 83, 14)   # 2.83.14 - May 12, 2021
+    V2_83_15 = (2, 83, 15)   # 2.83.15 - May 20, 2021
+    V2_83_16 = (2, 83, 16)   # 2.83.16 - June 16, 2021
+    V2_83_17 = (2, 83, 17)   # 2.83.17 - August 11, 2021
+    V2_83_18 = (2, 83, 18)   # 2.83.18 - September 29, 2021
+    V2_83_19 = (2, 83, 19)   # 2.83.19 - February 2, 2022
+    V2_83_20 = (2, 83, 20)   # 2.83.20 - April 20, 2022
     #
     # --- v2.90
     # API changes since v2.83 -> https://docs.blender.org/api/2.90/change_log.html
@@ -71,3 +81,36 @@ class BlenderVersion(tuple, Enum):
     V2_93 = (2, 93, 0)       # 2.93.0 - June 2, 2021
     V2_93_0 = (2, 93, 0)
     V2_93_1 = (2, 93, 1)     # 2.93.1 - June 23, 2021
+    V2_93_2 = (2, 93, 2)     # 2.93.2 - August 4, 2021
+    V2_93_3 = (2, 93, 3)     # 2.93.3 - August 18, 2021
+    V2_93_4 = (2, 93, 4)     # 2.93.4 - September 1, 2021
+    V2_93_5 = (2, 93, 5)     # 2.93.5 - October 6, 2021
+    V2_93_6 = (2, 93, 6)     # 2.93.6 - November 17, 2021
+    V2_93_7 = (2, 93, 7)     # 2.93.7 - December 15, 2021
+    V2_93_8 = (2, 93, 8)     # 2.93.8 - February 2, 2022
+    V2_93_9 = (2, 93, 9)     # 2.93.9 - April 20, 2022
+    #
+    # --- v3.0
+    # API changes -> https://wiki.blender.org/wiki/Reference/Release_Notes/3.0/Python_API
+    V3_0 = (3, 0, 0)       # 3.0.0 - December 3, 2021
+    V3_0_0 = (3, 0, 0)
+    V3_0_1 = (3, 0, 1)     # 3.0.1 - January 26, 2021
+    #
+    # --- v3.1
+    # API changes -> https://wiki.blender.org/wiki/Reference/Release_Notes/3.1/Python_API
+    V3_1 = (3, 1, 0)       # 3.1.0 - March 9, 2022
+    V3_1_0 = (3, 1, 0)
+    V3_1_1 = (3, 1, 1)     # 3.1.1 - March 30, 2022
+    V3_1_2 = (3, 1, 2)     # 3.1.2 - April 1, 2022
+    #
+    # --- v3.2
+    # API changes -> https://wiki.blender.org/wiki/Reference/Release_Notes/3.2/Python_API
+    V3_2 = (3, 2, 0)       # 3.2.0 - June 8, 2022
+    V3_2_0 = (3, 2, 0)
+    V3_2_1 = (3, 2, 1)     # 3.2.1 - July 6, 2022
+    V3_2_2 = (3, 2, 2)     # 3.2.2 - August 3, 2022
+    #
+    # --- v3.3
+    # API changes -> https://wiki.blender.org/wiki/Reference/Release_Notes/3.3/Python_API
+    V3_3 = (3, 3, 0)       # 3.3.0 - September 7, 2022
+    V3_3_0 = (3, 3, 0)

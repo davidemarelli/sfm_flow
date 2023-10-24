@@ -279,14 +279,15 @@ class SFMFLOW_OT_init_scene(bpy.types.Operator):
         scene.cycles.blur_glossy = 0.00
         # performances
         scene.render.threads_mode = 'AUTO'
-        scene.cycles.debug_bvh_type = 'DYNAMIC_BVH'
-        scene.cycles.preview_start_resolution = 64
-        scene.cycles.tile_order = 'HILBERT_SPIRAL'
-        scene.render.tile_x = 64
-        scene.render.tile_y = 64
-        scene.cycles.use_progressive_refine = False
-        scene.render.use_save_buffers = False
-        scene.render.use_persistent_data = False
+        if bpy.app.version < BlenderVersion.V3_0:  # < v3.0
+            scene.cycles.debug_bvh_type = 'DYNAMIC_BVH'
+            scene.cycles.preview_start_resolution = 64
+            scene.cycles.tile_order = 'HILBERT_SPIRAL'
+            scene.render.tile_x = 64
+            scene.render.tile_y = 64
+            scene.cycles.use_progressive_refine = False
+            scene.render.use_save_buffers = False
+            scene.render.use_persistent_data = False
         scene.cycles.debug_use_spatial_splits = False
         scene.cycles.debug_use_hair_bvh = True
         scene.cycles.debug_bvh_time_steps = 0
